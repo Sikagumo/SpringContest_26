@@ -11,12 +11,6 @@
 *.gch
 *.pch
 
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
 # Compiled Dynamic libraries
 *.so
 *.dylib
@@ -33,9 +27,16 @@
 *.lib
 
 # Executables
-*.exe
 *.out
 *.app
+*.exe
 
-# debug information files
-*.dwo
+# New addition
+.vs/
+x64/
+x86/
+Win32/
+Debug/
+Release/
+Log.txt
+
