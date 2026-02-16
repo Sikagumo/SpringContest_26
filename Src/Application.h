@@ -7,46 +7,37 @@ class Application
 
 public:
 
+	// ゲーム名
+	const char* GAME_NAME = "ちぇんじでGO";
+	
 	// スクリーンサイズ
-	static constexpr int SCREEN_SIZE_X = 1280;
-	static constexpr int SCREEN_SIZE_Y = 720;
+	static constexpr int SCREEN_SIZE_X = (16 * 80);
+	static constexpr int SCREEN_SIZE_Y = (9	* 80);
 	static constexpr int SCREEN_HALF_X = (SCREEN_SIZE_X / 2);
 	static constexpr int SCREEN_HALF_Y = (SCREEN_SIZE_Y / 2);
 
 	// 固定FPS
 	static constexpr int FRAME_RATE = 60;
 
-	// データパス関連
-	//-------------------------------------------
-	static const std::string PATH_DATA;
-	static const std::string PATH_IMAGE;
-	static const std::string PATH_MODEL;
-	static const std::string PATH_EFFECT;
-	static const std::string PATH_CSV;
-
-	static const std::string PATH_KEY_CONFIG;
-	static const std::string PATH_KEY_CONFIG_GAMEPAD;
-	static const std::string PATH_KEY_CONFIG_KEYBOARD;
-	//-------------------------------------------
-
 	// 重力(メートルの値をセンチメートルに変える)
 	static constexpr float GRAVITY = 9.81f * 100.0f;
 	static constexpr float GRAVITY_SCALE = 0.7f;
 
 
-	// インスタンスを明示的に生成
+	/// @brief 明示的にインスタンス生成処理
 	static void CreateInstance(void);
 
-	// インスタンスの取得
-	static Application& GetInstance(void);
+	/// @brief 静的インスタンス取得処理
+	/// @return アプリケーションマネージャ
+	static Application& GetInstance(void) { return *instance_;};
 
-	// 初期化
+	/// @brief 初期化 
 	void Init(void);
 
-	// ゲームループの開始
+	/// @brief 実行処理
 	void Run(void);
 
-	// リソースの破棄
+	/// @brief インスタンス削除処理
 	void Destroy(void);
 
 	// 初期化成功／失敗の判定
@@ -55,9 +46,12 @@ public:
 	// 解放成功／失敗の判定
 	bool IsReleaseFail(void) const;
 
-	// 重力の取得
+	/// @brief 重力の取得
 	float GetGravityPow(void) const { return GRAVITY * GRAVITY_SCALE; }
 
+	/// @brief ゲーム終了処理
+	void SetGameEnd(void) { isGame_ = false; };
+	
 
 private:
 
@@ -67,23 +61,29 @@ private:
 	// FPS制御
 	FpsController* fpsController_;
 
+	// ゲームを継続するか否か
+	bool isGame_;
+
 	// 初期化失敗
 	bool isInitFail_;
 
 	// 解放失敗
 	bool isReleaseFail_;
 
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
+
+	/// @brief デフォルトコンストラクタ
 	Application(void);
 
-	// コピーコンストラクタも同様
-	Application(const Application& instance) = default;
-
-	// デストラクタも同様
+	/// @brief デフォルトデストラクタ
 	~Application(void) = default;
+	
+	// コピーコンストラクタ対策
+	Application(const Application&) = delete;
+	Application& operator=(const Application&) = delete;
+	Application(Application&&) = delete;
+	Application& operator=(Application&&) = delete;
 
-	// エフェクシアの初期化
+	/// @brief エフェクシアの初期化処理
 	void InitEffekseer(void);
 
 };

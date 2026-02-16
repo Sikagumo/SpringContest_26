@@ -2,14 +2,14 @@
 #include <DxLib.h>
 #include <fstream>
 #include <sstream>
+
 #include <array>
+#include <vector>
 #include <string>
 #include <memory>
 #include <cassert>
-#include <map>
 
 #include "./StatusPlayer.h"
-#include "./StatusEnemy.h"
 #include "../Manager/ResourceManager.h"
 
 CsvManager* CsvManager::instance_ = nullptr;
@@ -50,12 +50,11 @@ CsvManager::CsvManager(void)
 }
 
 
-
 void CsvManager::Load(void)
 {
-	LoadPlayerStatus();
+	//LoadPlayerStatus();
 
-	LoadEnemy();
+	LoadStageMove();
 }
 
 std::string CsvManager::ReadCsvFile(const std::string& path)
@@ -169,63 +168,208 @@ void CsvManager::LoadPlayerStatus(void)
 	player_->LoadStatusParam(std::to_array(dataText));
 }
 
-void CsvManager::LoadEnemy(void)
+void CsvManager::LoadStages(void)
+{
+	// CSV読み込み
+	LoadStageMoveCsv(ResourceManager::PATH_CSV + PATH_STAGE_MOVE, STAGE_MOVE_X, STAGE_MOVE_Y, true);
+
+	LoadStageGravityCsv(ResourceManager::PATH_CSV + PATH_STAGE_GRAVITY, STAGE_GRAVITY_X, STAGE_GRAVITY_Y, true);
+}
+
+void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)
 {
 	/*　csvファイル読み込み処理　*/
 
-	// 文字列の一時格納配列
-	int max = static_cast<int>(StatusEnemy::PARAM::MAX);
-	std::string dataText[static_cast<int>(StatusEnemy::TYPE::MAX)][static_cast<int>(StatusEnemy::PARAM::MAX)];
+	// 空白時の値
+	const int BLANK_NUM = -1;
+
+	// ラベルの行をスキップするか否か
+	bool isSkip = _isLabelSkip;
+
+	// 縦横のマップ値[列数]
+	StageMap::MoveStagePlace dataNums;
 
 	// 行
 	std::string line;
-	std::string path = (ResourceManager::PATH_CSV + PATH_ENEMY);
+
+	// セーブファイルパス
 
 	// CSVファイルの内容を取得
-	std::string fileContent = ReadCsvFile(path);
+	std::string fileContent = ReadCsvFile(_path);
 	std::istringstream fileStream(fileContent);
 
-	int length = 0;
-	int param = 0; // 種類
+	int linePos = 0; // 行数
+	int cellPos = 0; // セル数
 
-	// 行読み込み
+	// 行ごとに読み込み
 	while (getline(fileStream, line))
 	{
 		std::stringstream ss(line);
 		std::string text;
 
-		if (param == 0)
+		if (isSkip)
 		{
-			// ラベルはスキップ
-			param++;
-			length = 0;
+			// ラベルの行をスキップ
+			isSkip = false;
 			continue;
 		}
-
-		// 列読み込み(コンマごと)
+		
+		// コンマごとにセルを読み込み
 		while (getline(ss, text, ','))
 		{
-			// カンマごとに区別されていない
-			if (length < max)
-			{
-				dataText[(param - 1)][length] = text;
-				length++;
-			}
+			// セル読み込み範囲を超えた場合、読み込み終了
+			if (cellPos >= _xSize) { break; }
+
+			// string→int変換
+			int num = 0;
+			UtilityCommon::ChangeString(text, num, BLANK_NUM);
+
+			// セルの数値を格納
+			dataNums[linePos][cellPos] = num;
+
+			// セル位置移動
+			cellPos++;
 		}
 
-		length = 0;
-		param++;
+		// 列数がステージ幅未満の時、空白の値にする
+		while (cellPos < _xSize)
+		{
+			dataNums[linePos][cellPos++] = BLANK_NUM;
+		}
+
+		if (linePos++ >= (_ySize - 1))
+		{
+			// ステージリストに格納
+			stage_.move.emplace_back(dataNums);
+
+			isSkip = _isLabelSkip;
+			linePos = 0;
+		}
+
+		cellPos = 0;
 	}
 
-	for (int i = 0; i < (param - 1); i++)
+	// 読み込まれていない領域を全て-1にする
+	while (linePos < _ySize)
 	{
-		// 敵パラメータ登録
-		enemy_[i] = std::make_unique<StatusEnemy>();
-		enemy_[i]->LoadParam(std::to_array(dataText[i]));
+		while (cellPos < _xSize)
+		{
+			// セルの数値を格納
+			dataNums[linePos][cellPos++] = -1;
+		}
+		linePos++;
+		cellPos = 0;
 	}
+
+	// ステージリストに格納
+	stage_.move.emplace_back(dataNums);
+}
+void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)
+{
+	/*　csvファイル読み込み処理　*/
+
+	// 空白時の値
+	const int BLANK_NUM = -1;
+
+	// ラベルの行をスキップするか否か
+	bool isSkip = _isLabelSkip;
+
+	// 縦横のマップ値[列数]
+	StageMap::GravityStagePlace dataNums;
+
+	// 行
+	std::string line;
+
+	// セーブファイルパス
+
+	// CSVファイルの内容を取得
+	std::string fileContent = ReadCsvFile(_path);
+	std::istringstream fileStream(fileContent);
+
+	int linePos = 0; // 行数
+	int cellPos = 0; // セル数
+
+	// 行ごとに読み込み
+	while (getline(fileStream, line))
+	{
+		std::stringstream ss(line);
+		std::string text;
+
+		if (isSkip)
+		{
+			// ラベルの行をスキップ
+			isSkip = false;
+			continue;
+		}
+		
+		// コンマごとにセルを読み込み
+		while (getline(ss, text, ','))
+		{
+			// セル読み込み範囲を超えた場合、読み込み終了
+			if (cellPos >= _xSize) { break; }
+
+			// string→int変換
+			int num = 0;
+			UtilityCommon::ChangeString(text, num, BLANK_NUM);
+
+			// セルの数値を格納
+			dataNums[linePos][cellPos] = num;
+
+			// セル位置移動
+			cellPos++;
+		}
+
+		// 列数がステージ幅未満の時、空白の値にする
+		while (cellPos < _xSize)
+		{
+			dataNums[linePos][cellPos++] = BLANK_NUM;
+		}
+
+		if (linePos++ >= (_ySize - 1))
+		{
+			// ステージリストに格納
+			stage_.gravity.emplace_back(dataNums);
+
+			isSkip = _isLabelSkip;
+			linePos = 0;
+		}
+
+		cellPos = 0;
+	}
+
+	// 読み込まれていない領域を全て-1にする
+	while (linePos < _ySize)
+	{
+		while (cellPos < _xSize)
+		{
+			// セルの数値を格納
+			dataNums[linePos][cellPos++] = -1;
+		}
+		linePos++;
+		cellPos = 0;
+	}
+
+	// ステージリストに格納
+	stage_.gravity.emplace_back(dataNums);
 }
 
 
+std::string& CsvManager::GetHandlePathPlayer(void)
+{
+	return player_->GetHandlePath();
+}
+
+int CsvManager::GetStageMoveNum(int _type, int x, int y)
+{
+	return stage_.move[_type].at(y).at(x);
+}
+int CsvManager::GetStageGravityNum(int _type, int x, int y)
+{
+	return stage_.gravity[_type].at(y).at(x);
+}
+
+
+/*
 void CsvManager::SaveCSV(void)
 {
 	/* CSV書き込み処理 */
@@ -269,16 +413,4 @@ void CsvManager::SaveCSV(void)
 #ifdef _DEBUG
 	OutputDebugString("\n正常に保存完了しました\n");
 #endif
-	*/
-}
-
-
-std::string& CsvManager::GetHandlePathPlayer(void)
-{
-	return player_->GetHandlePath();
-}
-
-std::string& CsvManager::GetHandlePathEnemy(int type)
-{
-	return enemy_[type]->GetHandlePath();
-}
+}*/

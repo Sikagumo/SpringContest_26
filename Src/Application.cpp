@@ -1,37 +1,43 @@
+#include "Application.h"
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
-#include "Manager/InputManager.h"
-#include "Manager/ResourceManager.h"
-#include "Manager/SceneManager.h"
-#include "Common/FpsController.h"
-#include "Application.h"
+#include <cassert>
+#include "./Manager/InputManager.h"
+#include "./Manager/ResourceManager.h"
+#include "./Manager/SceneManager.h"
+#include "./CSV/CsvManager.h"
+#include "./Common/FpsController.h"
 
+// シングルトンインスタンス
 Application* Application::instance_ = nullptr;
 
-const std::string Application::PATH_IMAGE = "Data/Image/";
-const std::string Application::PATH_MODEL = "Data/Model/";
-const std::string Application::PATH_EFFECT = "Data/Effect/";
-const std::string Application::PATH_CSV = "Data/CSV/";
 
 void Application::CreateInstance(void)
 {
-	if (instance_ == nullptr)
-	{
-		instance_ = new Application();
-	}
-	instance_->Init();
+	/* インスタンス生成処理 */
+
+	// インスタンス未生成時 生成
+	if (instance_ == nullptr) instance_ = new Application();
+
+	instance_->Init(); // 初期化処理
 }
 
-Application& Application::GetInstance(void)
+Application::Application(void)
+	:
+	isGame_(true),
+	isInitFail_(false),
+	isReleaseFail_(false),
+	fpsController_(nullptr)
 {
-	return *instance_;
 }
 
 void Application::Init(void)
 {
+	/* 初期化処理 */
 
-	// アプリケーションの初期設定
-	SetWindowText("2416026_中川原 諒");
+	// ゲーム名
+	SetWindowText(GAME_NAME);
+
 
 	// ウィンドウサイズ
 	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
@@ -46,7 +52,8 @@ void Application::Init(void)
 	if (DxLib_Init() == -1)
 	{
 		isInitFail_ = true;
-		return;
+		OutputDebugString("\nDxLibが初期化されていません");
+		assert(false);
 	}
 
 	// Effekseerの初期化
@@ -66,6 +73,8 @@ void Application::Init(void)
 	SetUseDirectInputFlag(true);
 	InputManager::CreateInstance();
 
+	CsvManager::CreateInstance();
+
 	// リソース管理初期化
 	ResourceManager::CreateInstance();
 
@@ -76,18 +85,26 @@ void Application::Init(void)
 
 void Application::Run(void)
 {
+	/*　実行処理　*/
 
-	InputManager& inputManager = InputManager::GetInstance();
+	// シーン管理マネージャ
 	SceneManager& sceneManager = SceneManager::GetInstance();
 
 	// ゲームループ
-	while (ProcessMessage() == 0 && CheckHitKey(KEY_INPUT_ESCAPE) == 0)
+	while (ProcessMessage() == 0 && isGame_)
 	{
 
-		inputManager.Update();
+		InputManager::GetInstance().Update();
+
 		sceneManager.Update();
 
 		sceneManager.Draw();
+
+		// ゲーム終了
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PAUSE))
+		{
+			isGame_ = false;
+		}
 
 		if (sceneManager.GetIsDebugMode())
 		{
@@ -106,6 +123,8 @@ void Application::Run(void)
 
 void Application::Destroy(void)
 {
+	/*　インスタンス削除処理　*/
+
 	// FPS制御メモリ解放
 	delete fpsController_;
 
@@ -114,6 +133,9 @@ void Application::Destroy(void)
 	
 	// シーン管理解放
 	SceneManager::GetInstance().Destroy();
+
+	// CSV管理解放
+	CsvManager::GetInstance().Destroy();
 
 	// Effekseerを終了する。
 	Effkseer_End();
@@ -139,13 +161,7 @@ bool Application::IsReleaseFail(void) const
 	return isReleaseFail_;
 }
 
-Application::Application(void)
-	:
-	isInitFail_(false),
-	isReleaseFail_(false),
-	fpsController_(nullptr)
-{
-}
+
 
 void Application::InitEffekseer(void)
 {

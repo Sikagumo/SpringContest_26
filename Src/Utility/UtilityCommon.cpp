@@ -51,11 +51,8 @@ void UtilityCommon::ChangeString(const std::string& _text, int& target, int minN
     else
     {
         // エラー
-        std::string error = "\n文字列の値に誤りがあります。文字：";
-        error += _text;
-        OutputDebugString(error.c_str());
+        OutputDebugString("\n！！int→文字列変換の値に誤りがあります。！！\n");
         assert(false);
-
     }
 }
 
@@ -104,11 +101,8 @@ void UtilityCommon::ChangeString(const std::string& text, int& target)
     else
     {
         // エラー
-        std::string error = "\nint→文字列変換の値に誤りがあります。文字：";
-        error += text;
-        OutputDebugString(error.c_str());
+        OutputDebugString("\n！！int→文字列変換の値に誤りがあります。！！\n");
         assert(false);
-
     }
 }
 
@@ -159,9 +153,7 @@ void UtilityCommon::ChangeString(const std::string& text, float& target, float m
     else
     {
         // エラー
-        std::string error = "\nfloat→文字列変換の値に誤りがあります。文字：";
-        error += text;
-        OutputDebugString(error.c_str());
+        OutputDebugString("\n！！float→文字列変換の値に誤りがあります。！！\n");
         assert(false);
 
     }
@@ -216,10 +208,8 @@ void UtilityCommon::ChangeString(const std::string& text, float& target)
     else
     {
         // エラー
-        std::string error = "\nfloat→文字列変換の値に誤りがあります。 文字：";
-        error += text;
-        assert(error.c_str());
-
+        OutputDebugString("\n！！float→文字列変換の値に誤りがあります。！！\n");
+        assert(false);
     }
 }
 
