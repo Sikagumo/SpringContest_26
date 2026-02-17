@@ -27,17 +27,10 @@ public:
 	~StageMove(void)override = default;
 
 
-	void Init(void)override;
-
-	void Update(void)override;
-
-	void Draw(void)override;
 	void DrawDebug(void)override;
 
-	void Release(void)override;
 
-
-private:
+protected:
 
 
 	static constexpr VECTOR STAGE_POS = { -1000.0f, -1000.0f, 850.0f };
@@ -46,23 +39,13 @@ private:
 	static constexpr float BLOCK_OFFSET_X = 200.0f;
 	static constexpr float BLOCK_OFFSET_Y = 200.0f;
 
-	struct BlockParam
-	{
-		BlockParam(void) :
-			type(BLOCK_TYPE::BLANK),
-			viewParam(nullptr),
-			collisionPos(0, 0),
-			collisionSize(0, 0) {
-		};
 
-		BLOCK_TYPE type;
-		Transform* viewParam;
-		Vector2 collisionPos;
-		Vector2 collisionSize;
-	};
+	void InitList(void)override;
 
-	// 配置リスト
-	std::vector<std::vector<BlockParam*>> placeType_;
-
-	std::vector<BlockParam*> SetBlockType(int _type, int list);
+	/// @brief ブロック状態割り当て
+	/// @param _param ブロックパラメータ
+	/// @param _blockType CSVのステージ配置の値
+	/// @param _posX 現在列数
+	/// @param _posY 現在行数
+	void SetParam(BlockParam& _param, int _blockType, float _posX, float _posY)override;
 };

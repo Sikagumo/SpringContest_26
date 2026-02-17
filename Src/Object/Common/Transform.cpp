@@ -103,6 +103,8 @@ void Transform::Release(void)
 void Transform::SetModel(int model)
 {
 	modelId = model;
+
+	Update();
 }
 
 void Transform::InitTransform(const VECTOR& _scl, const Quaternion& _rot, const Quaternion& _rotLocal, const VECTOR& _pos)

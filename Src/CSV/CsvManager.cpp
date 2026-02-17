@@ -198,7 +198,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 	std::string fileContent = ReadCsvFile(_path);
 	std::istringstream fileStream(fileContent);
 
-	int linePos = 0; // 行数
+	int linePos = (_ySize - 1); // 行数
 	int cellPos = 0; // セル数
 
 	// 行ごとに読み込み
@@ -237,27 +237,27 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 			dataNums[linePos][cellPos++] = BLANK_NUM;
 		}
 
-		if (linePos++ >= (_ySize - 1))
+		if (linePos-- < 1)
 		{
 			// ステージリストに格納
 			stage_.move.emplace_back(dataNums);
 
 			isSkip = _isLabelSkip;
-			linePos = 0;
+			linePos = (_ySize - 1);
 		}
 
 		cellPos = 0;
 	}
 
 	// 読み込まれていない領域を全て-1にする
-	while (linePos < _ySize)
+	while (linePos >= 0)
 	{
 		while (cellPos < _xSize)
 		{
 			// セルの数値を格納
 			dataNums[linePos][cellPos++] = -1;
 		}
-		linePos++;
+		linePos--;
 		cellPos = 0;
 	}
 
