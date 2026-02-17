@@ -1,7 +1,7 @@
 #include <DxLib.h>
 #include "../../Manager/ResourceManager.h"
 #include "../../Common/Vector2.h"
-#include "../Common/Transform.h"
+#include "../../Utility/AsoUtility.h"
 #include "StageMove.h"
 
 StageMove::StageMove(void)
@@ -40,23 +40,50 @@ void StageMove::SetParam(BlockParam& _param, int _blockType, float _posX, float 
 	_param.type = _blockType;
 	_param.viewParam = new Transform();
 
-	_param.viewParam->InitTransform(BLOCK_SCALE,
-		Quaternion::Identity(), Quaternion::Identity(),
-		{ (_posX * (BLOCK_OFFSET_X * BLOCK_SCALE) + STAGE_POS.x),
-		  (_posY * (BLOCK_OFFSET_Y * BLOCK_SCALE) + STAGE_POS.y),
-		  STAGE_POS.z
-		}
-	);
+	float scale = 1.0f;
 	
 	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
+	Quaternion rotLocal = Quaternion::Identity();
+	VECTOR pos = VGet((_posX * (BLOCK_OFFSET_X * scale) + STAGE_POS.x),
+					  (_posY * (BLOCK_OFFSET_Y * scale) + STAGE_POS.y),
+					   STAGE_POS.z);
+
 	if (type == BLOCK_TYPE::WALL)
 	{
+		scale = BLOCK_SCALE;
 		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_STONE));
+	}
+	else if (type == BLOCK_TYPE::GOAL)
+	{
+		// ÉSÅ[Éãìoò^
+		pos.x += 25.0f;
+		pos.y += 10.0f;
+		goalPos_ = pos;
+
+		scale = 0.15f;
+		rotLocal = Quaternion::AngleAxis(-90.0f, AsoUtility::AXIS_X);
+		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_GOAL));
+	}
+	else if (type == BLOCK_TYPE::PLATER_WIDTH)
+	{
+		// ÉvÉåÉCÉÑÅ[ÇPìoò^
+		playersPos_[0] = pos;
+		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_BLANK));
+	}
+	else if (type == BLOCK_TYPE::PLATER_HEIGHT)
+	{
+		// ÉvÉåÉCÉÑÅ[ÇQìoò^
+		playersPos_[1] = pos;
+		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_BLANK));
 	}
 	else
 	{
 		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_BLANK));
 	}
+
+	_param.viewParam->InitTransform(scale,
+									Quaternion::Identity(), rotLocal,
+									pos);
 
 	
 	// ÉuÉçÉbÉNÇÃìñÇΩÇËîªíËà íu

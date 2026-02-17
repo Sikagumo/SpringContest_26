@@ -12,11 +12,12 @@ public:
 
 	enum class BLOCK_TYPE
 	{
-		BLANK = -1,
-		WALL,
-		PLATER_WIDTH,
-		PLATER_HEIGHT,
-		GOAL,
+		BLANK = -1,    // 空白or未割当
+		WALL,		   // 壁
+		PLATER_WIDTH,  // 横移動プレイヤー
+		PLATER_HEIGHT, // 縦移動プレイヤー
+
+		GOAL, // ゴール
 
 		MAX,
 	};
@@ -47,5 +48,5 @@ protected:
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	void SetParam(BlockParam& _param, int _blockType, float _posX, float _posY)override;
+	void SetParam(StageBase::BlockParam& _param, int _blockType, float _posX, float _posY)override;
 };

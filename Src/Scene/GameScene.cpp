@@ -5,6 +5,7 @@
 #include "../Manager/InputManager.h"
 #include "../Object/Actor/ActorBase.h"
 #include "../Object/Common/Transform.h"
+#include "../Object/Stage/StageBase.h"
 #include "../Object/Stage/StageMove.h"
 #include "../Object/SkyDome/SkyDome.h"
 #include "../Object/Player/Player.h"

@@ -19,6 +19,11 @@ public:
 	virtual void DrawDebug(void) {};
 	virtual void Release(void);
 
+	const VECTOR& GetPlayerPos(int _num) { return playersPos_[_num]; };
+
+	const VECTOR& GetGoalPos(void) { return goalPos_; };
+
+
 protected:
 
 	SceneManager& sceneMng_;
@@ -43,6 +48,9 @@ protected:
 
 	// 配置リスト
 	std::vector<std::vector<BlockParam*>> placeType_;
+
+	VECTOR playersPos_[2];
+	VECTOR goalPos_;
 
 
 	virtual void InitList(void) = 0;

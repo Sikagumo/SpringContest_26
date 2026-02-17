@@ -24,6 +24,7 @@ public:
 		MODEL_SKYDOME,
 		MODEL_STAGE_BLANK,
 		MODEL_STAGE_STONE,
+		MODEL_GOAL,
 
 		// 外部アニメーション
 

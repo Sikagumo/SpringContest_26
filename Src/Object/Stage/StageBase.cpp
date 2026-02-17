@@ -1,15 +1,24 @@
 #include "StageBase.h"
+#include <cassert>
 #include "../../CSV/CsvManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Common/Vector2.h"
+#include "../../Utility/AsoUtility.h"
 #include "../Common/Transform.h"
 
 
-StageBase::StageBase(void):
+StageBase::StageBase(void) :
 	sceneMng_(SceneManager::GetInstance()),
 	resMng_(ResourceManager::GetInstance())
 {
+	constexpr VECTOR CONSTRUCT_POS = { -1, -1, -1 };
+	for (VECTOR& pos : playersPos_)
+	{
+		pos = CONSTRUCT_POS;
+	}
+
+	goalPos_ = CONSTRUCT_POS;
 }
 
 void StageBase::Init(void)
