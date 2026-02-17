@@ -41,7 +41,7 @@ void Camera::InitCollider(void)
 
 void Camera::InitPost(void)
 {
-	ChangeMode(MODE::FOLLOW);
+	ChangeMode(MODE::FIXED_POINT);
 }
 
 void Camera::Update(void)
@@ -85,6 +85,15 @@ void Camera::SetBeforeDraw(void)
 
 void Camera::DrawDebug(void)
 {
+#ifdef _DEBUG
+	DrawFormatString(0, 16, 0xffffff, "camera[pos(%.1f, %.1f, %.1f),(rot(%.1f, %.1f, %.1f)]", 
+		transform_.pos.x, transform_.pos.y, transform_.pos.z,
+		AsoUtility::Rad2Deg(transform_.rot.x),
+		AsoUtility::Rad2Deg(transform_.rot.y),
+		AsoUtility::Rad2Deg(transform_.rot.z)
+		);
+					 
+#endif
 }
 
 void Camera::Release(void)
@@ -199,7 +208,49 @@ void Camera::ProcessMove(void)
 
 void Camera::SetBeforeDrawFixedPoint(void)
 {
-	// ‰½‚à‚µ‚È‚¢
+#ifdef _DEBUG
+
+	const float move = 2.5f;
+	const float rot = 2.0f;
+
+	if (CheckHitKey(KEY_INPUT_UP))
+	{
+		if (CheckHitKey(KEY_INPUT_LSHIFT) ||
+			CheckHitKey(KEY_INPUT_RSHIFT)) { transform_.pos.y += move; }
+
+		else if (CheckHitKey(KEY_INPUT_LCONTROL) ||
+				CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_X, rot); }
+
+		else { transform_.pos.z += move; }
+	}
+
+	if (CheckHitKey(KEY_INPUT_DOWN))
+	{
+		if (CheckHitKey(KEY_INPUT_LSHIFT) ||
+			CheckHitKey(KEY_INPUT_RSHIFT)) { transform_.pos.y -= move; }
+
+		else if (CheckHitKey(KEY_INPUT_LCONTROL) ||
+				 CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_X, -rot); }
+
+		else { transform_.pos.z -= move; }
+	}
+
+	if (CheckHitKey(KEY_INPUT_RIGHT))
+	{
+		if (CheckHitKey(KEY_INPUT_LCONTROL) ||
+			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_Y, rot); }
+
+		else { transform_.pos.x += move; }
+	}
+
+	if (CheckHitKey(KEY_INPUT_LEFT))
+	{
+		if (CheckHitKey(KEY_INPUT_LCONTROL) ||
+			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_Y, -rot); }
+
+		else { transform_.pos.x -= move; }
+	}
+#endif
 }
 
 void Camera::SetBeforeDrawFree(void)

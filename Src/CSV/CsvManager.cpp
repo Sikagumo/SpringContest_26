@@ -54,7 +54,7 @@ void CsvManager::Load(void)
 {
 	//LoadPlayerStatus();
 
-	LoadStageMove();
+	LoadStages();
 }
 
 std::string CsvManager::ReadCsvFile(const std::string& path)
@@ -173,7 +173,7 @@ void CsvManager::LoadStages(void)
 	// CSVì«Ç›çûÇ›
 	LoadStageMoveCsv(ResourceManager::PATH_CSV + PATH_STAGE_MOVE, STAGE_MOVE_X, STAGE_MOVE_Y, true);
 
-	LoadStageGravityCsv(ResourceManager::PATH_CSV + PATH_STAGE_GRAVITY, STAGE_GRAVITY_X, STAGE_GRAVITY_Y, true);
+	//LoadStageGravityCsv(ResourceManager::PATH_CSV + PATH_STAGE_GRAVITY, STAGE_GRAVITY_X, STAGE_GRAVITY_Y, true);
 }
 
 void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)

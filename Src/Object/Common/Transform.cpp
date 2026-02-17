@@ -150,12 +150,12 @@ void Transform::Translate(const VECTOR& _dir, float _movePow)
 
 void Transform::Rotate(const Quaternion& rot)
 {
-	quaRot = Quaternion::Mult(quaRot, rot);
+	quaRot.Mult(rot);
 	Update();
 }
-void Transform::Rotate(const VECTOR& _axis, float _pow)
+void Transform::Rotate(const VECTOR& _axis, float _degPow)
 {
-	Quaternion qua = Quaternion::AngleAxis(_pow, _axis);
+	Quaternion qua = Quaternion::AngleAxis(_degPow, _axis);
 	Rotate(qua);
 }
 

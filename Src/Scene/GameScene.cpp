@@ -1,9 +1,11 @@
 #include "GameScene.h"
 #include <DxLib.h>
 #include "../Manager/SceneManager.h"
+#include "../Manager/ResourceManager.h"
 #include "../Manager/InputManager.h"
 #include "../Object/Actor/ActorBase.h"
-#include "../Object/Stage/Stage.h"
+#include "../Object/Common/Transform.h"
+#include "../Object/Stage/StageMove.h"
 #include "../Object/SkyDome/SkyDome.h"
 #include "../Object/Player/Player.h"
 #include "../Object/Collider/ColliderBase.h"
@@ -12,19 +14,21 @@
 
 GameScene::GameScene(void):
 	  skyDome_(nullptr),
+	  stage_(nullptr),
 	  SceneBase()
 {
 }
 
 void GameScene::Init(void)
-{		
-	//skyDome_ = new SkyDome(player_->GetTransform());
-	//skyDome_->Init();
+{
+	stage_ = new StageMove();
+	stage_->Init();
 
-	//Camera* camera = sceneMng_.GetCamera();
-	//camera->SetFollow(&player_->GetTransform());
-	//camera->Init();
-	//camera->AddHitCollider(stageCollider);
+	skyDome_ = new SkyDome({});
+	skyDome_->Init();
+
+	Camera* camera = sceneMng_.GetCamera();
+	camera->Init();
 }
 
 void GameScene::Update(void)
@@ -38,21 +42,29 @@ void GameScene::Update(void)
 	}
 #endif
 
+	stage_->Update();
 
-	//skyDome_->Update();
+	skyDome_->Update();
 
-	//Camera* camera = sceneMng_.GetCamera();
+	Camera* camera = sceneMng_.GetCamera();
 	//camera->SetFollow(&player_->GetTransform());
-	//camera->Update();
+	camera->Update();
 }
 
 void GameScene::Draw(void)
 {
-	//skyDome_->Draw();
+	skyDome_->Draw();
+
+	stage_->Draw();
+
+	stage_->DrawDebug();
 }
 
 void GameScene::Release(void)
 {
-	//skyDome_->Release();
-	//delete skyDome_;
+	stage_->Release();
+	delete stage_;
+
+	skyDome_->Release();
+	delete skyDome_;
 }

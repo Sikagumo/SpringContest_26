@@ -60,6 +60,9 @@ void ResourceManager::SetResource(void)
 
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER, PATH_MODEL + "Player/Player.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_SKYDOME, PATH_MODEL + "SkyDome/SkyDome.mv1");
+
+	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_BLANK, PATH_MODEL + "Blocks/Block_Blank.mv1");
+	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_STONE, PATH_MODEL + "Blocks/Block_Stone.mv1");
 }
 void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path)
 {

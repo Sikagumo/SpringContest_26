@@ -1,6 +1,7 @@
 #pragma once
 #include "SceneBase.h"
 class SkyDome;
+class StageMove;
 
 class GameScene : public SceneBase
 {
@@ -28,4 +29,6 @@ public:
 private:
 
 	SkyDome* skyDome_;
+
+	StageMove* stage_;
 };

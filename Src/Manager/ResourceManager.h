@@ -22,6 +22,8 @@ public:
 		// モデル
 		MODEL_PLAYER,
 		MODEL_SKYDOME,
+		MODEL_STAGE_BLANK,
+		MODEL_STAGE_STONE,
 
 		// 外部アニメーション
 

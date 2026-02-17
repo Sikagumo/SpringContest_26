@@ -1,3 +1,4 @@
+#pragma once
 #include <string>
 #include <memory>
 #include <array>
@@ -14,13 +15,13 @@ public:
 	const char* PATH_STAGE_MOVE = "StageMove.csv";
 	const char* PATH_STAGE_GRAVITY = "StageGravity.csv";
 
-	// 移動ステージサイズ
-	static constexpr int STAGE_MOVE_X = 10;
-	static constexpr int STAGE_MOVE_Y = 5;
+	// 移動ステージサイズ(ラベルは含めない)
+	static constexpr int STAGE_MOVE_X = 11;
+	static constexpr int STAGE_MOVE_Y = 11;
 
 	// 重力ステージサイズ
 	static constexpr int STAGE_GRAVITY_X = 10;
-	static constexpr int STAGE_GRAVITY_Y = 5;
+	static constexpr int STAGE_GRAVITY_Y = 10;
 
 
 	/// @brief インスタンス生成処理

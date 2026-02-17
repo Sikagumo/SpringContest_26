@@ -73,7 +73,7 @@ public:
 	/// @brief ‰ñ“]ˆ—
 	/// @param _axis ‰ñ“]•ûŒü
 	/// @param _pow ‘¬“x
-	void Rotate(const VECTOR& _axis, float _pow);
+	void Rotate(const VECTOR& _axis, float _degPow);
 	void Rotate(const Quaternion& _rot);
 
 
