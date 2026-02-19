@@ -2,8 +2,7 @@
 #include <vector>
 #include "../../Common/Vector2.h"
 #include "../Common/Transform.h"
-class SceneManager;
-class ResourceManager;
+#include "../Actor/ActorBase.h"
 
 class StageBase
 {
@@ -13,10 +12,15 @@ public:
 
 	virtual ~StageBase(void) = default;
 
+
 	virtual void Init(void);
+
 	virtual void Update(void);
+
 	virtual void Draw(void);
+
 	virtual void DrawDebug(void) {};
+
 	virtual void Release(void);
 
 	const VECTOR& GetPlayerPos(int _num) { return playersPos_[_num]; };
@@ -49,6 +53,7 @@ protected:
 	// 配置リスト
 	std::vector<std::vector<BlockParam*>> placeType_;
 
+	// プレイヤー初期位置
 	VECTOR playersPos_[2];
 	VECTOR goalPos_;
 

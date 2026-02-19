@@ -15,6 +15,7 @@ public:
 		SPHERE,
 		CAPSULE,
 		MODEL,
+		PLANE,
 	};
 
 	// П’УЋОнХ 

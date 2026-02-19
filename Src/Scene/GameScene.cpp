@@ -13,9 +13,10 @@
 #include "../Manager/Camera.h"
 
 
-GameScene::GameScene(void):
-	  skyDome_(nullptr),
-	  stage_(nullptr),
+GameScene::GameScene(void) :
+	skyDome_(nullptr),
+	stage_(nullptr),
+	temp_(nullptr),
 	  SceneBase()
 {
 }
@@ -24,9 +25,15 @@ void GameScene::Init(void)
 {
 	stage_ = new StageMove();
 	stage_->Init();
+	
 
 	skyDome_ = new SkyDome({});
 	skyDome_->Init();
+
+	temp_ = new Player();
+	temp_->Init();
+
+	//temp_->AddHitCollider(stage_.
 
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();

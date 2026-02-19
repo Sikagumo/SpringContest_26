@@ -1,5 +1,6 @@
 #include "StageBase.h"
 #include <cassert>
+#include "../Actor/ActorBase.h"
 #include "../../CSV/CsvManager.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
@@ -9,8 +10,8 @@
 
 
 StageBase::StageBase(void) :
-	sceneMng_(SceneManager::GetInstance()),
-	resMng_(ResourceManager::GetInstance())
+	resMng_(ResourceManager::GetInstance()),
+	sceneMng_(SceneManager::GetInstance())
 {
 	constexpr VECTOR CONSTRUCT_POS = { -1, -1, -1 };
 	for (VECTOR& pos : playersPos_)
@@ -32,6 +33,8 @@ void StageBase::Update(void)
 	{
 		for (auto& place : placeList)
 		{
+			if (place->viewParam == nullptr) { continue; }
+
 			place->viewParam->Update();
 		}
 	}
@@ -39,10 +42,13 @@ void StageBase::Update(void)
 
 void StageBase::Draw(void)
 {
+	// 設置オブジェクト描画
 	for (auto placeList : placeType_)
 	{
 		for (auto& place : placeList)
 		{
+			if (place->viewParam == nullptr) { continue; }
+
 			MV1DrawModel(place->viewParam->modelId);
 		}
 	}
@@ -53,6 +59,8 @@ void StageBase::Release(void)
 	{
 		for (auto place : placeList)
 		{
+			if (place->viewParam == nullptr) { continue; }
+
 			place->viewParam->Release();
 			delete place->viewParam;
 		}
@@ -72,6 +80,7 @@ void StageBase::SetBlockTypeList(int _type, int _xMax, int _yMax)
 			// 要素以外の値の時、処理終了
 			if (type <= -1) { continue; }
 
+			// ステージ情報割り当て
 			BlockParam* param = new BlockParam();
 			SetParam(*param, type, x, y);
 

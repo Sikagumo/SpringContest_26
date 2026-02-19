@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -36,6 +36,7 @@
     <ClCompile Include="Src\Manager\ResourceManager.cpp" />
     <ClCompile Include="Src\Manager\SceneManager.cpp" />
     <ClCompile Include="Src\Object\Actor\CharaBase.cpp" />
+    <ClCompile Include="Src\Object\Collider\ColliderPlane.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderBase.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderCapsule.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderLine.cpp" />
@@ -74,6 +75,7 @@
     <ClInclude Include="Src\Manager\ResourceManager.h" />
     <ClInclude Include="Src\Manager\SceneManager.h" />
     <ClInclude Include="Src\Object\Actor\CharaBase.h" />
+    <ClInclude Include="Src\Object\Collider\ColliderPlane.h" />
     <ClInclude Include="Src\Object\Collider\ColliderBase.h" />
     <ClInclude Include="Src\Object\Collider\ColliderCapsule.h" />
     <ClInclude Include="Src\Object\Collider\ColliderLine.h" />

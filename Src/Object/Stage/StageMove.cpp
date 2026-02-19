@@ -17,9 +17,9 @@ void StageMove::InitList(void)
 
 void StageMove::DrawDebug(void)
 {
-	/*
+	return;
 	const int x = 0;
-	int y = 16*3;
+	int y = (16 * 3);
 	for (auto placeList : placeType_)
 	{
 		for (auto& place : placeList)
@@ -31,64 +31,88 @@ void StageMove::DrawDebug(void)
 						     place->collisionPosX, place->collisionPosY);
 			y += 16;
 		}
-	}*/
+	}
 }
 
 
 void StageMove::SetParam(BlockParam& _param, int _blockType, float _posX, float _posY)
 {
 	_param.type = _blockType;
-	_param.viewParam = new Transform();
+
+	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
 
 	float scale = 1.0f;
-	
-	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
-	Quaternion rotLocal = Quaternion::Identity();
-	VECTOR pos = VGet((_posX * (BLOCK_OFFSET_X * scale) + STAGE_POS.x),
-					  (_posY * (BLOCK_OFFSET_Y * scale) + STAGE_POS.y),
-					   STAGE_POS.z);
 
-	if (type == BLOCK_TYPE::WALL)
-	{
-		scale = BLOCK_SCALE;
-		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_STONE));
-	}
-	else if (type == BLOCK_TYPE::GOAL)
+	Quaternion rotLocal = Quaternion::Identity();
+	VECTOR pos = AsoUtility::VECTOR_ZERO;
+
+	if (type == BLOCK_TYPE::GOAL ||
+		type == BLOCK_TYPE::PLATER_WIDTH ||
+		type == BLOCK_TYPE::PLATER_HEIGHT)
 	{
 		// ÉSÅ[Éãìoò^
-		pos.x += 25.0f;
-		pos.y += 10.0f;
-		goalPos_ = pos;
+		if (type == BLOCK_TYPE::GOAL)
+		{
+			_param.viewParam = new Transform();
 
-		scale = 0.15f;
-		rotLocal = Quaternion::AngleAxis(-90.0f, AsoUtility::AXIS_X);
-		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_GOAL));
-	}
-	else if (type == BLOCK_TYPE::PLATER_WIDTH)
-	{
+			VECTOR pos = VGet((_posX * (BLOCK_OFFSET_X * scale) + STAGE_POS.x),
+							  (_posY * (BLOCK_OFFSET_Y * scale) + STAGE_POS.y),
+							   STAGE_POS.z);
+
+			pos.x += 25.0f;
+			pos.y += 10.0f;
+			goalPos_ = pos;
+
+			scale = 0.15f;
+			rotLocal = Quaternion::AngleAxis(-90.0f, AsoUtility::AXIS_X);
+			_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_GOAL));
+
+			_param.viewParam->InitTransform(scale,
+				Quaternion::Identity(), rotLocal,
+				pos);
+		}
+
 		// ÉvÉåÉCÉÑÅ[ÇPìoò^
-		playersPos_[0] = pos;
-		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_BLANK));
-	}
-	else if (type == BLOCK_TYPE::PLATER_HEIGHT)
-	{
+		else if (type == BLOCK_TYPE::PLATER_WIDTH)
+		{
+			playersPos_[0] = pos;
+		}
+
 		// ÉvÉåÉCÉÑÅ[ÇQìoò^
-		playersPos_[1] = pos;
-		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_BLANK));
+		else if (type == BLOCK_TYPE::PLATER_HEIGHT)
+		{
+			playersPos_[1] = pos;
+		}
 	}
 	else
 	{
-		_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_BLANK));
+		_param.viewParam = new Transform();
+
+		VECTOR pos = VGet((_posX * (BLOCK_OFFSET_X * scale) + STAGE_POS.x),
+						  (_posY * (BLOCK_OFFSET_Y * scale) + STAGE_POS.y),
+						   STAGE_POS.z);
+
+		// ï«ìoò^
+		if (type == BLOCK_TYPE::WALL)
+		{
+			scale = BLOCK_SCALE;
+			_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_STONE));
+		}
+
+		// ó·äOìoò^
+		else
+		{
+			_param.viewParam->SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_BLANK));
+		}
+
+		_param.viewParam->InitTransform(scale,
+			Quaternion::Identity(), rotLocal,
+			pos);
 	}
-
-	_param.viewParam->InitTransform(scale,
-									Quaternion::Identity(), rotLocal,
-									pos);
-
 	
 	// ÉuÉçÉbÉNÇÃìñÇΩÇËîªíËà íu
-	_param.collisionPosX = _param.viewParam->pos.x;
-	_param.collisionPosY = _param.viewParam->pos.y;
+	_param.collisionPosX = pos.x;
+	_param.collisionPosY = pos.y;
 
 	// ÉuÉçÉbÉNÇÃìñÇΩÇËîªíËÇÃÉTÉCÉY
 	_param.collisionSize = Vector2(BLOCK_SCALE, BLOCK_SCALE);
