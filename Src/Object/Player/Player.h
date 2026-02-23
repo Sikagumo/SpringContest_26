@@ -18,6 +18,9 @@ public:
 
 	~Player(void)override = default;
 
+	void Init(const VECTOR& _pos);
+
+
 protected:
 
 

@@ -108,12 +108,12 @@ public:
 	/// @brief 左スティックの倒れた方向を取得
 	/// @param _num パッド番号
 	/// @param _threshold パッドの傾き制限
-	VECTOR GetDirXZ_LStick(Input::JOYPAD_NO _num = Input::JOYPAD_NO::PAD1, float _threshold = STICK_THRESHOLD) const;
+	VECTOR GetDirXY_LStick(Input::JOYPAD_NO _num = Input::JOYPAD_NO::PAD1, float _threshold = STICK_THRESHOLD) const;
 	
 	/// @brief 右スティックの倒れた方向を取得
 	/// @param _num パッド番号
 	/// @param _threshold パッドの傾き制限
-	VECTOR GetDirXZ_RStick(Input::JOYPAD_NO _num = Input::JOYPAD_NO::PAD1, float _threshold = STICK_THRESHOLD) const;
+	VECTOR GetDirXY_RStick(Input::JOYPAD_NO _num = Input::JOYPAD_NO::PAD1, float _threshold = STICK_THRESHOLD) const;
 
 
 private:

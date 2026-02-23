@@ -14,10 +14,7 @@ public:
 		NONE = -1,
 		
 		// ‰æ‘œ
-		IMG_TITLE,
 		IMG_SHADOW,
-		IMG_PUSH_SPACE,
-		IMG_CONGRATULATIONS,
 
 		// ƒ‚ƒfƒ‹
 		MODEL_PLAYER,

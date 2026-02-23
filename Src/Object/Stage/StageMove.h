@@ -42,9 +42,8 @@ protected:
 	void InitList(void)override;
 
 	/// @brief ブロック状態割り当て
-	/// @param _param ブロックパラメータ
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	void SetParam(StageBase::BlockParam& _param, int _blockType, float _posX, float _posY)override;
+	StageBase::BlockParam* SetParam(int _blockType, float _posX, float _posY)override;
 };

@@ -26,6 +26,24 @@ SceneManager& SceneManager::GetInstance(void)
 	return *instance_;
 }
 
+SceneManager::SceneManager(void) :
+	sceneId_(SCENE_ID::NONE),
+	waitSceneId_(SCENE_ID::NONE),
+	scene_(nullptr), fader_(nullptr),
+	camera_(nullptr),
+	deltaTime_(1.0f / 60.0f),
+	isSceneChanging_(false),
+	isDebugMode_(false)
+{
+	bool isDebug = false;
+
+#ifdef _DEBUG
+	isDebug = true;
+#endif
+
+	isDebugMode_ = isDebug;
+}
+
 void SceneManager::Init(void)
 {
 
@@ -127,7 +145,7 @@ void SceneManager::Update(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance().IsTrgDown(InputManager::TYPE::DEBUG_MODE))
 	{
-		//isDebugMode_ = !isDebugMode_;
+		isDebugMode_ = !isDebugMode_;
 	}
 #endif
 }
@@ -227,24 +245,6 @@ float SceneManager::GetDeltaTime(void) const
 Camera* SceneManager::GetCamera(void) const
 {
 	return camera_;
-}
-
-SceneManager::SceneManager(void):
-	sceneId_(SCENE_ID::NONE),
-	waitSceneId_(SCENE_ID::NONE),
-	scene_(nullptr), fader_(nullptr),
-	camera_(nullptr),
-	deltaTime_(1.0f / 60.0f),
-	isSceneChanging_(false),
-	isDebugMode_(false)
-{
-	bool isDebug = false;
-
-#ifdef _DEBUG
-	//isDebug = true;
-#endif
-
-	isDebugMode_ = isDebug;
 }
 
 void SceneManager::ResetDeltaTime(void)

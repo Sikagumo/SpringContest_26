@@ -81,8 +81,8 @@ void StageBase::SetBlockTypeList(int _type, int _xMax, int _yMax)
 			if (type <= -1) { continue; }
 
 			// ステージ情報割り当て
-			BlockParam* param = new BlockParam();
-			SetParam(*param, type, x, y);
+			BlockParam* param = SetParam(type, x, y);
+			if (param == nullptr) { continue; }
 
 			// 行配置リストに格納
 			list.emplace_back(param);

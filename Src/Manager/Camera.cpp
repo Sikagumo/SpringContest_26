@@ -183,7 +183,7 @@ void Camera::ProcessMove(void)
 	else
 	{
 		// 左スティックの傾き
-		moveDir = InputManager::GetInstance().GetDirXZ_LStick(Input::JOYPAD_NO::PAD1);
+		moveDir = InputManager::GetInstance().GetDirXY_LStick(Input::JOYPAD_NO::PAD1);
 	}
 
 	// 移動処理

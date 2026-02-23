@@ -8,6 +8,23 @@ class StageBase
 {
 public:
 
+	struct BlockParam
+	{
+		BlockParam(void) :
+			type(-1),
+			viewParam(nullptr),
+			collisionPosX(0.0f),
+			collisionPosY(0.0f),
+			collisionSize(0, 0) {
+		};
+
+		int type;
+		Transform* viewParam;
+		float collisionPosX;
+		float collisionPosY;
+		Vector2 collisionSize;
+	};
+
 	StageBase(void);
 
 	virtual ~StageBase(void) = default;
@@ -27,28 +44,14 @@ public:
 
 	const VECTOR& GetGoalPos(void) { return goalPos_; };
 
+	const std::vector<std::vector<BlockParam*>>& GetStageObjects(void) { return placeType_; };
+
 
 protected:
 
 	SceneManager& sceneMng_;
 	ResourceManager& resMng_;
 
-	struct BlockParam
-	{
-		BlockParam(void) :
-			type(-1),
-			viewParam(nullptr),
-			collisionPosX(0.0f),
-			collisionPosY(0.0f),
-			collisionSize(0, 0) {
-		};
-
-		int type;
-		Transform* viewParam;
-		float collisionPosX;
-		float collisionPosY;
-		Vector2 collisionSize;
-	};
 
 	// 配置リスト
 	std::vector<std::vector<BlockParam*>> placeType_;
@@ -68,9 +71,8 @@ protected:
 	void SetBlockTypeList(int _type, int _xMax, int _yMax);
 
 	/// @brief ブロック状態割り当て
-	/// @param _param ブロックパラメータ
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	virtual void SetParam(BlockParam& _param, int _blockType, float _posX, float _posY) = 0;
+	virtual StageBase::BlockParam* SetParam(int _blockType, float _posX, float _posY) = 0;
 };

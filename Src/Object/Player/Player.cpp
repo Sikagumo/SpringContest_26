@@ -16,6 +16,13 @@ Player::Player(void)
 {
 }
 
+void Player::Init(const VECTOR& _pos)
+{
+	ActorBase::Init();
+	transform_.pos = _pos;
+	transform_.Update();
+}
+
 void Player::InitLoadPost(void)
 {
 	transform_.SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_PLAYER));
@@ -120,14 +127,14 @@ void Player::ProcessMove(void)
 
 	if (GetJoypadNum() > 0)
 	{
-		dir = InputManager::GetInstance().GetDirXZ_LStick(Input::JOYPAD_NO::PAD1);
+		dir = InputManager::GetInstance().GetDirXY_LStick(Input::JOYPAD_NO::PAD1);
 	}
 	else
 	{
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_BACK))  { dir.z +=  1.0f; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_FRONT)) { dir.z += -1.0f; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_LEFT))  { dir.x += -1.0f; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_RIGHT)) { dir.x +=  1.0f; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_BACK))  { dir.y += 1.0f; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_FRONT)) { dir.y -= 1.0f; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_LEFT))  { dir.x -= 1.0f; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_RIGHT)) { dir.x += 1.0f; }
 	}
 
 	if (!AsoUtility::EqualsVZero(dir))

@@ -33,5 +33,5 @@ private:
 
 	StageBase* stage_;
 
-	Player* temp_;
+	Player* temp_[2];
 };

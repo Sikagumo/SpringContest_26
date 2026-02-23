@@ -157,7 +157,7 @@ Vector2 InputManager::GetKnockRStickSize(Input::JOYPAD_NO _num) const
 	return Vector2(padInfo.AKeyRX, padInfo.AKeyRY);
 }
 
-VECTOR InputManager::GetDirXZ_LStick(Input::JOYPAD_NO _num, float _threshold) const
+VECTOR InputManager::GetDirXY_LStick(Input::JOYPAD_NO _num, float _threshold) const
 {
 	VECTOR ret = {};
 
@@ -168,10 +168,10 @@ VECTOR InputManager::GetDirXZ_LStick(Input::JOYPAD_NO _num, float _threshold) co
 	auto padInfo = input_->GetJPadInputState(_num);
 
 	float dirX = static_cast<float>(padInfo.AKeyLX);
-	float dirZ = static_cast<float>(padInfo.AKeyLY);
+	float dirY = static_cast<float>(padInfo.AKeyLY);
 
 	// 平方根により、おおよその最大値が1.0となる
-	float len = sqrtf((dirX * dirX) + (dirZ * dirZ));
+	float len = sqrtf((dirX * dirX) + (dirY * dirY));
 	if (len < _threshold)
 	{
 		return ret;
@@ -180,15 +180,14 @@ VECTOR InputManager::GetDirXZ_LStick(Input::JOYPAD_NO _num, float _threshold) co
 	// デッドゾーン境界から再スケーリング(可変デッドゾーン)
 	float scale = (len - _threshold) / (1.0f - _threshold);
 	dirX = (dirX / len) * scale;
-	dirZ = (dirZ / len) * scale;
+	dirY = (dirY / len) * scale;
 
-	// Zは前方向を正に反転
-	ret = VNorm(VGet(dirX, 0.0f, -dirZ));
+	ret = VNorm(VGet(dirX, dirY, 0.0f));
 
 	return ret;
 }
 
-VECTOR InputManager::GetDirXZ_RStick(Input::JOYPAD_NO _num, float _threshold) const
+VECTOR InputManager::GetDirXY_RStick(Input::JOYPAD_NO _num, float _threshold) const
 {
 	VECTOR ret = {};
 
@@ -199,10 +198,10 @@ VECTOR InputManager::GetDirXZ_RStick(Input::JOYPAD_NO _num, float _threshold) co
 	auto padInfo = input_->GetJPadInputState(_num);
 
 	float dirX = static_cast<float>(padInfo.AKeyRX);
-	float dirZ = static_cast<float>(padInfo.AKeyRY);
+	float dirY = static_cast<float>(padInfo.AKeyRY);
 
 	// 平方根により、おおよその最大値が1.0となる
-	float len = sqrtf((dirX * dirX) + (dirZ * dirZ));
+	float len = sqrtf((dirX * dirX) + (dirY * dirY));
 	if (len < _threshold)
 	{
 		return ret;
@@ -211,10 +210,9 @@ VECTOR InputManager::GetDirXZ_RStick(Input::JOYPAD_NO _num, float _threshold) co
 	// デッドゾーン境界から再スケーリング(可変デッドゾーン)
 	float scale = (len - _threshold) / (1.0f - _threshold);
 	dirX = (dirX / len) * scale;
-	dirZ = (dirZ / len) * scale;
+	dirY = (dirY / len) * scale;
 
-	// Zは前方向を正に反転
-	ret = VNorm(VGet(dirX, 0.0f, -dirZ));
+	ret = VNorm(VGet(dirX, dirY, 0.0f));
 
 	return ret;
 }

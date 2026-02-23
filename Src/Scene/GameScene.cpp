@@ -5,6 +5,7 @@
 #include "../Manager/InputManager.h"
 #include "../Object/Actor/ActorBase.h"
 #include "../Object/Common/Transform.h"
+#include "../Object/StageObj/StageObjBase.h"
 #include "../Object/Stage/StageBase.h"
 #include "../Object/Stage/StageMove.h"
 #include "../Object/SkyDome/SkyDome.h"
@@ -16,9 +17,12 @@
 GameScene::GameScene(void) :
 	skyDome_(nullptr),
 	stage_(nullptr),
-	temp_(nullptr),
 	  SceneBase()
 {
+	for (int i = 0; i < 2; i++)
+	{
+		temp_[i] = nullptr;
+	}
 }
 
 void GameScene::Init(void)
@@ -30,10 +34,20 @@ void GameScene::Init(void)
 	skyDome_ = new SkyDome({});
 	skyDome_->Init();
 
-	temp_ = new Player();
-	temp_->Init();
+	for (int i = 0; i < 2; i++)
+	{
+		temp_[i] = new Player();
+		temp_[i]->Init(stage_->GetPlayerPos(i));
 
-	//temp_->AddHitCollider(stage_.
+		// “–‚½‚è”»’è“o˜^
+		for (auto& stageObjList : stage_->GetStageObjects())
+		{
+			for (auto& stageObj : stageObjList)
+			{
+				//temp_[i]->AddHitCollider(stageObj->GetOwnCollider());
+			}
+		}
+	}
 
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
@@ -41,7 +55,6 @@ void GameScene::Init(void)
 
 void GameScene::Update(void)
 {
-
 	// ƒV[ƒ“‘JˆÚ
 #ifdef _DEBUG
 	if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION))
@@ -50,10 +63,14 @@ void GameScene::Update(void)
 	}
 #endif
 
-	stage_->Update();
+	//stage_->Update();
 
 	skyDome_->Update();
 
+	for (int i = 0; i < 2; i++)
+	{
+		temp_[i]->Update();
+	}
 	Camera* camera = sceneMng_.GetCamera();
 	//camera->SetFollow(&player_->GetTransform());
 	camera->Update();
@@ -66,6 +83,11 @@ void GameScene::Draw(void)
 	stage_->Draw();
 
 	stage_->DrawDebug();
+
+	for (int i = 0; i < 2; i++)
+	{
+		temp_[i]->Draw();
+	}
 }
 
 void GameScene::Release(void)
@@ -75,4 +97,10 @@ void GameScene::Release(void)
 
 	skyDome_->Release();
 	delete skyDome_;
+
+	for (int i = 0; i < 2; i++)
+	{
+		temp_[i]->Release();
+		delete temp_[i];
+	}
 }

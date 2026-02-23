@@ -551,13 +551,12 @@ double AsoUtility::AngleDeg(const VECTOR& from, const VECTOR& to)
     return acos(dot) * (180.0 / DX_PI);
 }
 
-void AsoUtility::DrawLineDir(const VECTOR& pos, const VECTOR& dir, int color, float len)
+void AsoUtility::DrawLineDir(const VECTOR& pos, const VECTOR& dir, int color, float len, float _sphereSize)
 {
     auto nDir = AsoUtility::VNormalize(dir);
-    auto sPos = VAdd(pos, VScale(nDir, -len));
     auto ePos = VAdd(pos, VScale(nDir, len));
-    DrawLine3D(sPos, ePos, color);
-    DrawSphere3D(ePos, 5.0f, 5, color, color, true);
+    DrawLine3D(pos, ePos, color);
+    DrawSphere3D(ePos, _sphereSize, 5, color, color, true);
 }
 
 void AsoUtility::DrawLineXYZ(const VECTOR& pos, const Quaternion& rot, float len)

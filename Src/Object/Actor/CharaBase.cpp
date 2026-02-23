@@ -57,7 +57,7 @@ void CharaBase::Update(void)
 	DelayRotate();
 
 	// d—Í‚É‚æ‚éˆÚ“®—Ê
-	CalcGravityPow();
+	//CalcGravityPow();
 
 	// Õ“Ë”»’è‘O€”õ
 	CollisionReserve();
