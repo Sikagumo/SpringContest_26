@@ -213,7 +213,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 	const float move = 2.5f;
 	const float rot = 2.0f;
 
-	if (CheckHitKey(KEY_INPUT_UP))
+	if (InputManager::GetInstance().IsNew(InputManager::TYPE::CAMERA_MOVE_UP))
 	{
 		if (CheckHitKey(KEY_INPUT_LSHIFT) ||
 			CheckHitKey(KEY_INPUT_RSHIFT)) { transform_.pos.y += move; }
@@ -224,7 +224,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 		else { transform_.pos.z += move; }
 	}
 
-	if (CheckHitKey(KEY_INPUT_DOWN))
+	if (InputManager::GetInstance().IsNew(InputManager::TYPE::CAMERA_MOVE_DOWN))
 	{
 		if (CheckHitKey(KEY_INPUT_LSHIFT) ||
 			CheckHitKey(KEY_INPUT_RSHIFT)) { transform_.pos.y -= move; }
@@ -235,7 +235,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 		else { transform_.pos.z -= move; }
 	}
 
-	if (CheckHitKey(KEY_INPUT_RIGHT))
+	if (InputManager::GetInstance().IsNew(InputManager::TYPE::CAMERA_MOVE_RIGHT))
 	{
 		if (CheckHitKey(KEY_INPUT_LCONTROL) ||
 			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_Y, rot); }
@@ -243,7 +243,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 		else { transform_.pos.x += move; }
 	}
 
-	if (CheckHitKey(KEY_INPUT_LEFT))
+	if (InputManager::GetInstance().IsNew(InputManager::TYPE::CAMERA_MOVE_LEFT))
 	{
 		if (CheckHitKey(KEY_INPUT_LCONTROL) ||
 			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_Y, -rot); }

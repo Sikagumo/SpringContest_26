@@ -195,3 +195,8 @@ VECTOR Transform::GetDir(const VECTOR& dir) const
 {
 	return quaRot.PosAxis(dir);
 }
+
+void Transform::SetPosition(const VECTOR& pos)
+{
+	this->pos = pos;
+}

@@ -620,3 +620,16 @@ MATRIX AsoUtility::Multiplication(const VECTOR& childEuler, const VECTOR& parent
     // 行列の合成(子, 親と指定すると親⇒子の順に適用される)
     return MMult(localMat, mat);
 }
+
+bool AsoUtility::IsHitCircleXY(
+    const VECTOR& pos1, float radius1,
+    const VECTOR& pos2, float radius2)
+{
+    float dx = pos1.x - pos2.x;
+    float dy = pos1.y - pos2.y;
+
+    float distSq = dx * dx + dy * dy;
+    float radiusSum = radius1 + radius2;
+
+    return distSq <= (radiusSum * radiusSum);
+}

@@ -19,8 +19,18 @@ public:
 		PLAYER_MOVE_LEFT,  // 移動左
 		PLAYER_MOVE_BACK,  // 移動上
 		PLAYER_MOVE_FRONT, // 移動下
+		
+		PLAYER1_MOVE_RIGHT, // 移動右
+		PLAYER1_MOVE_LEFT,  // 移動左
+		PLAYER1_MOVE_BACK,  // 移動上
+		PLAYER1_MOVE_FRONT, // 移動下
+		PLAYER1_ACTION,
 
-		PLAYER_DASH,   // ダッシュ
+		PLAYER2_MOVE_RIGHT, // 移動右
+		PLAYER2_MOVE_LEFT,  // 移動左
+		PLAYER2_MOVE_BACK,  // 移動上
+		PLAYER2_MOVE_FRONT, // 移動下
+		PLAYER2_ACTION,
 
 		CAMERA_MOVE_RIGHT, // カメラ右移動
 		CAMERA_MOVE_LEFT,  // カメラ左移動
