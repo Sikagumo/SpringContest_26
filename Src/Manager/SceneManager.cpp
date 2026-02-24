@@ -5,6 +5,7 @@
 #include "../Scene/TitleScene.h"
 #include "../Scene/GameScene.h"
 #include "../Scene/DebugScene.h"
+#include "../Utility/AsoUtility.h"
 #include "./InputManager.h"
 #include "Camera.h"
 #include "ResourceManager.h"
@@ -106,15 +107,25 @@ void SceneManager::Init3D(void)
 	const float FOG_END  = 15000.0f;
 	SetFogStartEnd(FOG_START, FOG_END);
 
-	// シャドウマップが想定するライトの方向もセット
-	const VECTOR SHADOW_DIR = VNorm(VGet(0.0f, -1.0f, 1.0f));
-	SetShadowMapLightDirection(shadowMapHandle_, SHADOW_DIR);
+	// シャドウマップ初期化
+	InitShadow();
+}
+void SceneManager::InitShadow(void)
+{
+	// シャドウマップ生成
+	const int SHADOW_MAP_SIZE = 2056;
+	shadowMapHandle_ = MakeShadowMap(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
+
+	// シャドウマップが想定するライトの方向をセット
+	const VECTOR SHADOW_DIR = VAdd(AsoUtility::DIR_DOWN, AsoUtility::DIR_FORWARD);
+	SetShadowMapLightDirection(shadowMapHandle_, AsoUtility::VNormalize(SHADOW_DIR));
 
 	// シャドウマップに描画する範囲を設定
 	const VECTOR SHADOW_AREA_MIN = VGet(-10000.0f, -1.0f, -10000.0f);
 	const VECTOR SHADOW_AREA_MAX = VGet(10000.0f, 5000.0f, 10000.0f);
 	SetShadowMapDrawArea(shadowMapHandle_, SHADOW_AREA_MIN, SHADOW_AREA_MAX);
 }
+
 
 void SceneManager::Update(void)
 {
@@ -160,6 +171,15 @@ void SceneManager::Draw(void)
 	// 画面を初期化
 	ClearDrawScreen();
 
+	// シャドウマップへの描画の準備
+	ShadowMap_DrawSetup(shadowMapHandle_);
+
+	// 各シーンの描画処理
+	scene_->Draw();
+
+	ShadowMap_DrawEnd();
+
+
 	// カメラ設定
 	camera_->SetBeforeDraw();
 
@@ -167,13 +187,13 @@ void SceneManager::Draw(void)
 	UpdateEffekseer3D();
 
 	// シャドウマップへの描画の準備
-	ShadowMap_DrawSetup(shadowMapHandle_);
+	SetUseShadowMap(0, shadowMapHandle_);
 
 	// 各シーンの描画処理
 	scene_->Draw();
-
-	// シャドウマップへの描画を終了
-	ShadowMap_DrawEnd();
+	
+	// 描画に使用するシャドウマップの設定を解除
+	SetUseShadowMap(0, -1);
 
 	// カメラ描画
 	camera_->DrawDebug();
@@ -203,15 +223,14 @@ void SceneManager::Destroy(void)
 		delete scene_;
 	}
 
-	// シャドウマップの削除
-	DeleteShadowMap(shadowMapHandle_);
-
 	// フェード機能の解放
 	delete fader_;
 
 	camera_->Release();
 	delete camera_;
 
+	// シャドウマップの削除
+	DeleteShadowMap(shadowMapHandle_);
 
 	// インスタンスのメモリ解放
 	delete instance_;
@@ -314,5 +333,3 @@ void SceneManager::Fade(void)
 	}
 
 }
-
-

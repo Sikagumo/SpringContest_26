@@ -112,4 +112,5 @@ private:
 	// フェード
 	void Fade(void);
 
+	void InitShadow(void);
 };
