@@ -14,7 +14,7 @@ void StageObjBase::Init(const VECTOR& _pos)
 {
 	ActorBase::Init();
 
-	transform_.pos = _pos;
+	transform_.pos = VAdd(transform_.pos, _pos);
 
 	collisionPos_.x = transform_.pos.x;
 	collisionPos_.y = transform_.pos.y;

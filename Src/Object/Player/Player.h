@@ -5,6 +5,13 @@ class Player : public CharaBase
 {
 public:
 
+	enum class STAGE_TYPE
+	{
+		MOVE,
+		GRAVITY,
+		MAX,
+	};
+
 	enum class ANIM_TYPE
 	{
 		IDLE,
@@ -26,6 +33,8 @@ public:
 	~Player(void)override = default;
 
 	void SetPlayerNo(PLAYER_NO no);
+
+	void SetGameStageType(STAGE_TYPE stageType) { stageType_ = stageType; };
 
 protected:
 
@@ -101,6 +110,9 @@ private:
 	static constexpr float SPEED_DASH = 10.0f;
 
 	bool isDash_;
+
+	// 現在のステージ状態
+	STAGE_TYPE stageType_;
 
 
 	// 操作

@@ -2,6 +2,7 @@
 #include <cassert>
 #include "../Actor/ActorBase.h"
 #include "../../CSV/CsvManager.h"
+#include "../StageObj/StageObjBase.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Common/Vector2.h"
@@ -33,9 +34,7 @@ void StageBase::Update(void)
 	{
 		for (auto& place : placeList)
 		{
-			if (place->viewParam == nullptr) { continue; }
-
-			place->viewParam->Update();
+			place->Update();
 		}
 	}
 }
@@ -47,9 +46,7 @@ void StageBase::Draw(void)
 	{
 		for (auto& place : placeList)
 		{
-			if (place->viewParam == nullptr) { continue; }
-
-			MV1DrawModel(place->viewParam->modelId);
+			place->Draw();
 		}
 	}
 }
@@ -59,10 +56,8 @@ void StageBase::Release(void)
 	{
 		for (auto place : placeList)
 		{
-			if (place->viewParam == nullptr) { continue; }
-
-			place->viewParam->Release();
-			delete place->viewParam;
+			place->Release();
+			delete place;
 		}
 	}
 }
@@ -71,7 +66,7 @@ void StageBase::SetBlockTypeList(int _type, int _xMax, int _yMax)
 {
 	for (int y = 0; y < _yMax; y++)
 	{
-		std::vector<StageBase::BlockParam*> list;
+		std::vector<StageObjBase*> list;
 
 		for (int x = 0; x < _xMax; x++)
 		{
@@ -81,7 +76,7 @@ void StageBase::SetBlockTypeList(int _type, int _xMax, int _yMax)
 			if (type <= -1) { continue; }
 
 			// ステージ情報割り当て
-			BlockParam* param = SetParam(type, x, y);
+			StageObjBase* param = SetParam(type, x, y);
 			if (param == nullptr) { continue; }
 
 			// 行配置リストに格納

@@ -4,26 +4,11 @@
 #include "../Common/Transform.h"
 #include "../Actor/ActorBase.h"
 
+class StageObjBase;
+
 class StageBase
 {
 public:
-
-	struct BlockParam
-	{
-		BlockParam(void) :
-			type(-1),
-			viewParam(nullptr),
-			collisionPosX(0.0f),
-			collisionPosY(0.0f),
-			collisionSize(0, 0) {
-		};
-
-		int type;
-		Transform* viewParam;
-		float collisionPosX;
-		float collisionPosY;
-		Vector2 collisionSize;
-	};
 
 	StageBase(void);
 
@@ -44,7 +29,7 @@ public:
 
 	const VECTOR& GetGoalPos(void) { return goalPos_; };
 
-	const std::vector<std::vector<BlockParam*>>& GetStageObjects(void) { return placeType_; };
+	const std::vector<std::vector<StageObjBase*>>& GetStageObjects(void) { return placeType_; };
 
 
 protected:
@@ -54,7 +39,7 @@ protected:
 
 
 	// 配置リスト
-	std::vector<std::vector<BlockParam*>> placeType_;
+	std::vector<std::vector<StageObjBase*>> placeType_;
 
 	// プレイヤー初期位置
 	VECTOR playersPos_[2];
@@ -74,5 +59,5 @@ protected:
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	virtual StageBase::BlockParam* SetParam(int _blockType, float _posX, float _posY) = 0;
+	virtual StageObjBase* SetParam(int _blockType, float _posX, float _posY) = 0;
 };

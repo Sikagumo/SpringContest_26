@@ -5,6 +5,7 @@
 #include "../../CSV/CsvManager.h"
 #include "../../Common/Vector2.h"
 class Transform;
+class StageObjBase;
 
 class StageMove : public StageBase
 {
@@ -45,5 +46,5 @@ protected:
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	StageBase::BlockParam* SetParam(int _blockType, float _posX, float _posY)override;
+	StageObjBase* SetParam(int _blockType, float _posX, float _posY)override;
 };

@@ -43,6 +43,35 @@ void GameScene::Init(void)
 	player2_->SetPlayerNo(Player::PLAYER_NO::P2);
 	player2_->GetTransform().SetPosition(stage_->GetPlayerPos(1));
 
+
+	for (auto& stageObjList : stage_->GetStageObjects())
+	{
+		for (auto& stageObj : stageObjList)
+		{
+			for (auto& [type, collision] : stageObj->GetOwnColliders())
+			{
+				player1_->AddHitCollider(collision);
+				player2_->AddHitCollider(collision);
+			}
+		}
+	}
+
+	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
+
+	// ステージ状態登録
+	if (stageType_ == STAGE_TYPE::MOVE)
+	{
+		pStageType = Player::STAGE_TYPE::MOVE;
+	}
+	else if (stageType_ == STAGE_TYPE::GRAVITY)
+	{
+		pStageType = Player::STAGE_TYPE::GRAVITY;
+	}
+	player1_->SetGameStageType(pStageType);
+	player2_->SetGameStageType(pStageType);
+
+
+	// カメラ
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
 
@@ -132,6 +161,7 @@ void GameScene::SetStageType(GameScene::STAGE_TYPE _type)
 	// 同一時処理終了
 	if (stageType_ == _type) { return; }
 
+	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
 	stageType_ = _type;
 	
 	if (stage_ != nullptr)
@@ -143,11 +173,15 @@ void GameScene::SetStageType(GameScene::STAGE_TYPE _type)
 	if (_type == STAGE_TYPE::MOVE)
 	{
 		stage_ = new StageMove();
+		pStageType = Player::STAGE_TYPE::MOVE;
 	}
 	else if (_type == STAGE_TYPE::GRAVITY)
 	{
 		//stage_ = new StageGravity();	
+		pStageType = Player::STAGE_TYPE::GRAVITY;
 	}
+	if (player1_ != nullptr) { player1_->SetGameStageType(pStageType); }
+	if (player2_ != nullptr) { player2_->SetGameStageType(pStageType); }
 
 	stage_->Init();
 }

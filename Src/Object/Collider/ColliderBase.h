@@ -16,6 +16,7 @@ public:
 		CAPSULE,
 		MODEL,
 		PLANE,
+		AABB,
 	};
 
 	// è’ìÀéÌï 
@@ -25,6 +26,7 @@ public:
 		PLAYER,
 		CAMERA,
 		ENEMY,
+		GOAL,
 		VIEW_RANGE,
 	};
 

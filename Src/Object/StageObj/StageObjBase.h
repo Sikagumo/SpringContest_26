@@ -19,11 +19,13 @@ public:
 	/// @brief XVˆ—
 	virtual void Update(void)override = 0;
 
+
 	const Vector2F& GetCollisionPos(void)const { return collisionPos_; };
 
 	const Vector2F& GetCollisionSize(void)const { return collisionSize_; };
 
 	const ColliderBase* GetOwnCollider(void);
+
 
 protected:
 
