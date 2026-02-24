@@ -100,7 +100,9 @@ public:
 
 	void GetScale(float _scale) { scl = VGet(_scale, _scale, _scale); };
 
+	void SetPosition(const VECTOR& pos);
 
+	const VECTOR& GetPosition() const { return pos; }
 private:
 
 	Transform* parent_;

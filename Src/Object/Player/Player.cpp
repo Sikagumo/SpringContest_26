@@ -10,10 +10,17 @@
 #include "../Collider/ColliderCapsule.h"
 
 
+
+
 Player::Player(void)
 	:CharaBase::CharaBase(),
 	isDash_(false)
 {
+}
+
+void Player::SetPlayerNo(PLAYER_NO no)
+{
+	playerNo_ = no;
 }
 
 void Player::InitLoadPost(void)
@@ -124,10 +131,22 @@ void Player::ProcessMove(void)
 	}
 	else
 	{
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_BACK))  { dir.z +=  1.0f; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_FRONT)) { dir.z += -1.0f; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_LEFT))  { dir.x += -1.0f; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_RIGHT)) { dir.x +=  1.0f; }
+		auto& input = InputManager::GetInstance();
+
+		if (playerNo_ == PLAYER_NO::P1)
+		{
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK)) { dir.z += 1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.z += -1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT)) { dir.x += -1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT)) { dir.x += 1.0f; }
+		}
+		else if (playerNo_ == PLAYER_NO::P2)
+		{
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_BACK)) { dir.z += 1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_FRONT)) { dir.z += -1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT)) { dir.x += -1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT)) { dir.x += 1.0f; }
+		}
 	}
 
 	if (!AsoUtility::EqualsVZero(dir))
