@@ -14,9 +14,18 @@ public:
 		MAX,
 	};
 
+	enum class PLAYER_NO
+	{
+		P1,
+		P2
+	};
+
+
 	Player(void);
 
 	~Player(void)override = default;
+
+	void SetPlayerNo(PLAYER_NO no);
 
 protected:
 
@@ -101,4 +110,6 @@ private:
 	void ProcessJump(void);
 
 	void PlayAnim(ANIM_TYPE type, bool _isLoop = true);
+
+	PLAYER_NO playerNo_;
 };

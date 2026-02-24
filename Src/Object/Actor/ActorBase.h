@@ -33,6 +33,8 @@ public:
 	// 大きさ、回転、座標等の取得
 	const Transform& GetTransform(void) const { return transform_; };
 
+	Transform& GetTransform();
+
 	// 自身の衝突情報取得
 	const ColliderMap& GetOwnColliders(void) const
 	{

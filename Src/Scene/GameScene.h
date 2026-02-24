@@ -2,6 +2,7 @@
 #include "SceneBase.h"
 class SkyDome;
 class StageMove;
+class Player;
 
 class GameScene : public SceneBase
 {
@@ -31,4 +32,8 @@ private:
 	SkyDome* skyDome_;
 
 	StageMove* stage_;
+
+	Player* player1_;
+
+	Player* player2_;
 };

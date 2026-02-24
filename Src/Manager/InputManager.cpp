@@ -40,6 +40,16 @@ void InputManager::Init(void)
 	RegisterTrigger(TYPE::PLAYER_MOVE_FRONT, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
 	RegisterTrigger(TYPE::PLAYER_DASH, { KEY_INPUT_LSHIFT, KEY_INPUT_RSHIFT, }, { BTN::L_STICK }, { });
 
+	RegisterTrigger(TYPE::PLAYER1_MOVE_RIGHT, { KEY_INPUT_D }, { }, { STICK::L_STICK_RIGHT });
+	RegisterTrigger(TYPE::PLAYER1_MOVE_LEFT, { KEY_INPUT_A }, { }, { STICK::L_STICK_LEFT });
+	RegisterTrigger(TYPE::PLAYER1_MOVE_BACK, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
+	RegisterTrigger(TYPE::PLAYER1_MOVE_FRONT, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
+
+	RegisterTrigger(TYPE::PLAYER2_MOVE_RIGHT, { KEY_INPUT_RIGHT }, { }, { });
+	RegisterTrigger(TYPE::PLAYER2_MOVE_LEFT, { KEY_INPUT_LEFT }, { }, { });
+	RegisterTrigger(TYPE::PLAYER2_MOVE_BACK, { KEY_INPUT_UP }, { }, { });
+	RegisterTrigger(TYPE::PLAYER2_MOVE_FRONT, { KEY_INPUT_DOWN }, { }, { });
+
 	// ÉJÉÅÉâëÄçÏ
 	RegisterTrigger(TYPE::CAMERA_MOVE_RIGHT, { KEY_INPUT_RIGHT }, { }, { STICK::R_STICK_RIGHT }, MOUSE::MOVE_RIGHT);
 	RegisterTrigger(TYPE::CAMERA_MOVE_LEFT, { KEY_INPUT_LEFT }, { }, { STICK::R_STICK_LEFT }, MOUSE::MOVE_LEFT);

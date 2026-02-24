@@ -166,5 +166,9 @@ public:
 	// 親子のオイラー角を合成する
 	static MATRIX Multiplication(const VECTOR& childEuler, const VECTOR& parentEuler);
 
+	// 2D円同士の衝突判定（XY平面）
+	static bool IsHitCircleXY(
+		const VECTOR& pos1, float radius1,
+		const VECTOR& pos2, float radius2);
 };
 
