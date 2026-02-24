@@ -96,6 +96,24 @@ void GameScene::Update(void)
 
 	player2_->Update();
 
+	// ゴール判定
+	// 親クラス StageBase で定義されている GetGoalPos() を使用
+	VECTOR goalPos = stage_->GetGoalPos();
+
+	// 判定の大きさ
+	float hitRange = 80.0f;
+
+	// 各プレイヤーとゴールの XY 距離判定
+	bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f, goalPos, hitRange);
+	bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f, goalPos, hitRange);
+
+	//二人が星に触れた状態になったらタイトルに
+	if (isP1Clear && isP2Clear)
+	{
+		sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+		return; 
+	}
+
 	VECTOR pos1 = player1_->GetTransform().pos;
 	VECTOR pos2 = player2_->GetTransform().pos;
 

@@ -371,9 +371,19 @@ void CharaBase::DrawPre(void)
 
 void CharaBase::DelayRotate(void)
 {
-	// 移動方向から回転に変換する
-	Quaternion goalRot = Quaternion::LookRotation(moveDir_);
-	// 回転の補間
-	transform_.quaRot =
-		Quaternion::Slerp(transform_.quaRot, goalRot, 0.2f);
+	// 移動方向ベクトルを取得
+	VECTOR dir = moveDir_;
+
+	//上下への回転をなくす
+	dir.y = 0.0f;
+
+	// ベクトルの長さがほぼ0（静止中）なら回転を更新しない
+	if (VDot(dir, dir) < 0.0001f) return;
+
+	// 水平方向のみのベクトルから目標角度を作成
+	Quaternion goalRot = Quaternion::LookRotation(dir);
+
+	// 回転の補間（0.2f は回転の滑らかさ）
+	transform_.quaRot = Quaternion::Slerp(transform_.quaRot, goalRot, 0.2f);
+
 }
