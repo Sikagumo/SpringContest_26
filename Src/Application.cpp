@@ -5,6 +5,7 @@
 #include "./Manager/InputManager.h"
 #include "./Manager/ResourceManager.h"
 #include "./Manager/SceneManager.h"
+#include "./Manager/SoundManager.h"
 #include "./CSV/CsvManager.h"
 #include "./Common/FpsController.h"
 
@@ -78,6 +79,9 @@ void Application::Init(void)
 	// リソース管理初期化
 	ResourceManager::CreateInstance();
 
+	// リソース管理初期化
+	SoundManager::CreateInstance();
+
 	// シーン管理初期化
 	SceneManager::CreateInstance();
 
@@ -128,7 +132,13 @@ void Application::Destroy(void)
 	// FPS制御メモリ解放
 	delete fpsController_;
 
+	// 入力解放マネージャ
 	InputManager::GetInstance().Destroy();
+
+	// 音声管理解放
+	SoundManager::GetInstance().Destroy();
+
+	// リソース管理解放
 	ResourceManager::GetInstance().Destroy();
 	
 	// シーン管理解放

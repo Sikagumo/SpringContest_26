@@ -31,6 +31,12 @@ public:
 		// エフェクト
 
 		// 映像
+		
+		// BGM
+		BGM_TITLE,
+		BGM_GAME,
+		
+		// サウンドエフェクト
 	};
 
 
@@ -85,14 +91,17 @@ public:
 	/// @brief リソースのハンドルを取得
 	/// @param _src 読み込み対象
 	const int LoadHandleId(SRC _src);
+	const int LoadHandleId(int _src) { return LoadHandleId(static_cast<SRC>(_src)); };
 	const int& LoadHandleIds(SRC _src);
-
-
 
 	/// @brief 3Dモデル重複利用時の読み込み
 	/// @param src 読み込み対象
 	int LoadModelDuplicate(SRC src);
 
+	/// @brief リソースのハンドルを取得
+	/// @param _src 読み込み対象
+	std::string GetHandlePath(SRC _src);
+	std::string GetHandlePath(int _src) { return GetHandlePath(static_cast<SRC>(_src)); };
 
 
 private:

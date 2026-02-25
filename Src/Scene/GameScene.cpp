@@ -44,6 +44,7 @@ void GameScene::Init(void)
 		pStageType = Player::STAGE_TYPE::GRAVITY;
 	}
 
+
 	VECTOR stagePos = AsoUtility::VECTOR_ZERO;
 
 	player1_ = new Player({});
@@ -77,7 +78,6 @@ void GameScene::Init(void)
 	// ƒJƒƒ‰
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
-
 }
 
 void GameScene::Update(void)

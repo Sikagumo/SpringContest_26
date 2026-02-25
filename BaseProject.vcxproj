@@ -25,6 +25,8 @@
     <ClCompile Include="Src\CSV\StatusEnemy.cpp" />
     <ClCompile Include="Src\CSV\StatusPlayer.cpp" />
     <ClCompile Include="Src\Manager\Input.cpp" />
+    <ClCompile Include="Src\Manager\Sound.cpp" />
+    <ClCompile Include="Src\Manager\SoundManager.cpp" />
     <ClCompile Include="Src\Object\Actor\ActorBase.cpp" />
     <ClCompile Include="Src\Application.cpp" />
     <ClCompile Include="Src\Common\Fader.cpp" />
@@ -68,6 +70,8 @@
     <ClInclude Include="Src\CSV\StatusEnemy.h" />
     <ClInclude Include="Src\CSV\StatusPlayer.h" />
     <ClInclude Include="Src\Manager\Input.h" />
+    <ClInclude Include="Src\Manager\Sound.h" />
+    <ClInclude Include="Src\Manager\SoundManager.h" />
     <ClInclude Include="Src\Object\Actor\ActorBase.h" />
     <ClInclude Include="Src\Application.h" />
     <ClInclude Include="Src\Common\Fader.h" />

@@ -16,6 +16,7 @@ public:
 		MOVIE,  // 映像ファイル
 		ANIM,   // アニメーションファイル
 		EFFECT, // エフェクト
+		SOUND,  // 音声
 	};
 
 
@@ -57,6 +58,8 @@ public:
 	int GetHandleId(void)const { return handleId_; };
 
 	int* GetHandleIds(void)const { return handleIds_; };
+
+	std::string GetHandlePath(void)const { return path_; };
 
 
 private:

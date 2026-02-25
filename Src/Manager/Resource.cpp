@@ -64,6 +64,12 @@ void Resource::Load(void)
 			handleId_ = LoadEffekseerEffect(path_.c_str());
 		}
 		break;
+
+		case LOAD_TYPE::SOUND:
+		{
+			handleId_ = LoadSoundMem(path_.c_str());
+		}
+		break;
 	}
 }
 
@@ -113,6 +119,19 @@ void Resource::Release(void)
 		case LOAD_TYPE::EFFECT:
 		{
 			DeleteEffekseerEffect(handleId_);
+		}
+		break;
+
+		case LOAD_TYPE::SOUND:
+		{
+			if (CheckSoundMem(handleId_) == 1)
+			{
+				// 再生時、再生中の音声を停止
+				StopSoundMem(handleId_);
+			}
+
+			// 音声ファイルを解放
+			DeleteSoundMem(handleId_);
 		}
 		break;
 	}

@@ -58,8 +58,10 @@ void ResourceManager::SetResource(void)
 {
 	using LOAD_TYPE = Resource::LOAD_TYPE;
 
+	/* 画像 */
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_SHADOW, PATH_IMAGE + "Shadow.png");
 
+	/* モデル */
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER, PATH_MODEL + "Player/Player.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_WIDTH, PATH_MODEL + "Player/PlayerMoveWidth.mv1");
  	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_HEIGHT, PATH_MODEL + "Player/PlayerMoveHeight.mv1");
@@ -68,6 +70,13 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_BLANK, PATH_MODEL + "Blocks/Block_Blank.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_STONE, PATH_MODEL + "Blocks/Block_Stone.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_GOAL, PATH_MODEL + "Goal/Goal.mv1");
+
+	/* BGM */
+	_SetResource(LOAD_TYPE::SOUND, SRC::BGM_TITLE, PATH_BGM + "TitleBGM.mp3");
+	_SetResource(LOAD_TYPE::SOUND, SRC::BGM_GAME, PATH_BGM + "GameBGM.mp3");
+
+	/* サウンドエフェクト */
+
 }
 void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path)
 {
@@ -103,7 +112,6 @@ void ResourceManager::Release(void)
 void ResourceManager::Destroy(void)
 {
 	/*　インスタンス削除処理　*/
-
 	instance_->Release();
 	delete instance_;
 }
@@ -127,6 +135,11 @@ const int ResourceManager::LoadHandleId(SRC _src)
 const int& ResourceManager::LoadHandleIds(SRC _src)
 {
 	return *Load(_src).GetHandleIds();
+}
+
+std::string ResourceManager::GetHandlePath(SRC _src)
+{
+	return Load(_src).GetHandlePath();
 }
 
 Resource* ResourceManager::_Load(SRC src)

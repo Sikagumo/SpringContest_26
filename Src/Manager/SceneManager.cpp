@@ -1,3 +1,4 @@
+#include "SceneManager.h"
 #include <chrono>
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
@@ -7,9 +8,9 @@
 #include "../Scene/DebugScene.h"
 #include "../Utility/AsoUtility.h"
 #include "./InputManager.h"
-#include "Camera.h"
-#include "ResourceManager.h"
-#include "SceneManager.h"
+#include "./Camera.h"
+#include "./ResourceManager.h"
+#include "./SoundManager.h"
 
 SceneManager* SceneManager::instance_ = nullptr;
 
@@ -283,17 +284,38 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 		delete scene_;
 	}
 
+	int soundSrc = -1;
+
 	switch (sceneId_)
 	{
-	case SCENE_ID::TITLE:
-		scene_ = new TitleScene();
+		case SCENE_ID::TITLE:
+		{
+			scene_ = new TitleScene();
+			//soundSrc = static_cast<int>(ResourceManager::SRC::BGM_TITLE);
+		}
 		break;
-	case SCENE_ID::GAME:
-		scene_ = new GameScene();
+
+		case SCENE_ID::GAME:
+		{
+			scene_ = new GameScene();
+			soundSrc = static_cast<int>(ResourceManager::SRC::BGM_GAME);
+		}
 		break;
-	case SCENE_ID::DEBUG:
-		scene_ = new DebugScene();
+
+		case SCENE_ID::DEBUG:
+			scene_ = new DebugScene();
 		break;
+	}
+
+	if (soundSrc != -1)
+	{
+		// BGMçƒê∂
+		SoundManager::GetInstance().Play(soundSrc, true);
+	}
+	else
+	{
+		// BGMí‚é~
+		SoundManager::GetInstance().StopAllChoice(true);
 	}
 
 	// äeÉVÅ[ÉìÇÃèâä˙âª
