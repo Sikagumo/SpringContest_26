@@ -23,6 +23,7 @@ public:
 
 	enum class PLAYER_NO
 	{
+		NONE = -1,
 		P1,
 		P2
 	};
@@ -34,7 +35,7 @@ public:
 
 	void SetPlayerNo(PLAYER_NO no);
 
-	void SetGameStageType(STAGE_TYPE stageType) { stageType_ = stageType; };
+	void SetGameStageType(STAGE_TYPE stageType);
 
 protected:
 

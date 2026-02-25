@@ -18,6 +18,9 @@ public:
 
 		// ƒ‚ƒfƒ‹
 		MODEL_PLAYER,
+		MODEL_PLAYER_WIDTH, // ‰¡ˆÚ“®
+		MODEL_PLAYER_HEIGHT,// cˆÚ“®
+
 		MODEL_SKYDOME,
 		MODEL_STAGE_BLANK,
 		MODEL_STAGE_STONE,

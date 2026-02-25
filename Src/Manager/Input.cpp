@@ -17,7 +17,6 @@ void Input::Init(void)
 {
 	Input::MouseInfo info;
 
-	cursorMode_ = CURSOR_MODE::CONFINED_SIDE;
 	// É}ÉEÉX
 	info = Input::MouseInfo();
 	for (int i = 0; i < static_cast<int>(MOUSE::MAX); i++)

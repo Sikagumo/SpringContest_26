@@ -33,15 +33,32 @@ void GameScene::Init(void)
 	skyDome_ = new SkyDome({});
 	skyDome_->Init();
 
+	// ステージ状態登録
+	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
+	if (stageType_ == STAGE_TYPE::MOVE)
+	{
+		pStageType = Player::STAGE_TYPE::MOVE;
+	}
+	else if (stageType_ == STAGE_TYPE::GRAVITY)
+	{
+		pStageType = Player::STAGE_TYPE::GRAVITY;
+	}
+
+	VECTOR stagePos = AsoUtility::VECTOR_ZERO;
+
 	player1_ = new Player({});
-	player1_->Init();
 	player1_->SetPlayerNo(Player::PLAYER_NO::P1);
-	player1_->GetTransform().SetPosition(stage_->GetPlayerPos(0));
+	player1_->SetGameStageType(pStageType);
+	player1_->Init();
+	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
+	player1_->GetTransform().SetPosition(stagePos);
 
 	player2_ = new Player({});
-	player2_->Init();
 	player2_->SetPlayerNo(Player::PLAYER_NO::P2);
-	player2_->GetTransform().SetPosition(stage_->GetPlayerPos(1));
+	player2_->SetGameStageType(pStageType);
+	player2_->Init();
+	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
+	player2_->GetTransform().SetPosition(stagePos);
 
 
 	for (auto& stageObjList : stage_->GetStageObjects())
@@ -55,20 +72,6 @@ void GameScene::Init(void)
 			}
 		}
 	}
-
-	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
-
-	// ステージ状態登録
-	if (stageType_ == STAGE_TYPE::MOVE)
-	{
-		pStageType = Player::STAGE_TYPE::MOVE;
-	}
-	else if (stageType_ == STAGE_TYPE::GRAVITY)
-	{
-		pStageType = Player::STAGE_TYPE::GRAVITY;
-	}
-	player1_->SetGameStageType(pStageType);
-	player2_->SetGameStageType(pStageType);
 
 
 	// カメラ
@@ -122,7 +125,7 @@ void GameScene::Update(void)
 		printfDx("XY衝突中！\n");
 	}
 
-	if (CheckHitKey(KEY_INPUT_N) == 1)
+	if (input_.IsTrgDown(InputManager::TYPE::PLAYER_CHANGE))
 	{
 		// Transformを参照で取得（←重要）
 		Transform& t1 = player1_->GetTransform();

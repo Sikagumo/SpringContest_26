@@ -61,6 +61,8 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_SHADOW, PATH_IMAGE + "Shadow.png");
 
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER, PATH_MODEL + "Player/Player.mv1");
+	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_WIDTH, PATH_MODEL + "Player/PlayerMoveWidth.mv1");
+ 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_HEIGHT, PATH_MODEL + "Player/PlayerMoveHeight.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_SKYDOME, PATH_MODEL + "SkyDome/SkyDome.mv1");
 
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_BLANK, PATH_MODEL + "Blocks/Block_Blank.mv1");

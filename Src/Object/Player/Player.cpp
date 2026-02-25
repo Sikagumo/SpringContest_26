@@ -8,11 +8,14 @@
 #include "../../Manager/Camera.h"
 #include "../Collider/ColliderLine.h"
 #include "../Collider/ColliderCapsule.h"
+#include "../Collider/ColliderModel.h"
 
 
 Player::Player(void)
 	:CharaBase::CharaBase(),
-	isDash_(false)
+	isDash_(false),
+	playerNo_(PLAYER_NO::NONE),
+	stageType_(STAGE_TYPE::MAX)
 {
 }
 
@@ -21,14 +24,52 @@ void Player::SetPlayerNo(PLAYER_NO no)
 	playerNo_ = no;
 }
 
+void Player::SetGameStageType(STAGE_TYPE stageType)
+{
+	if (stageType_ == stageType) { return; }
+
+	stageType_ = stageType;
+
+	// ÉÇÉfÉãéÌóﬁïœçX
+	ResourceManager::SRC src = ResourceManager::SRC::MODEL_PLAYER;
+
+	if (playerNo_ == PLAYER_NO::P1)
+	{
+		if (stageType == STAGE_TYPE::GRAVITY)
+		{
+			src = ResourceManager::SRC::MODEL_PLAYER_WIDTH;
+		}
+		else if (stageType == STAGE_TYPE::MOVE)
+		{
+			src = ResourceManager::SRC::MODEL_PLAYER_WIDTH;
+		}
+	}
+	else if (playerNo_ == PLAYER_NO::P2)
+	{
+		if (stageType == STAGE_TYPE::GRAVITY)
+		{
+			src = ResourceManager::SRC::MODEL_PLAYER_HEIGHT;
+		}
+		else if (stageType == STAGE_TYPE::MOVE)
+		{
+			src = ResourceManager::SRC::MODEL_PLAYER_HEIGHT;
+		}
+	}
+
+	int temp = resMng_.LoadModelDuplicate(src);
+	// ÉÇÉfÉãäÑÇËìñÇƒ
+	transform_.SetModel(resMng_.LoadModelDuplicate(src));
+}
+
 void Player::InitLoadPost(void)
 {
-	transform_.SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_PLAYER));
+
 }
 
 void Player::InitTransform(void)
 {
-	transform_.InitTransform(1.0f,
+	constexpr float MODEL_SCALE = 1.25f;
+	transform_.InitTransform(MODEL_SCALE,
 							 Quaternion::Identity(), Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y),
 							 AsoUtility::VECTOR_ZERO);
 }

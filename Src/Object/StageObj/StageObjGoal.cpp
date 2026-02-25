@@ -1,7 +1,6 @@
 #include "StageObjGoal.h"
 #include "./StageObjBase.h"
-#include "../Collider/ColliderPlane.h"
-#include "../Collider/ColliderModel.h"
+#include "../Collider/ColliderSphere.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Utility/AsoUtility.h"
 
@@ -24,6 +23,6 @@ void StageObjGoal::InitTransform(void)
 
 void StageObjGoal::InitCollider(void)
 {
-	ColliderModel* model = new ColliderModel(ColliderBase::TAG::GOAL, &transform_);
-	ownColliders_.emplace(static_cast<int>(ColliderBase::SHAPE::MODEL), model);
+	ColliderSphere* sphere = new ColliderSphere(ColliderBase::TAG::GOAL, &transform_, MODEL_OFFSET, COLLISION_RADIUS);
+	ownColliders_.emplace(static_cast<int>(ColliderBase::SHAPE::SPHERE), sphere);
 }
