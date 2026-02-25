@@ -62,6 +62,21 @@ void StageBase::Release(void)
 	}
 }
 
+void StageBase::AddStageColliders(ActorBase& _actor)
+{
+	/*@“–‚½‚è”»’è‘S“o˜^@*/
+	for (auto& stageObjList : placeType_)
+	{
+		for (auto& stageObj : stageObjList)
+		{
+			for (auto& [type, collision] : stageObj->GetOwnColliders())
+			{
+				_actor.AddHitCollider(collision);
+			}
+		}
+	}
+}
+
 void StageBase::SetBlockTypeList(int _type, int _xMax, int _yMax)
 {
 	for (int y = 0; y < _yMax; y++)

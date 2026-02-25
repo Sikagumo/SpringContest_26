@@ -48,6 +48,5 @@ private:
 	Player* player1_;
 
 	Player* player2_;
-	
 	void SetStageType(STAGE_TYPE _type);
 };

@@ -29,7 +29,9 @@ public:
 
 	const VECTOR& GetGoalPos(void) { return goalPos_; };
 
-	const std::vector<std::vector<StageObjBase*>>& GetStageObjects(void) { return placeType_; };
+	/// @brief ステージの当たり判定を全登録
+	/// @param _actor 割り当てる対象
+	void AddStageColliders(ActorBase& _actor);
 
 
 protected:

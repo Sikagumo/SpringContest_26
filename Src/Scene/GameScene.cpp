@@ -30,9 +30,6 @@ void GameScene::Init(void)
 	// ステージ初期化
 	SetStageType(STAGE_TYPE::MOVE);
 
-	skyDome_ = new SkyDome({});
-	skyDome_->Init();
-
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
 	if (stageType_ == STAGE_TYPE::MOVE)
@@ -47,34 +44,22 @@ void GameScene::Init(void)
 
 	VECTOR stagePos = AsoUtility::VECTOR_ZERO;
 
-	player1_ = new Player({});
-	player1_->SetPlayerNo(Player::PLAYER_NO::P1);
-	player1_->SetGameStageType(pStageType);
-	player1_->Init();
-	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
-	player1_->GetTransform().SetPosition(stagePos);
+	player1_ = new Player(Player::PLAYER_NO::P1);
+	stagePos = stage_->GetPlayerPos(static_cast<int>(player1_->GetPlayerNo()));
+	player1_->Init(stagePos, pStageType);
+	
+	player2_ = new Player(Player::PLAYER_NO::P2);
+	stagePos = stage_->GetPlayerPos(static_cast<int>(player2_->GetPlayerNo()));
+	player2_->Init(stagePos, pStageType);
+	
+	// ステージ当たり判定登録
+	stage_->AddStageColliders(*player1_);
+	stage_->AddStageColliders(*player2_);
 
-	player2_ = new Player({});
-	player2_->SetPlayerNo(Player::PLAYER_NO::P2);
-	player2_->SetGameStageType(pStageType);
-	player2_->Init();
-	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
-	player2_->GetTransform().SetPosition(stagePos);
-
-
-	for (auto& stageObjList : stage_->GetStageObjects())
-	{
-		for (auto& stageObj : stageObjList)
-		{
-			for (auto& [type, collision] : stageObj->GetOwnColliders())
-			{
-				player1_->AddHitCollider(collision);
-				player2_->AddHitCollider(collision);
-			}
-		}
-	}
-
-
+	// スカイドーム
+	skyDome_ = new SkyDome({});
+	skyDome_->Init();
+	
 	// カメラ
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
@@ -91,13 +76,14 @@ void GameScene::Update(void)
 	}
 #endif
 
-	//stage_->Update();
+	stage_->Update();
 
 	skyDome_->Update();
 
 	player1_->Update();
 
 	player2_->Update();
+
 
 	// ゴール判定
 	// 親クラス StageBase で定義されている GetGoalPos() を使用

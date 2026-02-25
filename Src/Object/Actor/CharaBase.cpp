@@ -69,7 +69,10 @@ void CharaBase::Update(void)
 	transform_.Update();
 
 	// アニメーション再生
-	animation_->Update();
+	if (animation_ != nullptr) 
+	{
+		animation_->Update();
+	}
 
 	// 各キャラクターごとの更新後処理
 	UpdateProcessPost();
@@ -78,7 +81,7 @@ void CharaBase::Update(void)
 
 void CharaBase::Release(void)
 {
-	if (animation_)
+	if (animation_ != nullptr)
 	{
 		animation_->Release();
 		delete animation_;

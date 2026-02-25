@@ -11,10 +11,10 @@
 #include "../Collider/ColliderModel.h"
 
 
-Player::Player(void)
+Player::Player(PLAYER_NO _playerNo)
 	:CharaBase::CharaBase(),
 	isDash_(false),
-	playerNo_(PLAYER_NO::NONE),
+	playerNo_(_playerNo),
 	stageType_(STAGE_TYPE::MAX)
 {
 }
@@ -66,12 +66,20 @@ void Player::InitLoadPost(void)
 
 }
 
+void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
+{
+	CharaBase::Init();	
+
+	SetGameStageType(_stageType);
+
+	transform_.pos = _pos;
+}
+
 void Player::InitTransform(void)
 {
 	constexpr float MODEL_SCALE = 1.25f;
 	transform_.InitTransform(MODEL_SCALE,
-							 Quaternion::Identity(), Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y),
-							 AsoUtility::VECTOR_ZERO);
+							 Quaternion::Identity(), Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y));
 }
 
 void Player::InitCollider(void)
@@ -117,7 +125,7 @@ void Player::UpdateProcessPost(void)
 void Player::CollisionReserve(void)
 {
 	/* アニメーションごとの衝突位置調整 */
-
+	if (animation_ == nullptr) { return; }
 	if (animation_->GetPlayType() == static_cast<int>(ANIM_TYPE::JUMP))
 	{
 		// ジャンプ中は線分を伸ばす
@@ -235,7 +243,7 @@ void Player::PlayAnim(Player::ANIM_TYPE _type, bool _isLoop)
 	int type = static_cast<int>(_type);
 
 	// 指定したアニメーションが割り当てられているとき、処理終了
-	if (type == animation_->GetPlayType()) return;
+	if (animation_ == nullptr || type == animation_->GetPlayType()) return;
 
 	animation_->Play(type, _isLoop);
 }

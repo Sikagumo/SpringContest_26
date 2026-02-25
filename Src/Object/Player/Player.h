@@ -29,11 +29,14 @@ public:
 	};
 
 
-	Player(void);
+	Player(PLAYER_NO _playerNo);
 
 	~Player(void)override = default;
 
+	void Init(const VECTOR& _pos, STAGE_TYPE _stageType);
+
 	void SetPlayerNo(PLAYER_NO no);
+	PLAYER_NO GetPlayerNo(void) { return playerNo_; };
 
 	void SetGameStageType(STAGE_TYPE stageType);
 
