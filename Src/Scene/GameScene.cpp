@@ -44,12 +44,12 @@ void GameScene::Init(void)
 
 	VECTOR stagePos = AsoUtility::VECTOR_ZERO;
 
-	player1_ = new Player(Player::PLAYER_NO::P1);
-	stagePos = stage_->GetPlayerPos(static_cast<int>(player1_->GetPlayerNo()));
+	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
+	player1_ = new Player(Player::PLAYER_NO::P1, stagePos);
 	player1_->Init(stagePos, pStageType);
 	
-	player2_ = new Player(Player::PLAYER_NO::P2);
-	stagePos = stage_->GetPlayerPos(static_cast<int>(player2_->GetPlayerNo()));
+	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
+	player2_ = new Player(Player::PLAYER_NO::P2, stagePos);
 	player2_->Init(stagePos, pStageType);
 	
 	// ステージ当たり判定登録
@@ -111,7 +111,8 @@ void GameScene::Update(void)
 		printfDx("XY衝突中！\n");
 	}
 
-	if (input_.IsTrgDown(InputManager::TYPE::PLAYER_CHANGE))
+	if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE) ||
+		input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE))
 	{
 		// Transformを参照で取得（←重要）
 		Transform& t1 = player1_->GetTransform();
@@ -129,6 +130,7 @@ void GameScene::Update(void)
 		t2.prePos = t2.pos;
 	}
 
+	// カメラ更新
 	Camera* camera = sceneMng_.GetCamera();
 	//camera->SetFollow(&player_->GetTransform());
 	camera->Update();

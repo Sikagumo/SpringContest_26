@@ -8,14 +8,15 @@
 #include "StageMove.h"
 
 StageMove::StageMove(void)
-	:StageBase::StageBase()
+	:StageBase::StageBase(TYPE::MOVE, CsvManager::GetInstance().GetStageMoveMapNum())
 {
 
 }
 
 void StageMove::InitList(void)
 {
-	SetBlockTypeList(0, CsvManager::STAGE_MOVE_X, CsvManager::STAGE_MOVE_Y);
+	int rand = GetRand(mapNumMax_ - 1);
+	SetBlockTypeList(rand, CsvManager::STAGE_MOVE_X, CsvManager::STAGE_MOVE_Y);
 }
 
 void StageMove::DrawDebug(void)

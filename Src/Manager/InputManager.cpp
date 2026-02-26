@@ -34,22 +34,24 @@ void InputManager::Init(void)
 	using MOUSE = Input::MOUSE;
 
 	// プレイヤー操作
-	RegisterTrigger(TYPE::PLAYER_MOVE_RIGHT, { KEY_INPUT_D }, { }, { STICK::L_STICK_RIGHT });
+	RegisterTrigger(TYPE::PLAYER_MOVE_UP, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
+	RegisterTrigger(TYPE::PLAYER_MOVE_DOWN, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
 	RegisterTrigger(TYPE::PLAYER_MOVE_LEFT, { KEY_INPUT_A }, { }, { STICK::L_STICK_LEFT });
-	RegisterTrigger(TYPE::PLAYER_MOVE_BACK, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
-	RegisterTrigger(TYPE::PLAYER_MOVE_FRONT, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
+	RegisterTrigger(TYPE::PLAYER_MOVE_RIGHT, { KEY_INPUT_D }, { }, { STICK::L_STICK_RIGHT });
 
-	RegisterTrigger(TYPE::PLAYER_CHANGE, { KEY_INPUT_N }, { BTN::RB_RIGHT}, { });
-
-	RegisterTrigger(TYPE::PLAYER1_MOVE_RIGHT, { KEY_INPUT_D }, { }, { STICK::L_STICK_RIGHT });
-	RegisterTrigger(TYPE::PLAYER1_MOVE_LEFT,  { KEY_INPUT_A }, { }, { STICK::L_STICK_LEFT });
-	RegisterTrigger(TYPE::PLAYER1_MOVE_BACK,  { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
+	RegisterTrigger(TYPE::PLAYER1_MOVE_BACK, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
 	RegisterTrigger(TYPE::PLAYER1_MOVE_FRONT, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
+	RegisterTrigger(TYPE::PLAYER1_MOVE_LEFT, { KEY_INPUT_A }, { }, { STICK::L_STICK_LEFT });
+	RegisterTrigger(TYPE::PLAYER1_MOVE_RIGHT, { KEY_INPUT_D }, { }, { STICK::L_STICK_RIGHT });
+	RegisterTrigger(TYPE::PLAYER1_ACTION, { KEY_INPUT_SPACE }, { BTN::RB_LEFT, BTN::RB_TOP }, { });
+	RegisterTrigger(TYPE::PLAYER1_CHANGE, { KEY_INPUT_LSHIFT }, { BTN::RB_RIGHT, BTN::RB_BOTTOM }, { });
 
+	RegisterTrigger(TYPE::PLAYER2_MOVE_UP, { KEY_INPUT_UP }, { }, { STICK::L_STICK_UP });
+	RegisterTrigger(TYPE::PLAYER2_MOVE_DOWN, { KEY_INPUT_DOWN }, { }, { STICK::L_STICK_DOWN });
+	RegisterTrigger(TYPE::PLAYER2_MOVE_LEFT, { KEY_INPUT_LEFT }, { }, { STICK::L_STICK_LEFT });
 	RegisterTrigger(TYPE::PLAYER2_MOVE_RIGHT, { KEY_INPUT_RIGHT }, { }, { STICK::L_STICK_RIGHT });
-	RegisterTrigger(TYPE::PLAYER2_MOVE_LEFT,  { KEY_INPUT_LEFT }, { }, { STICK::L_STICK_LEFT});
-	RegisterTrigger(TYPE::PLAYER2_MOVE_BACK,  { KEY_INPUT_UP }, { }, { STICK::L_STICK_UP });
-	RegisterTrigger(TYPE::PLAYER2_MOVE_FRONT, { KEY_INPUT_DOWN }, { }, { STICK::L_STICK_DOWN });
+	RegisterTrigger(TYPE::PLAYER2_ACTION, { KEY_INPUT_RETURN }, { BTN::RB_LEFT, BTN::RB_TOP }, { });
+	RegisterTrigger(TYPE::PLAYER2_CHANGE, { KEY_INPUT_RSHIFT }, { BTN::RB_RIGHT, BTN::RB_BOTTOM  }, { });
 
 	// カメラ操作
 	RegisterTrigger(TYPE::CAMERA_MOVE_RIGHT, { KEY_INPUT_L }, { }, { STICK::R_STICK_RIGHT });

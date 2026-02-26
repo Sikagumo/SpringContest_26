@@ -17,22 +17,22 @@ public:
 
 		PLAYER_MOVE_RIGHT, // 移動右
 		PLAYER_MOVE_LEFT,  // 移動左
-		PLAYER_MOVE_BACK,  // 移動上
-		PLAYER_MOVE_FRONT, // 移動下
-
-		PLAYER_CHANGE, // 位置変更
+		PLAYER_MOVE_UP,  // 移動上
+		PLAYER_MOVE_DOWN, // 移動下
 		
 		PLAYER1_MOVE_RIGHT, // 移動右
 		PLAYER1_MOVE_LEFT,  // 移動左
 		PLAYER1_MOVE_BACK,  // 移動上
 		PLAYER1_MOVE_FRONT, // 移動下
 		PLAYER1_ACTION,
+		PLAYER1_CHANGE, // 位置変更
 
 		PLAYER2_MOVE_RIGHT, // 移動右
 		PLAYER2_MOVE_LEFT,  // 移動左
-		PLAYER2_MOVE_BACK,  // 移動上
-		PLAYER2_MOVE_FRONT, // 移動下
+		PLAYER2_MOVE_UP,  // 移動上
+		PLAYER2_MOVE_DOWN, // 移動下
 		PLAYER2_ACTION,
+		PLAYER2_CHANGE, // 位置変更
 
 		CAMERA_MOVE_RIGHT, // カメラ右移動
 		CAMERA_MOVE_LEFT,  // カメラ左移動

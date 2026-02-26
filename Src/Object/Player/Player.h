@@ -29,7 +29,7 @@ public:
 	};
 
 
-	Player(PLAYER_NO _playerNo);
+	Player(PLAYER_NO _playerNo, const VECTOR& _pos);
 
 	~Player(void)override = default;
 
@@ -82,16 +82,16 @@ private:
 
 
 	// 衝突判定用カプセル上部球体
-	static constexpr VECTOR COL_CAPSULE_TOP_LOCAL_POS = { 0.0f, 110.0f, 0.0f };
+	static constexpr VECTOR COL_CAPSULE_TOP_POS_P1 = { 0.0f, 0.0f, 90.0f };
 
 	// 衝突判定用カプセル下部球体
-	static constexpr VECTOR COL_CAPSULE_DOWN_LOCAL_POS = { 0.0f, 30.0f, 0.0f };
+	static constexpr VECTOR COL_CAPSULE_DOWN_POS_P1 = { 0.0f, 0.0f, -90.0f };
 
-	// 衝突判定用カプセル上部球体(ジャンプ時)
-	static constexpr VECTOR COL_CAPSULE_TOP_JUMP_LOCAL_POS = { 0.0f, 160.0f, 0.0f };
+	// 衝突判定用カプセル上部球体
+	static constexpr VECTOR COL_CAPSULE_TOP_POS_P2 = { 0.0f, 90.0f, 0.0f };
 
-	// 衝突判定用カプセル下部球体(ジャンプ時)
-	static constexpr VECTOR COL_CAPSULE_DOWN_JUMP_LOCAL_POS = { 0.0f, 80.0f, 0.0f };
+	// 衝突判定用カプセル下部球体
+	static constexpr VECTOR COL_CAPSULE_DOWN_POS_P2 = { 0.0f, -90.0f, 0.0f };
 
 
 	// 衝突判定用カプセル球体半径

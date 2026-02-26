@@ -10,7 +10,12 @@ class StageBase
 {
 public:
 
-	StageBase(void);
+	enum class TYPE
+	{
+		MOVE,
+		GRAVITY,
+	};
+	StageBase(TYPE stageType, int mapNum);
 
 	virtual ~StageBase(void) = default;
 
@@ -38,7 +43,11 @@ protected:
 
 	SceneManager& sceneMng_;
 	ResourceManager& resMng_;
+	
+	TYPE stageType_;
 
+	// マップ最大数
+	int mapNumMax_;
 
 	// 配置リスト
 	std::vector<std::vector<StageObjBase*>> placeType_;
@@ -55,11 +64,11 @@ protected:
 	/// @param _xMax 列数
 	/// @param _yMax 行数
 	/// @return ブロックの行リスト
-	void SetBlockTypeList(int _type, int _xMax, int _yMax);
+	void SetBlockTypeList(int _mapType, int _xMax, int _yMax);
 
 	/// @brief ブロック状態割り当て
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	virtual StageObjBase* SetParam(int _blockType, float _posX, float _posY) = 0;
+	virtual StageObjBase* SetParam(int _mapType, float _posX, float _posY) = 0;
 };

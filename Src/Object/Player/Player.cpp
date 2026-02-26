@@ -11,12 +11,13 @@
 #include "../Collider/ColliderModel.h"
 
 
-Player::Player(PLAYER_NO _playerNo)
+Player::Player(PLAYER_NO _playerNo, const VECTOR& _pos)
 	:CharaBase::CharaBase(),
 	isDash_(false),
 	playerNo_(_playerNo),
 	stageType_(STAGE_TYPE::MAX)
 {
+	transform_.pos = _pos;
 }
 
 void Player::SetPlayerNo(PLAYER_NO no)
@@ -71,15 +72,21 @@ void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 	CharaBase::Init();	
 
 	SetGameStageType(_stageType);
-
-	transform_.pos = _pos;
 }
 
 void Player::InitTransform(void)
 {
-	constexpr float MODEL_SCALE = 1.25f;
+	constexpr float MODEL_SCALE = 1.0f;
+	float rot = 0.0f;
+	if (playerNo_ == PLAYER_NO::P1) 
+	{
+		rot = 90.0f;
+	}
+
+
 	transform_.InitTransform(MODEL_SCALE,
-							 Quaternion::Identity(), Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y));
+							 Quaternion::AngleAxis(rot, AsoUtility::AXIS_Y),
+							 Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y));
 }
 
 void Player::InitCollider(void)
@@ -89,8 +96,20 @@ void Player::InitCollider(void)
 											 COL_LINE_START_LOCAL_POS, COL_LINE_END_LOCAL_POS);
 
 	// 主に壁や木などの衝突で仕様するカプセルコライダ
+	VECTOR colPosTop = AsoUtility::VECTOR_ZERO;
+	VECTOR colPosBottom = AsoUtility::VECTOR_ZERO;
+	if (playerNo_ == PLAYER_NO::P1)
+	{
+		colPosTop = COL_CAPSULE_TOP_POS_P1;
+		colPosBottom = COL_CAPSULE_DOWN_POS_P1;
+	}
+	else if (playerNo_ == PLAYER_NO::P2)
+	{
+		colPosTop = COL_CAPSULE_TOP_POS_P2;
+		colPosBottom = COL_CAPSULE_DOWN_POS_P2;
+	}
 	ColliderCapsule* colCapsule = new ColliderCapsule(ColliderBase::TAG::PLAYER, &transform_,
-													  COL_CAPSULE_TOP_LOCAL_POS, COL_CAPSULE_DOWN_LOCAL_POS,
+													  colPosTop, colPosBottom,
 													  COL_CAPSULE_RADIUS);
 
 	ownColliders_.emplace(static_cast<int>(COLLIDER_TYPE::CAPSULE), colCapsule);
@@ -125,6 +144,7 @@ void Player::UpdateProcessPost(void)
 void Player::CollisionReserve(void)
 {
 	/* アニメーションごとの衝突位置調整 */
+	/*
 	if (animation_ == nullptr) { return; }
 	if (animation_->GetPlayType() == static_cast<int>(ANIM_TYPE::JUMP))
 	{
@@ -165,7 +185,7 @@ void Player::CollisionReserve(void)
 			colCapsule->SetLocalPosTop(COL_CAPSULE_TOP_LOCAL_POS);
 			colCapsule->SetLocalPosDown(COL_CAPSULE_DOWN_LOCAL_POS);
 		}
-	}
+	}*/
 }
 
 void Player::ProcessMove(void)
@@ -180,17 +200,17 @@ void Player::ProcessMove(void)
 	{
 		if (playerNo_ == PLAYER_NO::P1)
 		{
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
+			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
+			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
 			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT))  { dir.x -= 1.0f; }
 			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT)) { dir.x += 1.0f; }
 		}
 		else if (playerNo_ == PLAYER_NO::P2)
 		{
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_BACK))  { dir.y += 1.0f; }
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_FRONT)) { dir.y -= 1.0f; }
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT))  { dir.x -= 1.0f; }
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT)) { dir.x += 1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_UP))  { dir.y += 1.0f; }
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN)) { dir.y -= 1.0f; }
+			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT))  { dir.x -= 1.0f; }
+			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT)) { dir.x += 1.0f; }
 		}
 	}
 

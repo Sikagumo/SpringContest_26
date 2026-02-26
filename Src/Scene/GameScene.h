@@ -39,7 +39,6 @@ public:
 
 private:
 
-	
 	SkyDome* skyDome_;
 
 	STAGE_TYPE stageType_;

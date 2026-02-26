@@ -14,9 +14,6 @@ TitleScene::TitleScene(void)
 {
 }
 
-TitleScene::~TitleScene(void)
-{
-}
 
 void TitleScene::Init(void)
 {
@@ -34,7 +31,8 @@ void TitleScene::Update(void)
 
 void TitleScene::Draw(void)
 {
-
+ 	DrawString(Application::SCREEN_HALF_X-100, Application::SCREEN_HALF_Y, 
+			   "Spaceでゲームスタート", 0x0);
 }
 
 void TitleScene::Release(void)

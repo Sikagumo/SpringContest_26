@@ -48,7 +48,14 @@ public:
 
 	int GetStageMoveNum(int _type, int x, int y);
 
+	/// @brief ステージ数取得
+	int GetStageMoveMapNum(void) { return stage_.move.size() - 1; };
+
+
 	int GetStageGravityNum(int _type, int x, int y);
+
+	/// @brief ステージ数取得
+	int GetStageGravityMapNum(void) { return stage_.gravity.size() - 1; };
 
 private:
 

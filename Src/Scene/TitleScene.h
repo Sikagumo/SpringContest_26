@@ -14,7 +14,7 @@ public:
 	TitleScene(void);
 
 	// デストラクタ
-	~TitleScene(void) override;
+	~TitleScene(void) override = default;
 
 	// 初期化
 	void Init(void) override;

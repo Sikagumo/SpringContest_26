@@ -30,6 +30,7 @@
 *.out
 *.app
 *.exe
+*.dxa
 
 # New addition
 .vs/
