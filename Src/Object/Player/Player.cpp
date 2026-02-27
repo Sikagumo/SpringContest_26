@@ -192,26 +192,40 @@ void Player::ProcessMove(void)
 {
 	VECTOR dir = AsoUtility::VECTOR_ZERO;
 
+	if (playerNo_ == PLAYER_NO::P1)
+	{
+		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
+		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT, Input::JOYPAD_NO::PAD1))
+		{
+			dir.x -= 1.0f;
+		}
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT, Input::JOYPAD_NO::PAD1))
+		{
+			dir.x += 1.0f;
+		}
+	}
+	else if (playerNo_ == PLAYER_NO::P2)
+	{
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2))
+		{
+			dir.y += 1.0f;
+		}
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
+		{
+			dir.y -= 1.0f;
+		}
+		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT))  { dir.x -= 1.0f; }
+		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT)) { dir.x += 1.0f; }
+	}
+
 	if (GetJoypadNum() > 0)
 	{
-		dir = InputManager::GetInstance().GetDirXY_LStick(Input::JOYPAD_NO::PAD1);
+		//dir = InputManager::GetInstance().GetDirXY_LStick(Input::JOYPAD_NO::PAD1);
 	}
 	else
 	{
-		if (playerNo_ == PLAYER_NO::P1)
-		{
-			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
-			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT))  { dir.x -= 1.0f; }
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT)) { dir.x += 1.0f; }
-		}
-		else if (playerNo_ == PLAYER_NO::P2)
-		{
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_UP))  { dir.y += 1.0f; }
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN)) { dir.y -= 1.0f; }
-			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT))  { dir.x -= 1.0f; }
-			//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT)) { dir.x += 1.0f; }
-		}
+		
 	}
 
 	if (!AsoUtility::EqualsVZero(dir))

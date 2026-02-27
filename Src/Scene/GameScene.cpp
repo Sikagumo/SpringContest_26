@@ -108,11 +108,13 @@ void GameScene::Update(void)
 
 	if (AsoUtility::IsHitCircleXY(pos1, 40.0f, pos2, 40.0f))
 	{
+#ifdef _DEBUG
 		printfDx("XY衝突中！\n");
+#endif
 	}
 
-	if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE) ||
-		input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE))
+	if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1) ||
+		input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
 	{
 		// Transformを参照で取得（←重要）
 		Transform& t1 = player1_->GetTransform();

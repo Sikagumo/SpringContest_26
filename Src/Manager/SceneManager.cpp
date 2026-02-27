@@ -168,10 +168,12 @@ void SceneManager::Draw(void)
 	// 描画先グラフィック領域の指定
 	// (３Ｄ描画で使用するカメラの設定などがリセットされる)
 	SetDrawScreen(DX_SCREEN_BACK);
-
+	
 	// 画面を初期化
 	ClearDrawScreen();
 
+	SetDrawArea(0, 0, Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y);
+	SetCameraScreenCenter(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y);
 	// シャドウマップへの描画の準備
 	ShadowMap_DrawSetup(shadowMapHandle_);
 
