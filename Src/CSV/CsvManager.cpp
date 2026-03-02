@@ -188,6 +188,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 
 	// 縦横のマップ値[列数]
 	StageMap::MoveStagePlace dataNums;
+	StageMap::MoveStagePlace dataNumBacks;
 
 	// 行
 	std::string line;
@@ -218,29 +219,68 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 		while (getline(ss, text, ','))
 		{
 			// セル読み込み範囲を超えた場合、読み込み終了
-			if (cellPos >= _xSize) { break; }
+			if (cellPos >= (_xSize * 2)) { break; }
+
+			// 前ステージと後ろステージの間はスキップ
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
 
 			// string→int変換
 			int num = 0;
 			UtilityCommon::ChangeString(text, num, BLANK_NUM);
 
 			// セルの数値を格納
-			dataNums[linePos][cellPos] = num;
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = num;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = num;
+			}
 
 			// セル位置移動
 			cellPos++;
 		}
 
 		// 列数がステージ幅未満の時、空白の値にする
-		while (cellPos < _xSize)
+		while (cellPos <= (_xSize * 2))
 		{
-			dataNums[linePos][cellPos++] = BLANK_NUM;
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
+
+			// セルの数値を格納
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = BLANK_NUM;
+			}
+
+			// セル位置移動
+			cellPos++;
 		}
 
-		if (linePos-- < 1)
+		// １マップ登録時、初期化
+		if (linePos-- <= 0)
 		{
 			// ステージリストに格納
 			stage_.move.emplace_back(dataNums);
+			stage_.moveBack.emplace_back(dataNumBacks);
 
 			isSkip = _isLabelSkip;
 			linePos = (_ySize - 1);
@@ -250,12 +290,29 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 	}
 
 	// 読み込まれていない領域を全て-1にする
+	if (linePos >= (_ySize - 1)) {
+		return;
+	}
+
 	while (linePos >= 0)
 	{
-		while (cellPos < _xSize)
+		while (cellPos <= (_xSize * 2))
 		{
+			if (cellPos == _xSize - 1) { continue; }
+
 			// セルの数値を格納
-			dataNums[linePos][cellPos++] = -1;
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				dataNumBacks[linePos][(cellPos / 2) + (cellPos % 2)] = BLANK_NUM;
+			}
+
+			cellPos++;
 		}
 		linePos--;
 		cellPos = 0;
@@ -263,6 +320,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 
 	// ステージリストに格納
 	stage_.move.emplace_back(dataNums);
+	stage_.moveBack.emplace_back(dataNumBacks);
 }
 void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)
 {
@@ -276,6 +334,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 
 	// 縦横のマップ値[列数]
 	StageMap::GravityStagePlace dataNums;
+	StageMap::GravityStagePlace dataNumBacks;
 
 	// 行
 	std::string line;
@@ -286,7 +345,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 	std::string fileContent = ReadCsvFile(_path);
 	std::istringstream fileStream(fileContent);
 
-	int linePos = 0; // 行数
+	int linePos = (_ySize - 1); // 行数
 	int cellPos = 0; // セル数
 
 	// 行ごとに読み込み
@@ -301,56 +360,111 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 			isSkip = false;
 			continue;
 		}
-		
+
 		// コンマごとにセルを読み込み
 		while (getline(ss, text, ','))
 		{
 			// セル読み込み範囲を超えた場合、読み込み終了
-			if (cellPos >= _xSize) { break; }
+			if (cellPos >= (_xSize * 2)) { break; }
+
+			// 前ステージと後ろステージの間はスキップ
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
 
 			// string→int変換
 			int num = 0;
 			UtilityCommon::ChangeString(text, num, BLANK_NUM);
 
 			// セルの数値を格納
-			dataNums[linePos][cellPos] = num;
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = num;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = num;
+			}
 
 			// セル位置移動
 			cellPos++;
 		}
 
 		// 列数がステージ幅未満の時、空白の値にする
-		while (cellPos < _xSize)
+		while (cellPos <= (_xSize * 2))
 		{
-			dataNums[linePos][cellPos++] = BLANK_NUM;
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
+
+			// セルの数値を格納
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = BLANK_NUM;
+			}
+
+			// セル位置移動
+			cellPos++;
 		}
 
-		if (linePos++ >= (_ySize - 1))
+		// １マップ登録時、初期化
+		if (linePos-- <= 0)
 		{
 			// ステージリストに格納
 			stage_.gravity.emplace_back(dataNums);
+			stage_.gravityBack.emplace_back(dataNumBacks);
 
 			isSkip = _isLabelSkip;
-			linePos = 0;
+			linePos = (_ySize - 1);
 		}
 
 		cellPos = 0;
 	}
 
 	// 読み込まれていない領域を全て-1にする
-	while (linePos < _ySize)
+	if (linePos >= (_ySize - 1)) { return; }
+
+	while (linePos >= 0)
 	{
-		while (cellPos < _xSize)
+		while (cellPos <= (_xSize * 2))
 		{
+			if (cellPos == _xSize - 1) { continue; }
+
 			// セルの数値を格納
-			dataNums[linePos][cellPos++] = -1;
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				dataNumBacks[linePos][(cellPos / 2) + (cellPos % 2)] = BLANK_NUM;
+			}
+
+			cellPos++;
 		}
-		linePos++;
+		linePos--;
 		cellPos = 0;
 	}
 
 	// ステージリストに格納
 	stage_.gravity.emplace_back(dataNums);
+	stage_.gravityBack.emplace_back(dataNumBacks);
 }
 
 
@@ -363,9 +477,18 @@ int CsvManager::GetStageMoveNum(int _type, int x, int y)
 {
 	return stage_.move[_type].at(y).at(x);
 }
+int CsvManager::GetStageBackMoveNum(int _type, int x, int y)
+{
+	return stage_.moveBack[_type].at(y).at(x);
+}
 int CsvManager::GetStageGravityNum(int _type, int x, int y)
 {
 	return stage_.gravity[_type].at(y).at(x);
+}
+
+int CsvManager::GetStageBackGravityNum(int _type, int x, int y)
+{
+	return stage_.gravityBack[_type].at(y).at(x);
 }
 
 
