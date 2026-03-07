@@ -54,6 +54,7 @@
     <ClCompile Include="Src\Object\StageObj\StageObjWall.cpp" />
     <ClCompile Include="Src\Object\Stage\Stage.cpp" />
     <ClCompile Include="Src\Object\Stage\StageBase.cpp" />
+    <ClCompile Include="Src\Object\Stage\StageController.cpp" />
     <ClCompile Include="Src\Object\Stage\StageMove.cpp" />
     <ClCompile Include="Src\Scene\DebugScene.cpp" />
     <ClCompile Include="Src\Scene\GameScene.cpp" />
@@ -99,6 +100,7 @@
     <ClInclude Include="Src\Object\StageObj\StageObjWall.h" />
     <ClInclude Include="Src\Object\Stage\Stage.h" />
     <ClInclude Include="Src\Object\Stage\StageBase.h" />
+    <ClInclude Include="Src\Object\Stage\StageController.h" />
     <ClInclude Include="Src\Object\Stage\StageMove.h" />
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Scene\GameScene.h" />

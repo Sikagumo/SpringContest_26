@@ -56,8 +56,6 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 			src = ResourceManager::SRC::MODEL_PLAYER_HEIGHT;
 		}
 	}
-
-	int temp = resMng_.LoadModelDuplicate(src);
 	// ƒ‚ƒfƒ‹Š„‚è“–‚Ä
 	transform_.SetModel(resMng_.LoadModelDuplicate(src));
 }

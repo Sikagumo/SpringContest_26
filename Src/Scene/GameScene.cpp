@@ -6,6 +6,7 @@
 #include "../Object/Actor/ActorBase.h"
 #include "../Object/Common/Transform.h"
 #include "../Object/StageObj/StageObjBase.h"
+#include "../Object/Stage/StageController.h"
 #include "../Object/Stage/StageBase.h"
 #include "../Object/Stage/StageMove.h"
 //#include "../Object/Stage/StageGravity.h"
@@ -20,7 +21,7 @@ GameScene::GameScene(void):
 	stage_(nullptr),
 	player1_(nullptr),
 	player2_(nullptr),
-	stageType_(STAGE_TYPE::MAX),
+
 	SceneBase()
 {
 }
@@ -28,15 +29,16 @@ GameScene::GameScene(void):
 void GameScene::Init(void)
 {
 	// ステージ初期化
-	SetStageType(STAGE_TYPE::MOVE);
+	stage_ = new StageController();
+	stage_->Init();
 
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
-	if (stageType_ == STAGE_TYPE::MOVE)
+	if (pStageType == Player::STAGE_TYPE::MOVE)
 	{
 		pStageType = Player::STAGE_TYPE::MOVE;
 	}
-	else if (stageType_ == STAGE_TYPE::GRAVITY)
+	else if (pStageType == Player::STAGE_TYPE::GRAVITY)
 	{
 		pStageType = Player::STAGE_TYPE::GRAVITY;
 	}
@@ -56,6 +58,7 @@ void GameScene::Init(void)
 	stage_->AddStageColliders(*player1_);
 	stage_->AddStageColliders(*player2_);
 
+	SetStageType();
 	// スカイドーム
 	skyDome_ = new SkyDome({});
 	skyDome_->Init();
@@ -90,16 +93,23 @@ void GameScene::Update(void)
 	VECTOR goalPos = stage_->GetGoalPos();
 
 	// 判定の大きさ
-	float hitRange = 80.0f;
+	const float GOAL_HIT_RANGE = 35.0f;
 
 	// 各プレイヤーとゴールの XY 距離判定
-	bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f, goalPos, hitRange);
-	bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f, goalPos, hitRange);
+	bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f, goalPos, GOAL_HIT_RANGE);
+	bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f, goalPos, GOAL_HIT_RANGE);
 
 	//二人が星に触れた状態になったらタイトルに
 	if (isP1Clear && isP2Clear)
 	{
-		sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+		if (stage_->GetIsTypeEquals(StageController::STAGE_TYPE::CLEAR))
+		{
+			sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+		}
+		else
+		{
+			SetStageType();
+		}
 		return; 
 	}
 
@@ -167,32 +177,24 @@ void GameScene::Release(void)
 	delete player2_;
 }
 
-void GameScene::SetStageType(GameScene::STAGE_TYPE _type)
+void GameScene::SetStageType(void)
 {
-	// 同一時処理終了
-	if (stageType_ == _type) { return; }
-
-	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
-	stageType_ = _type;
+	// ステージ状態を進める
+	stage_->ChangeStages();
 	
-	if (stage_ != nullptr)
-	{
-		stage_->Release();
-	}
+	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
 
-	// ステージ登録
-	if (_type == STAGE_TYPE::MOVE)
+	if (stage_->GetStageType() == StageController::STAGE_TYPE::MOVE ||
+		stage_->GetStageType() == StageController::STAGE_TYPE::MOVE3D)
 	{
-		stage_ = new StageMove();
 		pStageType = Player::STAGE_TYPE::MOVE;
 	}
-	else if (_type == STAGE_TYPE::GRAVITY)
-	{
-		//stage_ = new StageGravity();	
+	else if (stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY ||
+			 stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY3D)
+	{	
 		pStageType = Player::STAGE_TYPE::GRAVITY;
 	}
+
 	if (player1_ != nullptr) { player1_->SetGameStageType(pStageType); }
 	if (player2_ != nullptr) { player2_->SetGameStageType(pStageType); }
-
-	stage_->Init();
 }

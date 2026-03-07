@@ -7,8 +7,9 @@
 #include "../StageObj/StageObjGoal.h"
 #include "StageMove.h"
 
-StageMove::StageMove(void)
-	:StageBase::StageBase(TYPE::MOVE, CsvManager::GetInstance().GetStageMoveMapNum())
+StageMove::StageMove(bool _isBack)
+	:StageBase::StageBase(((_isBack) ? TYPE::MOVE3D : TYPE::MOVE),
+							CsvManager::GetInstance().GetStageMoveMapNum())
 {
 
 }

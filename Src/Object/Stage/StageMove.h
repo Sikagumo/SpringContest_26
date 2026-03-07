@@ -24,7 +24,7 @@ public:
 	};
 
 
-	StageMove(void);
+	StageMove(bool _isBack);
 
 	~StageMove(void)override = default;
 
