@@ -48,4 +48,11 @@ private:
 
 	Player* player2_;
 	void SetStageType(STAGE_TYPE _type);
+
+	// “ü‚ê‘Ö‚¦Œ ŒÀ‚Ì’è‹`
+	enum class SWAP_RIGHT {
+		P1,
+		P2
+	};
+	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
 };

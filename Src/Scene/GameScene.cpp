@@ -28,7 +28,7 @@ GameScene::GameScene(void):
 void GameScene::Init(void)
 {
 	// ステージ初期化
-	SetStageType(STAGE_TYPE::GRAVITY);
+	SetStageType(STAGE_TYPE::MOVE);
 
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
@@ -113,23 +113,52 @@ void GameScene::Update(void)
 #endif
 	}
 
-	if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1) ||
-		input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
+	//入れ替え入力の判定と実行
+	bool executeSwap = false;
+
+	// 1. 今どちらが権限を持っていて、かつ対応するボタンが押されたか
+	if (currentSwapRight_ == SWAP_RIGHT::P1)
 	{
-		// Transformを参照で取得（←重要）
+		// P1が権限保持中：P1のチェンジボタンだけをチェック
+		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1))
+		{
+			executeSwap = true;
+		}
+	}
+	else if (currentSwapRight_ == SWAP_RIGHT::P2)
+	{
+		// P2が権限保持中：P2のチェンジボタンだけをチェック
+		if (input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
+		{
+			executeSwap = true;
+		}
+	}
+
+	// 入れ替え実行と権限の譲渡
+	if (executeSwap)
+	{
+		// Transformを参照で取得
 		Transform& t1 = player1_->GetTransform();
 		Transform& t2 = player2_->GetTransform();
 
-		// 位置を保存
+		// 位置の入れ替え
 		VECTOR temp = t1.pos;
-
-		// 入れ替え
 		t1.pos = t2.pos;
 		t2.pos = temp;
 
-		// 重力落下防止（これ入れないとワープ後に落ちる）
+		// 物理挙動の安定化
 		t1.prePos = t1.pos;
 		t2.prePos = t2.pos;
+
+		// 権限を交互に切り替える
+		if (currentSwapRight_ == SWAP_RIGHT::P1)
+		{
+			currentSwapRight_ = SWAP_RIGHT::P2;
+		}
+		else
+		{
+			currentSwapRight_ = SWAP_RIGHT::P1;
+		}
 	}
 
 	// カメラ更新
