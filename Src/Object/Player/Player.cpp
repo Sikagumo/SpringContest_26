@@ -76,21 +76,46 @@ void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 
 void Player::InitTransform(void)
 {
+	//constexpr float MODEL_SCALE = 1.0f;
+	//float rot = 0.0f;
+	//if (playerNo_ == PLAYER_NO::P1) 
+	//{
+	//	rot = 90.0f;
+	//}
+
+
+	//transform_.InitTransform(MODEL_SCALE,
+	//						 Quaternion::AngleAxis(rot, AsoUtility::AXIS_Y),
+	//						 Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y));
+
 	constexpr float MODEL_SCALE = 1.0f;
-	float rot = 0.0f;
-	if (playerNo_ == PLAYER_NO::P1) 
+	float rotY = (playerNo_ == PLAYER_NO::P1) ? 90.0f : 0.0f;
+	float rotZ = 0.0f;
+
+	// P2かつ重力モードならZ軸で180度回転（逆さま）
+	if (playerNo_ == PLAYER_NO::P2 && stageType_ == STAGE_TYPE::GRAVITY)
 	{
-		rot = 90.0f;
+		rotZ = 180.0f;
 	}
 
-
 	transform_.InitTransform(MODEL_SCALE,
-							 Quaternion::AngleAxis(rot, AsoUtility::AXIS_Y),
-							 Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y));
+		Quaternion::AngleAxis(rotY, AsoUtility::AXIS_Y),
+		Quaternion::AngleAxis(rotZ, AsoUtility::AXIS_Z)); // 180度反転
+
 }
 
 void Player::InitCollider(void)
 {
+	//変更箇所：P2かつ重力モードなら判定を上に向ける
+	VECTOR lineStart = COL_LINE_START_LOCAL_POS;
+	VECTOR lineEnd = COL_LINE_END_LOCAL_POS;
+
+	if (playerNo_ == PLAYER_NO::P2 && stageType_ == STAGE_TYPE::GRAVITY)
+	{
+		lineStart = VGet(0, 0, 0);
+		lineEnd = VGet(0, 80.0f, 0); // 上向きに判定を出す
+	}
+
 	// 主に地面との衝突で仕様する線分コライダ
 	ColliderLine* colLine = new ColliderLine(ColliderBase::TAG::PLAYER, &transform_,
 											 COL_LINE_START_LOCAL_POS, COL_LINE_END_LOCAL_POS);
@@ -207,16 +232,29 @@ void Player::ProcessMove(void)
 	}
 	else if (playerNo_ == PLAYER_NO::P2)
 	{
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2))
+		// --- 修正箇所：重力モードなら左右、そうでなければ元の上下操作 ---
+		if (stageType_ == STAGE_TYPE::GRAVITY)
 		{
-			dir.y += 1.0f;
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT, Input::JOYPAD_NO::PAD2))
+			{
+				dir.x -= 1.0f;
+			}
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT, Input::JOYPAD_NO::PAD2))
+			{
+				dir.x += 1.0f;
+			}
 		}
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
+		else
 		{
-			dir.y -= 1.0f;
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2))
+			{
+				dir.y += 1.0f;
+			}
+			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
+			{
+				dir.y -= 1.0f;
+			}
 		}
-		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT))  { dir.x -= 1.0f; }
-		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT)) { dir.x += 1.0f; }
 	}
 
 	if (GetJoypadNum() > 0)
@@ -247,6 +285,7 @@ void Player::ProcessMove(void)
 			}
 		}
 
+
 		// カメラの方向で進行
 		Quaternion cameraRot = sceneMng_.GetCamera()->GetQuaRotY();
 
@@ -265,6 +304,22 @@ void Player::ProcessMove(void)
 			PlayAnim(ANIM_TYPE::IDLE);
 		}
 	}
+
+	// 重力の適用
+	if (stageType_ == STAGE_TYPE::GRAVITY)
+	{
+		if (playerNo_ == PLAYER_NO::P1)
+		{
+			//下重力 
+			movePow_.y -= 2.0f;
+		}
+		else if (playerNo_ == PLAYER_NO::P2)
+		{
+			//上重力
+			movePow_.y += 2.0f;
+		}
+	}
+
 }
 
 void Player::ProcessJump(void)

@@ -20,8 +20,8 @@ public:
 	static constexpr int STAGE_MOVE_Y = 11;
 
 	// 重力ステージサイズ
-	static constexpr int STAGE_GRAVITY_X = 10;
-	static constexpr int STAGE_GRAVITY_Y = 10;
+	static constexpr int STAGE_GRAVITY_X = 11;
+	static constexpr int STAGE_GRAVITY_Y = 11;
 
 
 	/// @brief インスタンス生成処理

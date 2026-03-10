@@ -8,7 +8,7 @@
 #include "../Object/StageObj/StageObjBase.h"
 #include "../Object/Stage/StageBase.h"
 #include "../Object/Stage/StageMove.h"
-//#include "../Object/Stage/StageGravity.h"
+#include "../Object/Stage/StageGravity.h"
 #include "../Object/SkyDome/SkyDome.h"
 #include "../Object/Player/Player.h"
 #include "../Object/Collider/ColliderBase.h"
@@ -28,7 +28,7 @@ GameScene::GameScene(void):
 void GameScene::Init(void)
 {
 	// ステージ初期化
-	SetStageType(STAGE_TYPE::MOVE);
+	SetStageType(STAGE_TYPE::GRAVITY);
 
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
@@ -188,7 +188,7 @@ void GameScene::SetStageType(GameScene::STAGE_TYPE _type)
 	}
 	else if (_type == STAGE_TYPE::GRAVITY)
 	{
-		//stage_ = new StageGravity();	
+		stage_ = new StageGravity();	
 		pStageType = Player::STAGE_TYPE::GRAVITY;
 	}
 	if (player1_ != nullptr) { player1_->SetGameStageType(pStageType); }
