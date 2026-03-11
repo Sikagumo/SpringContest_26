@@ -188,6 +188,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 
 	// 縦横のマップ値[列数]
 	StageMap::MoveStagePlace dataNums;
+	StageMap::MoveStagePlace dataNumBacks;
 
 	// 行
 	std::string line;
@@ -218,29 +219,68 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 		while (getline(ss, text, ','))
 		{
 			// セル読み込み範囲を超えた場合、読み込み終了
-			if (cellPos >= _xSize) { break; }
+			if (cellPos > (_xSize * 2)) { break; }
+
+			// 前ステージと後ろステージの間はスキップ
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
 
 			// string→int変換
 			int num = 0;
 			UtilityCommon::ChangeString(text, num, BLANK_NUM);
 
 			// セルの数値を格納
-			dataNums[linePos][cellPos] = num;
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = num;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = num;
+			}
 
 			// セル位置移動
 			cellPos++;
 		}
 
 		// 列数がステージ幅未満の時、空白の値にする
-		while (cellPos < _xSize)
+		while (cellPos <= (_xSize * 2))
 		{
-			dataNums[linePos][cellPos++] = BLANK_NUM;
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
+
+			// セルの数値を格納
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = BLANK_NUM;
+			}
+
+			// セル位置移動
+			cellPos++;
 		}
 
-		if (linePos-- < 1)
+		// １マップ登録時、初期化
+		if (linePos-- <= 0)
 		{
 			// ステージリストに格納
 			stage_.move.emplace_back(dataNums);
+			stage_.moveBack.emplace_back(dataNumBacks);
 
 			isSkip = _isLabelSkip;
 			linePos = (_ySize - 1);
@@ -250,12 +290,29 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 	}
 
 	// 読み込まれていない領域を全て-1にする
+	if (linePos >= (_ySize - 1)) {
+		return;
+	}
+
 	while (linePos >= 0)
 	{
-		while (cellPos < _xSize)
+		while (cellPos <= (_xSize * 2))
 		{
+			if (cellPos == _xSize - 1) { continue; }
+
 			// セルの数値を格納
-			dataNums[linePos][cellPos++] = -1;
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				dataNumBacks[linePos][(cellPos / 2) + (cellPos % 2)] = BLANK_NUM;
+			}
+
+			cellPos++;
 		}
 		linePos--;
 		cellPos = 0;
@@ -263,173 +320,155 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 
 	// ステージリストに格納
 	stage_.move.emplace_back(dataNums);
+	stage_.moveBack.emplace_back(dataNumBacks);
 }
-//void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)
-//{
-//	/*　csvファイル読み込み処理　*/
-//
-//	// 空白時の値
-//	const int BLANK_NUM = -1;
-//
-//	// ラベルの行をスキップするか否か
-//	bool isSkip = _isLabelSkip;
-//
-//	// 縦横のマップ値[列数]
-//	StageMap::GravityStagePlace dataNums;
-//
-//	// 行
-//	std::string line;
-//
-//	// セーブファイルパス
-//
-//	// CSVファイルの内容を取得
-//	std::string fileContent = ReadCsvFile(_path);
-//	std::istringstream fileStream(fileContent);
-//
-//	int linePos = 0; // 行数
-//	int cellPos = 0; // セル数
-//
-//	// 行ごとに読み込み
-//	while (getline(fileStream, line))
-//	{
-//		std::stringstream ss(line);
-//		std::string text;
-//
-//		if (isSkip)
-//		{
-//			// ラベルの行をスキップ
-//			isSkip = false;
-//			continue;
-//		}
-//		
-//		// コンマごとにセルを読み込み
-//		while (getline(ss, text, ','))
-//		{
-//			// セル読み込み範囲を超えた場合、読み込み終了
-//			if (cellPos >= _xSize) { break; }
-//
-//			// string→int変換
-//			int num = 0;
-//			UtilityCommon::ChangeString(text, num, BLANK_NUM);
-//
-//			// セルの数値を格納
-//			dataNums[linePos][cellPos] = num;
-//
-//			// セル位置移動
-//			cellPos++;
-//		}
-//
-//		// 列数がステージ幅未満の時、空白の値にする
-//		while (cellPos < _xSize)
-//		{
-//			dataNums[linePos][cellPos++] = BLANK_NUM;
-//		}
-//
-//		if (linePos++ >= (_ySize - 1))
-//		{
-//			// ステージリストに格納
-//			stage_.gravity.emplace_back(dataNums);
-//
-//			isSkip = _isLabelSkip;
-//			linePos = 0;
-//		}
-//
-//		cellPos = 0;
-//	}
-//
-//	// 読み込まれていない領域を全て-1にする
-//	while (linePos < _ySize)
-//	{
-//		while (cellPos < _xSize)
-//		{
-//			// セルの数値を格納
-//			dataNums[linePos][cellPos++] = -1;
-//		}
-//		linePos++;
-//		cellPos = 0;
-//	}
-//
-//	// ステージリストに格納
-//	stage_.gravity.emplace_back(dataNums);
-//}
 void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)
 {
+	/*　csvファイル読み込み処理　*/
+
+	// 空白時の値
 	const int BLANK_NUM = -1;
+
+	// ラベルの行をスキップするか否か
 	bool isSkip = _isLabelSkip;
+
+	// 縦横のマップ値[列数]
 	StageMap::GravityStagePlace dataNums;
+	StageMap::GravityStagePlace dataNumBacks;
+
+	// 行
 	std::string line;
 
+	// セーブファイルパス
+
+	// CSVファイルの内容を取得
 	std::string fileContent = ReadCsvFile(_path);
 	std::istringstream fileStream(fileContent);
 
-	//修正箇所：Moveに合わせて「一番下の行」から開始
-	int linePos = (_ySize - 1);
-	int cellPos = 0;
+	int linePos = (_ySize - 1); // 行数
+	int cellPos = 0; // セル数
 
+	// 行ごとに読み込み
 	while (getline(fileStream, line))
 	{
+		std::stringstream ss(line);
+		std::string text;
+
 		if (isSkip)
 		{
+			// ラベルの行をスキップ
 			isSkip = false;
-			linePos = (_ySize - 1);
 			continue;
 		}
 
-		std::stringstream ss(line);
-		std::string text;
-		cellPos = 0;
-
+		// コンマごとにセルを読み込み
 		while (getline(ss, text, ','))
 		{
-			if (cellPos >= _xSize) { break; }
+			// セル読み込み範囲を超えた場合、読み込み終了
+			if (cellPos > (_xSize * 2)) { break; }
 
+			// 前ステージと後ろステージの間はスキップ
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
+
+			// string→int変換
 			int num = 0;
-			// ここで空文字をスルーできるように UtilityCommon が修正されていれば完璧です
 			UtilityCommon::ChangeString(text, num, BLANK_NUM);
 
-			dataNums[linePos][cellPos] = num;
+			// セルの数値を格納
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = num;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = num;
+			}
+
+			// セル位置移動
 			cellPos++;
 		}
 
-		while (cellPos < _xSize)
+		// 列数がステージ幅未満の時、空白の値にする
+		while (cellPos <= (_xSize * 2))
 		{
-			dataNums[linePos][cellPos++] = BLANK_NUM;
+			if (cellPos == _xSize)
+			{
+				cellPos++;
+				continue;
+			}
+
+			// セルの数値を格納
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				int cell = (cellPos - _xSize) - 1;
+				dataNumBacks[linePos][cell] = BLANK_NUM;
+			}
+
+			// セル位置移動
+			cellPos++;
 		}
 
-		// データ行を1行読み終わったのでデクリメント
-		linePos--;
-
-		// 指定した行数（ySize分）を読み終えたらリストに格納
-		if (linePos < 0)
+		// １マップ登録時、初期化
+		if (linePos-- <= 0)
 		{
+			// ステージリストに格納
 			stage_.gravity.emplace_back(dataNums);
-			isSkip = _isLabelSkip; // 次のラベルスキップフラグを立てる
-			// 次の linePos は continue 後の isSkip 処理でリセットされるのでここでは何もしない
+			stage_.gravityBack.emplace_back(dataNumBacks);
+
+			isSkip = _isLabelSkip;
+			linePos = (_ySize - 1);
 		}
-		//// --- 修正箇所：Moveに合わせてカウントダウン（--）し、0未満でリセット ---
-		//if (linePos-- < 1)
-		//{
-		//	stage_.gravity.emplace_back(dataNums);
-		//	isSkip = _isLabelSkip;
-		//	linePos = (_ySize - 1);
-		//}
 
 		cellPos = 0;
 	}
 
-	// --- 修正箇所：残りの領域を -1 で埋める処理も下から上へ ---
+	// 読み込まれていない領域を全て-1にする
+	if (linePos >= (_ySize - 1)) {
+		return;
+	}
+
 	while (linePos >= 0)
 	{
-		while (cellPos < _xSize)
+		while (cellPos <= (_xSize * 2))
 		{
-			dataNums[linePos][cellPos++] = -1;
+			if (cellPos == _xSize - 1) { continue; }
+
+			// セルの数値を格納
+			if (cellPos < _xSize)
+			{
+				// 前のステージ格納
+				dataNums[linePos][cellPos] = BLANK_NUM;
+			}
+			else
+			{
+				// 後ろのステージ格納
+				dataNumBacks[linePos][(cellPos / 2) + (cellPos % 2)] = BLANK_NUM;
+			}
+
+			cellPos++;
 		}
 		linePos--;
 		cellPos = 0;
 	}
 
+	// ステージリストに格納
 	stage_.gravity.emplace_back(dataNums);
+	stage_.gravityBack.emplace_back(dataNumBacks);
 }
+
 
 std::string& CsvManager::GetHandlePathPlayer(void)
 {
@@ -440,9 +479,17 @@ int CsvManager::GetStageMoveNum(int _type, int x, int y)
 {
 	return stage_.move[_type].at(y).at(x);
 }
+int CsvManager::GetStageBackMoveNum(int _type, int x, int y)
+{
+	return stage_.moveBack[_type].at(y).at(x);
+}
 int CsvManager::GetStageGravityNum(int _type, int x, int y)
 {
 	return stage_.gravity[_type].at(y).at(x);
+}
+int CsvManager::GetStageBackGravityNum(int _type, int x, int y)
+{
+	return stage_.gravityBack[_type].at(y).at(x);
 }
 
 

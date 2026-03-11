@@ -11,8 +11,8 @@ public:
 	const char* GAME_NAME = "ちぇんじでGO";
 	
 	// スクリーンサイズ
-	static constexpr int SCREEN_SIZE_X = (16 * 80);
-	static constexpr int SCREEN_SIZE_Y = (9	* 80);
+	static constexpr int SCREEN_SIZE_X = (16 * 100);
+	static constexpr int SCREEN_SIZE_Y = (9	* 100);
 	static constexpr int SCREEN_HALF_X = (SCREEN_SIZE_X / 2);
 	static constexpr int SCREEN_HALF_Y = (SCREEN_SIZE_Y / 2);
 

@@ -108,12 +108,7 @@ private:
 	static constexpr float TIME_JUMP_INPUT = 0.6f;
 
 	// 移動速度(通常)
-	static constexpr float SPEED_MOVE = 5.0f;
-
-	// 移動速度(ダッシュ)
-	static constexpr float SPEED_DASH = 10.0f;
-
-	bool isDash_;
+	static constexpr float SPEED_MOVE = 7.5f;
 
 	// 現在のステージ状態
 	STAGE_TYPE stageType_;

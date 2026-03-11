@@ -4,6 +4,7 @@
 #include <map>
 #include "../../CSV/CsvManager.h"
 #include "../../Common/Vector2.h"
+
 class Transform;
 class StageObjBase;
 
@@ -24,7 +25,7 @@ public:
 	};
 
 
-	StageMove(void);
+	StageMove(bool _isBack);
 
 	~StageMove(void)override = default;
 
@@ -34,17 +35,16 @@ protected:
 
 
 	static constexpr VECTOR STAGE_POS = { -1000.0f, -1000.0f, 850.0f };
-	static constexpr float BLOCK_SCALE = 1.0f;
+	static constexpr float BLOCK_SCALE = 0.5f;
 
-	static constexpr float BLOCK_OFFSET_X = 200.0f;
-	static constexpr float BLOCK_OFFSET_Y = 200.0f;
+	static constexpr VECTOR BLOCK_OFFSET = { 200.0f, 200.0f, 200.0f };
 
 
-	void InitList(void)override;
 
 	/// @brief ブロック状態割り当て
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
 	StageObjBase* SetParam(int _blockType, float _posX, float _posY)override;
+	StageObjBase* SetParamBack(int _blockType, float _posX, float _posY)override;
 };

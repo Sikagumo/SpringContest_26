@@ -1,5 +1,6 @@
 #pragma once
 #include "../Common/Transform.h"
+#include "../Collider/ColliderBase.h"
 #include <map>
 #include <vector>
 class ColliderBase;
@@ -45,6 +46,10 @@ public:
 
 	// 衝突対象となるコライダを登録
 	void AddHitCollider(const ColliderBase* hitCollider);
+
+	/// @brief 指定したタグがついた衝突対象となるコライダを除外
+	/// @param _targetTag 対象のタグ
+	void RemoveHitCollider(const ColliderBase::TAG _targetTag);
 
 	// 衝突対象となるコライダをクリア
 	void ClearHitCollider(void);

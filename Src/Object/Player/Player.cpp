@@ -13,7 +13,6 @@
 
 Player::Player(PLAYER_NO _playerNo, const VECTOR& _pos)
 	:CharaBase::CharaBase(),
-	isDash_(false),
 	playerNo_(_playerNo),
 	stageType_(STAGE_TYPE::MAX)
 {
@@ -56,8 +55,6 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 			src = ResourceManager::SRC::MODEL_PLAYER_HEIGHT;
 		}
 	}
-
-	int temp = resMng_.LoadModelDuplicate(src);
 	// モデル割り当て
 	transform_.SetModel(resMng_.LoadModelDuplicate(src));
 }
@@ -69,8 +66,9 @@ void Player::InitLoadPost(void)
 
 void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 {
-	CharaBase::Init();	
+	CharaBase::Init();
 
+	transform_.pos = _pos;
 	SetGameStageType(_stageType);
 }
 
@@ -271,18 +269,11 @@ void Player::ProcessMove(void)
 		//movePow_ = AsoUtility::VECTOR_ZERO;
 
 		// ダッシュ入力時にダッシュ加速度にする
-		moveSpeed_ = ((isDash_) ? SPEED_DASH : SPEED_MOVE);
+		moveSpeed_ = SPEED_MOVE;
 
 		if (!isJump_)
 		{
-			if (isDash_)
-			{
-				PlayAnim(ANIM_TYPE::FAST_RUN);
-			}
-			else
-			{
-				PlayAnim(ANIM_TYPE::RUN);
-			}
+			PlayAnim(ANIM_TYPE::RUN);
 		}
 
 

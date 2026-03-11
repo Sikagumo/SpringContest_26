@@ -2,19 +2,14 @@
 #include "SceneBase.h"
 class SkyDome;
 class StageBase;
+class StageController;
 class Player;
 
 class GameScene : public SceneBase
 {
 
 public:
-	
-	enum class STAGE_TYPE
-	{
-		MOVE,
-		GRAVITY,
-		MAX,
-	};
+
 	
 	// コンストラクタ
 	GameScene(void);
@@ -33,21 +28,21 @@ public:
 
 	// 解放
 	void Release(void) override;
-
-	STAGE_TYPE GetStageType(void){ return stageType_; };
+	
+	// ステージ取得
+	const StageController& GetStage(void)const { return *stage_; };
 
 
 private:
 
 	SkyDome* skyDome_;
 
-	STAGE_TYPE stageType_;
-	StageBase* stage_;
+	StageBase* stageB_;
+	StageController* stage_;
 
 	Player* player1_;
 
 	Player* player2_;
-	void SetStageType(STAGE_TYPE _type);
 
 	// 入れ替え権限の定義
 	enum class SWAP_RIGHT {
@@ -55,4 +50,8 @@ private:
 		P2
 	};
 	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
+
+
+	void SetStageType(void);
+
 };

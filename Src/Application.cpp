@@ -42,7 +42,9 @@ void Application::Init(void)
 
 	// ウィンドウサイズ
 	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
-	ChangeWindowMode(true);
+
+	constexpr bool IS_FULLSCREEN = true;
+	ChangeWindowMode(IS_FULLSCREEN);
 
 	// FPS制御初期化
 	fpsController_ = new FpsController(FRAME_RATE);
