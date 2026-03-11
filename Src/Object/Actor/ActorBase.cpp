@@ -1,4 +1,5 @@
 #include "ActorBase.h"
+#include <vector>
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../Collider/ColliderBase.h"
@@ -87,6 +88,19 @@ void ActorBase::AddHitCollider(const ColliderBase* hitCollider)
 	}
 	hitColliders_.emplace_back(hitCollider);
 }
+void ActorBase::RemoveHitCollider(const ColliderBase::TAG _targetTag)
+{
+	const int SIZE = (hitColliders_.size() - 1);
+	for (int i = SIZE; i >= 0; i--)
+	{
+		// 指定のタグの当たり判定を外す
+		if (hitColliders_[i]->GetTag() == _targetTag)
+		{
+			hitColliders_.erase(hitColliders_.begin() + i);
+		}
+	}
+}
+
 void ActorBase::ClearHitCollider(void)
 {
 	hitColliders_.clear();

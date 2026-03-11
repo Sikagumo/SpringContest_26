@@ -18,20 +18,33 @@ StageBase::StageBase(TYPE stageType, int mapNum, int mapBackNum) :
 	stageType_(stageType),
 	mapNumMax_(mapNum), mapBackNumMax_(mapBackNum)
 {
-	constexpr VECTOR CONSTRUCT_POS = { -1, -1, -1 };
 	for (VECTOR& pos : playersPos_)
 	{
-		pos = CONSTRUCT_POS;
+		pos = AsoUtility::VECTOR_ZERO;
 	}
-
-	goalPos_ = CONSTRUCT_POS;
+	goalPos_ = goalPosBack_ = AsoUtility::VECTOR_ZERO;
 }
 
 void StageBase::Init(void)
 {
 	int rand = GetRand(mapNumMax_ - 1);
+
+	for (VECTOR& pos : playersPos_)
+	{
+		pos = AsoUtility::VECTOR_ZERO;
+	}
+	goalPos_ = goalPosBack_ = AsoUtility::VECTOR_ZERO;
+
+
+	// ステージ配置処理
 	SetBlockTypeList(rand, CsvManager::STAGE_MOVE_X, CsvManager::STAGE_MOVE_Y);
-	SetBlockBackTypeList(rand, CsvManager::STAGE_MOVE_X, CsvManager::STAGE_MOVE_Y);
+
+	// ステージ奥配置処理
+	if (stageType_ == TYPE::MOVE3D ||
+		stageType_ == TYPE::GRAVITY3D)
+	{
+		SetBlockBackTypeList(rand, CsvManager::STAGE_MOVE_X, CsvManager::STAGE_MOVE_Y);
+	}
 }
 
 void StageBase::Update(void)
@@ -154,7 +167,9 @@ void StageBase::SetBlockTypeList(int _mapType, int _xMax, int _yMax)
 			if (mapNum <= -1) { continue; }
 
 			// ステージ情報割り当て
-			StageObjBase* param = SetParam(mapNum, x, y);
+			StageObjBase* param = SetParam(mapNum,
+										   static_cast<float>(x),
+										   static_cast<float>(y));
 			if (param == nullptr) { continue; }
 
 			// 行配置リストに格納
@@ -180,13 +195,11 @@ void StageBase::SetBlockBackTypeList(int _mapType, int _xMax, int _yMax)
 		{
 			mapNum = -1;
 
-			if (stageType_ == TYPE::MOVE ||
-				stageType_ == TYPE::MOVE3D)
+			if (stageType_ == TYPE::MOVE3D)
 			{
 				mapNum = csvMng_.GetStageBackMoveNum(type, x, y);
 			}
-			else if (stageType_ == TYPE::GRAVITY ||
-				stageType_ == TYPE::GRAVITY3D)
+			else if (stageType_ == TYPE::GRAVITY3D)
 			{
 				mapNum = csvMng_.GetStageBackGravityNum(type, x, y);
 			}

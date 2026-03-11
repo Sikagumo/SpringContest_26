@@ -33,9 +33,11 @@ public:
 
 	virtual void Release(void);
 
+
 	const VECTOR& GetPlayerPos(int _num) { return playersPos_[_num]; };
 
 	const VECTOR& GetGoalPos(void) { return goalPos_; };
+	const VECTOR& GetGoalBackPos(void) { return goalPosBack_; };
 
 	/// @brief ステージの当たり判定を全登録
 	/// @param _actor 割り当てる対象
@@ -48,6 +50,7 @@ protected:
 	ResourceManager& resMng_;
 	CsvManager& csvMng_;
 	
+
 	TYPE stageType_;
 
 	// マップ最大数
@@ -61,6 +64,7 @@ protected:
 	// プレイヤー初期位置
 	VECTOR playersPos_[2];
 	VECTOR goalPos_;
+	VECTOR goalPosBack_;
 
 
 	/// @brief ブロック配置処理

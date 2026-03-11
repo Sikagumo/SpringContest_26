@@ -101,6 +101,7 @@
     <ClInclude Include="Src\Object\Stage\Stage.h" />
     <ClInclude Include="Src\Object\Stage\StageBase.h" />
     <ClInclude Include="Src\Object\Stage\StageController.h" />
+    <ClInclude Include="Src\Object\Stage\StageGravity.h" />
     <ClInclude Include="Src\Object\Stage\StageMove.h" />
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Scene\GameScene.h" />

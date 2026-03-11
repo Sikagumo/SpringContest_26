@@ -219,7 +219,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 		while (getline(ss, text, ','))
 		{
 			// セル読み込み範囲を超えた場合、読み込み終了
-			if (cellPos >= (_xSize * 2)) { break; }
+			if (cellPos > (_xSize * 2)) { break; }
 
 			// 前ステージと後ろステージの間はスキップ
 			if (cellPos == _xSize)
@@ -365,7 +365,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 		while (getline(ss, text, ','))
 		{
 			// セル読み込み範囲を超えた場合、読み込み終了
-			if (cellPos >= (_xSize * 2)) { break; }
+			if (cellPos > (_xSize * 2)) { break; }
 
 			// 前ステージと後ろステージの間はスキップ
 			if (cellPos == _xSize)

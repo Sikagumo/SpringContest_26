@@ -20,8 +20,8 @@ public:
 	static constexpr int STAGE_MOVE_Y = 11;
 
 	// 重力ステージサイズ
-	static constexpr int STAGE_GRAVITY_X = 10;
-	static constexpr int STAGE_GRAVITY_Y = 10;
+	static constexpr int STAGE_GRAVITY_X = 11;
+	static constexpr int STAGE_GRAVITY_Y = 11;
 
 
 	/// @brief インスタンス生成処理
@@ -50,16 +50,16 @@ public:
 	int GetStageBackMoveNum(int _type, int x, int y);
 
 	/// @brief ステージ数取得
-	int GetStageMoveMapNum(void) { return static_cast<int>(stage_.move.size()) - 1; };
-	int GetStageBackMoveMapNum(void) { return static_cast<int>(stage_.moveBack.size()) - 1; };
+	int GetStageMoveMapNum(void) { return static_cast<int>(stage_.move.size()); };
+	int GetStageBackMoveMapNum(void) { return static_cast<int>(stage_.moveBack.size()); };
 
 
 	int GetStageGravityNum(int _type, int x, int y);
 	int GetStageBackGravityNum(int _type, int x, int y);
 
 	/// @brief ステージ数取得
-	int GetStageGravityMapNum(void) { return static_cast<int>(stage_.gravity.size()) - 1; };
-	int GetStageBackGravityMapNum(void) { return static_cast<int>(stage_.gravityBack.size()) - 1; };
+	int GetStageGravityMapNum(void) { return static_cast<int>(stage_.gravity.size()); };
+	int GetStageBackGravityMapNum(void) { return static_cast<int>(stage_.gravityBack.size()); };
 
 private:
 
@@ -93,9 +93,9 @@ private:
 	~CsvManager(void) = default;
 
 	// コピーコンストラクタ対策
-	CsvManager(const CsvManager&) = delete;
+	CsvManager(const CsvManager&)			 = delete;
 	CsvManager& operator=(const CsvManager&) = delete;
-	CsvManager(CsvManager&&) = delete;
+	CsvManager(CsvManager&&)			= delete;
 	CsvManager& operator=(CsvManager&&) = delete;
 
 

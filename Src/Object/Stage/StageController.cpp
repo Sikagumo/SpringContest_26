@@ -29,6 +29,22 @@ void StageController::Draw(void)
 void StageController::DrawDebug(void)
 {
 	stage_->DrawDebug();
+
+#ifdef _DEBUG
+	std::string text = "";
+	switch (stageType_)
+	{
+		case STAGE_TYPE::MOVE: { text = "MOVE"; } break;
+		case STAGE_TYPE::MOVE3D: { text = "MOVE3D"; } break;
+		case STAGE_TYPE::GRAVITY: { text = "GRAVITY"; } break;
+		case STAGE_TYPE::GRAVITY3D: { text = "GRAVITY3D"; } break;
+
+		case STAGE_TYPE::CLEAR: { text = "STAGE_CLEAR"; } break;
+		default: { text = "Stage:None"; } break;
+	}
+
+	DrawString(0, 32, text.c_str(), 0xff0000);
+#endif
 }
 
 void StageController::Release(void)
@@ -40,9 +56,6 @@ void StageController::Release(void)
 
 void StageController::SetStageType(StageController::STAGE_TYPE _type)
 {
-	// ìØàÍéûèàóùèIóπ
-	if (stageType_ == _type) { return; }
-
 	stageType_ = _type;
 
 	if (stage_ != nullptr)

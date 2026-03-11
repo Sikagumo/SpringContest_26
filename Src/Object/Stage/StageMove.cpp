@@ -29,17 +29,19 @@ StageObjBase* StageMove::SetParam(int _blockType, float _posX, float _posY)
 
 	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
 					  (_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
-					   STAGE_POS.z + BLOCK_OFFSET.z);
+					   STAGE_POS.z);
 
 	// ƒvƒŒƒCƒ„[‚P“o˜^
-	if (type == BLOCK_TYPE::PLATER_WIDTH)
+	if (type == BLOCK_TYPE::PLATER_WIDTH &&
+		AsoUtility::EqualsVZero(playersPos_[0]))
 	{
 		playersPos_[0] = pos;
 	}
 
 	// ƒvƒŒƒCƒ„[‚Q“o˜^
 	else if (type == BLOCK_TYPE::PLATER_HEIGHT
-			&& stageType_ == TYPE::MOVE)
+			&& stageType_ == TYPE::MOVE
+			&& AsoUtility::EqualsVZero(playersPos_[1]))
 	{
 		playersPos_[1] = pos;
 	}
@@ -74,17 +76,18 @@ StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
 
 	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
 					  (_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
-					  STAGE_POS.z);
+					  (STAGE_POS.z + BLOCK_OFFSET.z));
 
 	// ƒvƒŒƒCƒ„[‚P“o˜^
-	if (type == BLOCK_TYPE::PLATER_WIDTH &&
-		stageType_ == TYPE::MOVE3D)
+	if (type == BLOCK_TYPE::PLATER_WIDTH
+		&& AsoUtility::EqualsVZero(playersPos_[0]))
 	{
 		playersPos_[0] = pos;
 	}
 
 	// ƒvƒŒƒCƒ„[‚Q“o˜^
-	else if (type == BLOCK_TYPE::PLATER_HEIGHT)
+	else if (type == BLOCK_TYPE::PLATER_HEIGHT
+			 && AsoUtility::EqualsVZero(playersPos_[1]))
 	{
 		playersPos_[1] = pos;
 	}
@@ -94,7 +97,7 @@ StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
 	{
 		ret = new StageObjGoal(_blockType);
 		ret->Init(pos);
-		goalPos_ = ret->GetTransform().pos;
+		goalPosBack_ = ret->GetTransform().pos;
 	}
 
 	// •Ç“o˜^
