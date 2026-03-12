@@ -110,7 +110,45 @@ void GameScene::Update(void)
 		return;
 	}
 	
+	// プレイヤー交代
+	PlayerSwap();
 
+	// カメラ更新
+	Camera* camera = sceneMng_.GetCamera();
+	//camera->SetFollow(&player_->GetTransform());
+	camera->Update();
+}
+
+void GameScene::Draw(void)
+{
+	skyDome_->Draw();
+
+	stage_->Draw();
+
+	player1_->Draw();
+
+	player2_->Draw();
+
+	stage_->DrawDebug();
+}
+
+void GameScene::Release(void)
+{
+	stage_->Release();
+	delete stage_;
+
+	skyDome_->Release();
+	delete skyDome_;
+
+	player1_->Release();
+	delete player1_;
+
+	player2_->Release();
+	delete player2_;
+}
+
+void GameScene::PlayerSwap(void)
+{
 	/*
 #ifdef _DEBUG
 
@@ -169,40 +207,6 @@ void GameScene::Update(void)
 			currentSwapRight_ = SWAP_RIGHT::P1;
 		}
 	}
-
-	// カメラ更新
-	Camera* camera = sceneMng_.GetCamera();
-	//camera->SetFollow(&player_->GetTransform());
-	camera->Update();
-
-}
-
-void GameScene::Draw(void)
-{
-	skyDome_->Draw();
-
-	stage_->Draw();
-
-	player1_->Draw();
-
-	player2_->Draw();
-
-	stage_->DrawDebug();
-}
-
-void GameScene::Release(void)
-{
-	stage_->Release();
-	delete stage_;
-
-	skyDome_->Release();
-	delete skyDome_;
-
-	player1_->Release();
-	delete player1_;
-
-	player2_->Release();
-	delete player2_;
 }
 
 void GameScene::SetStageType(void)

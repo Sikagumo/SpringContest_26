@@ -52,6 +52,8 @@ private:
 	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
 
 
+	void PlayerSwap(void);
+
 	void SetStageType(void);
 
 };
