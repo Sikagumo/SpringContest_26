@@ -311,12 +311,12 @@ void Player::ProcessMove(void)
 		if (playerNo_ == PLAYER_NO::P1)
 		{
 			//â∫èdóÕ 
-			movePow_.y -= 2.0f;
+			movePow_.y -= 9.8f;
 		}
 		else if (playerNo_ == PLAYER_NO::P2)
 		{
 			//è„èdóÕ
-			movePow_.y += 2.0f;
+			movePow_.y += 9.8f;
 		}
 	}
 

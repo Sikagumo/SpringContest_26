@@ -1,4 +1,5 @@
 #pragma once
+#include<DxLib.h>
 #include "SceneBase.h"
 class SkyDome;
 class StageBase;
@@ -55,4 +56,18 @@ private:
 		P2
 	};
 	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
+
+	//イージング用に追加
+	//入れ替え中かどうかのフラグ
+	bool isSwapping_ = false;
+	//現在の経過フレーム数
+	float swapTimer_ = 0.0f;
+	//入れ替えにかける合計フレーム数
+	const float SWAP_LIMIT_FRAME = 30.0f;
+
+	//移動の開始座標と終了座標を保持
+	VECTOR p1StartPos_;
+	VECTOR p1EndPos_;
+	VECTOR p2StartPos_;
+	VECTOR p2EndPos_;
 };
