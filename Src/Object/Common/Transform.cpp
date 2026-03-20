@@ -16,6 +16,7 @@ Transform::Transform(void)
 	matPos(MGetIdent()),
 	quaRot(Quaternion().Identity()),
 	quaRotLocal(Quaternion().Identity()),
+	alpha(1.0f),
 	parent_(nullptr)
 {
 }
@@ -53,10 +54,13 @@ void Transform::Update(void)
 	mat = MMult(mat, qua.ToMatrix());
 	mat = MMult(mat, matPos);
 
-	// 行列をモデルに判定
 	if (modelId != -1)
 	{
+		// 行列をモデルに判定
 		MV1SetMatrix(modelId, mat);
+
+		// モデルの透過率割り当て
+		MV1SetOpacityRate(modelId, alpha);
 	}
 
 }
@@ -64,10 +68,13 @@ void Transform::Update(void)
 void Transform::DrawModelDir(void)
 {
 #ifdef _DEBUG
+
+	// ライティングを無効化
 	SetUseLighting(FALSE);
-	const float DRAW_OFFSET = 65.0f;
+
+	const float DRAW_OFFSET		  = 65.0f;
 	const float DRAW_OFFSET_LOCAL = 25.0f;
-	const float DRAW_RADIUS = 10.0f;
+	const float DRAW_RADIUS		  = 10.0f;
 	const float DRAW_RADIUS_LOCAL = 15.0f;
 	const int DRAW_DIM = 10;
 	const unsigned int SPEC_COLOR = 0x555555;
@@ -196,7 +203,24 @@ VECTOR Transform::GetDir(const VECTOR& dir) const
 	return quaRot.PosAxis(dir);
 }
 
-void Transform::SetPosition(const VECTOR& pos)
+void Transform::SetAlpha(float _alpha)
 {
-	this->pos = pos;
+	alpha = _alpha;
+
+	if (modelId == -1)
+	{
+#ifdef _DEBUG
+		OutputDebugString("モデルが未割当です");
+#endif
+		return;
+	}
+
+	// 拡散光の透過率割り当て
+	COLOR_F color = MV1GetMaterialDifColor(modelId, 0);
+	color.a = alpha;
+	MV1SetMaterialDifColor(modelId, 0, color);
+
+	// 透過率割り当て
+	MV1SetOpacityRate(modelId, alpha);
+
 }

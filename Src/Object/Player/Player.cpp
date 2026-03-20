@@ -70,6 +70,35 @@ void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 
 	transform_.pos = _pos;
 	SetGameStageType(_stageType);
+
+	const float LIGHT_RANGE = 100.0f;
+	lightHandle_ = CreatePointLightHandle(transform_.pos, LIGHT_RANGE, 0.0f, 0.001f, 0.0f);
+
+	SetLightTypeHandle(lightHandle_, DX_LIGHTTYPE_POINT);
+}
+
+void Player::Draw(void)
+{
+	// ライティングを無効化
+	SetUseLighting(FALSE);
+	//SetUseZBuffer3D(FALSE);
+
+	ActorBase::Draw();
+
+	// ライティングを無効化
+	SetUseLighting(TRUE);
+	//SetUseZBuffer3D(TRUE);
+
+	const float LIGHT_POS_Z = 0.0f;
+	VECTOR lightPos = VAdd(transform_.pos, VGet(0.0f, 0.0f, LIGHT_POS_Z));
+	SetLightPositionHandle(lightHandle_, lightPos);
+}
+
+void Player::Release(void)
+{
+	ActorBase::Release();
+
+	DeleteLightHandle(lightHandle_);
 }
 
 void Player::InitTransform(void)

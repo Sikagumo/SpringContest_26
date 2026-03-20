@@ -7,35 +7,38 @@
 #include "../StageObj/StageObjWall.h"
 #include "../StageObj/StageObjGoal.h"
 
-StageGravity::StageGravity(void)
-    : StageBase::StageBase(TYPE::GRAVITY, CsvManager::GetInstance().GetStageGravityMapNum())
+StageGravity::StageGravity(bool _isBack)
+    : StageBase::StageBase(((_isBack) ? TYPE::GRAVITY3D : TYPE::GRAVITY),
+							CsvManager::GetInstance().GetStageGravityMapNum())
 {
 }
 
 void StageGravity::DrawDebug(void)
 {
-    // 必要であればデバッグ描画を記述
 }
 
-StageObjBase* StageGravity::SetParam(int _blockType, float _posX, float _posY)
+StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 {
     StageObjBase* ret = nullptr;
     BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
     float scale = BLOCK_SCALE;
 
     // 座標計算
-    VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
-                      (_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
+    VECTOR pos = VGet((_x * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
+                      (_y * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
                       STAGE_POS.z);
 
     // プレイヤー1 (下重力) 登録
-    if (type == BLOCK_TYPE::PLAYER_DOWN)
+    if (type == BLOCK_TYPE::PLAYER_DOWN
+		&& AsoUtility::EqualsVZero(playersPos_[0]))
     {
         playersPos_[0] = pos;
     }
 
     // プレイヤー2 (上重力) 登録
-    else if (type == BLOCK_TYPE::PLAYER_UP)
+    else if (type == BLOCK_TYPE::PLAYER_UP
+			 && stageType_ == TYPE::MOVE
+			 && AsoUtility::EqualsVZero(playersPos_[1]))
     {
         playersPos_[1] = pos;
     }
@@ -43,7 +46,7 @@ StageObjBase* StageGravity::SetParam(int _blockType, float _posX, float _posY)
     // ゴール登録
     else if (type == BLOCK_TYPE::GOAL)
     {
-        ret = new StageObjGoal(_blockType);
+        ret = new StageObjGoal(_x, _y, _blockType);
         ret->Init(pos);
         goalPos_ = ret->GetTransform().pos;
     }
@@ -51,26 +54,24 @@ StageObjBase* StageGravity::SetParam(int _blockType, float _posX, float _posY)
     // 壁登録
     else if (type == BLOCK_TYPE::WALL)
     {
-        ret = new StageObjWall(_blockType);
+        ret = new StageObjWall(_x, _y, _blockType);
         ret->Init(pos);
     }
 
     return ret;
 }
-StageObjBase* StageGravity::SetParamBack(int _blockType, float _posX, float _posY)
+StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y)
 {
 	// 奥行がない場合はnullで返す
-	if (stageType_ != TYPE::MOVE3D) { return nullptr; }
+	if (stageType_ != TYPE::GRAVITY3D) { return nullptr; }
 
 	StageObjBase* ret = nullptr;
 
 	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
 
-	float scale = 1.0f;
-
-	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
-		(_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
-		(STAGE_POS.z + BLOCK_OFFSET.z));
+	VECTOR pos = VGet((_x * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
+					  (_y * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),
+					  (STAGE_POS.z + BLOCK_OFFSET.z));
 
 	// プレイヤー１登録
 	if (type == BLOCK_TYPE::PLAYER_DOWN
@@ -80,7 +81,7 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, float _posX, float _pos
 	}
 
 	// プレイヤー２登録
-	else if (type == BLOCK_TYPE::PLAYER_DOWN
+	else if (type == BLOCK_TYPE::PLAYER_UP
 		&& AsoUtility::EqualsVZero(playersPos_[1]))
 	{
 		playersPos_[1] = pos;
@@ -89,7 +90,7 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, float _posX, float _pos
 	// ゴール登録
 	else if (type == BLOCK_TYPE::GOAL)
 	{
-		ret = new StageObjGoal(_blockType);
+		ret = new StageObjGoal(_x, _y, _blockType);
 		ret->Init(pos);
 		goalPosBack_ = ret->GetTransform().pos;
 	}
@@ -97,7 +98,14 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, float _posX, float _pos
 	// 壁登録
 	else if (type == BLOCK_TYPE::WALL)
 	{
-		ret = new StageObjWall(_blockType);
+		ret = new StageObjWall(_x, _y, _blockType);
+		ret->Init(pos);
+	}
+
+	// 未割当時、透過オブジェクトの追加
+	if (ret == nullptr)
+	{
+		ret = new StageObjWall(_x, _y, _blockType, BACK_ALPHA, false);
 		ret->Init(pos);
 	}
 

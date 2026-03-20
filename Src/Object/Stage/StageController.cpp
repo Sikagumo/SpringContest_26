@@ -2,7 +2,7 @@
 #include "../Actor/ActorBase.h"
 #include "./StageBase.h"
 #include "./StageMove.h"
-//#include "./StageGravity.h"
+#include "./StageGravity.h"
 
 StageController::StageController(void) :
 	stageType_(STAGE_TYPE::NONE), stage_(nullptr),
@@ -13,7 +13,7 @@ StageController::StageController(void) :
 
 void StageController::Init(void)
 {
-	SetStageType(STAGE_TYPE::MOVE);
+	SetStageType(STAGE_TYPE::MOVE3D);
 }
 
 void StageController::Update(void)
@@ -24,6 +24,11 @@ void StageController::Update(void)
 void StageController::Draw(void)
 {
 	stage_->Draw();
+}
+
+void StageController::DrawPre(void)
+{
+	stage_->DrawPre();
 }
 
 void StageController::DrawDebug(void)
@@ -74,8 +79,7 @@ void StageController::SetStageType(StageController::STAGE_TYPE _type)
 			 _type == STAGE_TYPE::GRAVITY3D)
 	{
 		// 重力ステージ(GRAVITY3D時、奥行追加)
-		//stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
-		stage_ = new StageMove(false);
+		stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
 	}
 
 	stage_->Init();

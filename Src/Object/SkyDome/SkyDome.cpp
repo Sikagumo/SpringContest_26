@@ -33,16 +33,6 @@ void SkyDome::InitPost(void)
 	// Zバッファの使用&書き込み無効(突き抜け対策)
 	MV1SetUseZBuffer(transform_.modelId, false);
 	MV1SetWriteZBuffer(transform_.modelId, false);
-
-	SceneManager::SCENE_ID sceneId = sceneMng_.GetSceneID();
-	if (sceneId == SceneManager::SCENE_ID::GAME)
-	{
-		ChangeStateFollow();
-	}
-	else
-	{
-		ChangeStateStay();
-	}
 }
 
 void SkyDome::Update(void)
@@ -64,6 +54,7 @@ void SkyDome::Update(void)
 }
 void SkyDome::UpdateNone(void)
 {
+	transform_.Rotate(AsoUtility::AXIS_Y, ROT_SPEED);
 }
 void SkyDome::UpdateStay(void)
 {

@@ -21,6 +21,7 @@ GameScene::GameScene(void):
 	stage_(nullptr),
 	player1_(nullptr),
 	player2_(nullptr),
+	isExecuteSwaped_(false),
 	SceneBase()
 {
 }
@@ -30,7 +31,7 @@ void GameScene::Init(void)
 	// ステージ初期化
 	stage_ = new StageController();
 	stage_->Init();
-	
+
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
 	if (stage_->GetStageType() == StageController::STAGE_TYPE::MOVE ||
@@ -122,11 +123,27 @@ void GameScene::Draw(void)
 {
 	skyDome_->Draw();
 
+	stage_->DrawPre();
+
+	if (isExecuteSwaped_)
+	{
+		player1_->Draw();
+	}
+	else
+	{
+		player2_->Draw();
+	}
+
 	stage_->Draw();
 
-	player1_->Draw();
-
-	player2_->Draw();
+	if (isExecuteSwaped_)
+	{
+		player2_->Draw();
+	}
+	else
+	{
+		player1_->Draw();
+	}
 
 	stage_->DrawDebug();
 }
@@ -150,15 +167,6 @@ void GameScene::PlayerSwap(void)
 {
 	if (!isSwapping_)
 	{
-		stage_->Update();
-
-		skyDome_->Update();
-
-		player1_->Update();
-
-		player2_->Update();
-
-
 		// ゴール判定
 		// 親クラス StageBase で定義されている GetGoalPos() を使用
 		VECTOR goalPos = stage_->GetGoalPos();

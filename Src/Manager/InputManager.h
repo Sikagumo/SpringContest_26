@@ -34,8 +34,8 @@ public:
 		PLAYER2_ACTION,
 		PLAYER2_CHANGE, // 位置変更
 
-		CAMERA_MOVE_RIGHT, // カメラ右移動
 		CAMERA_MOVE_LEFT,  // カメラ左移動
+		CAMERA_MOVE_RIGHT, // カメラ右移動
 		CAMERA_MOVE_UP,	   // カメラ上移動
 		CAMERA_MOVE_DOWN,  // カメラ下移動
 

@@ -31,20 +31,13 @@ public:
 
 	void DrawDebug(void)override;
 
+
 protected:
-
-
-	static constexpr VECTOR STAGE_POS = { -1000.0f, -1000.0f, 850.0f };
-	static constexpr float BLOCK_SCALE = 0.5f;
-
-	static constexpr VECTOR BLOCK_OFFSET = { 200.0f, 200.0f, 200.0f };
-
-
 
 	/// @brief ブロック状態割り当て
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	StageObjBase* SetParam(int _blockType, float _posX, float _posY)override;
-	StageObjBase* SetParamBack(int _blockType, float _posX, float _posY)override;
+	StageObjBase* SetParam(int _blockType, int _x, int _y)override;
+	StageObjBase* SetParamBack(int _blockType, int _x, int _y)override;
 };

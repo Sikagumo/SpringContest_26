@@ -3,6 +3,7 @@
 #include "../Actor/ActorBase.h"
 #include "../../CSV/CsvManager.h"
 #include "../StageObj/StageObjBase.h"
+#include "../StageObj/StageObjWall.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../CSV/CsvManager.h"
@@ -37,14 +38,19 @@ void StageBase::Init(void)
 
 
 	// ステージ配置処理
-	SetBlockTypeList(rand, CsvManager::STAGE_MOVE_X, CsvManager::STAGE_MOVE_Y);
+	SetBlockTypeList(rand, CsvManager::STAGE_X, CsvManager::STAGE_Y);
 
 	// ステージ奥配置処理
 	if (stageType_ == TYPE::MOVE3D ||
 		stageType_ == TYPE::GRAVITY3D)
 	{
-		SetBlockBackTypeList(rand, CsvManager::STAGE_MOVE_X, CsvManager::STAGE_MOVE_Y);
+		SetBlockBackTypeList(rand, CsvManager::STAGE_X, CsvManager::STAGE_Y);
+
+		// 前ステージの透過
+		ChangeFrontObjects(rand);
 	}
+
+	SetBlockBackList(CsvManager::STAGE_X, CsvManager::STAGE_Y);
 }
 
 void StageBase::Update(void)
@@ -78,11 +84,24 @@ void StageBase::Draw(void)
 			back->Draw();
 		}
 	}
+
 	for (auto& placeList : placeType_)
 	{
 		for (auto& place : placeList)
 		{
 			place->Draw();
+		}
+	}
+}
+
+void StageBase::DrawPre(void)
+{
+	/* 背景オブジェクト */
+	for (auto& backGround : backGroundList_)
+	{
+		for (auto& bg : backGround)
+		{
+			bg->Draw();
 		}
 	}
 }
@@ -97,11 +116,21 @@ void StageBase::Release(void)
 		}
 	}
 
-	if (placeBackType_.empty()) { return; }
-
-	for (auto& backObjList : placeBackType_)
+	if (!placeBackType_.empty())
 	{
-		for (auto& back : backObjList)
+		for (auto& backObjList : placeBackType_)
+		{
+			for (auto& back : backObjList)
+			{
+				back->Release();
+				delete back;
+			}
+		}
+	}
+	
+	for (auto& backGround : backGroundList_)
+	{
+		for (auto& back : backGround)
 		{
 			back->Release();
 			delete back;
@@ -204,9 +233,6 @@ void StageBase::SetBlockBackTypeList(int _mapType, int _xMax, int _yMax)
 				mapNum = csvMng_.GetStageBackGravityNum(type, x, y);
 			}
 
-			// 要素以外の値の時、処理終了
-			if (mapNum <= -1) { continue; }
-
 			// ステージ情報割り当て
 			StageObjBase* param = SetParamBack(mapNum,
 										   static_cast<float>(x),
@@ -219,5 +245,55 @@ void StageBase::SetBlockBackTypeList(int _mapType, int _xMax, int _yMax)
 
 		// ステージ配置リストに格納
 		placeBackType_.emplace_back(list);
+	}
+}
+
+void StageBase::SetBlockBackList(int _xMax, int _yMax)
+{
+	/* 背景オブジェクト割り当て */
+	const float BACK_ALPHA = 1.0f;
+	float posZ = ((static_cast<int>(stageType_) % 2 == 0) ?
+					((STAGE_POS.z + BLOCK_OFFSET.z) * BLOCK_SCALE) :
+					((STAGE_POS.z + (BLOCK_OFFSET.z * 2)) * BLOCK_SCALE)
+				  );
+
+	for (int y = 0; y < _yMax; y++)
+	{
+		std::vector<StageObjBase*> list;
+
+		for (int x = 0; x < _xMax; x++)
+		{
+			// ステージ情報割り当て
+			StageObjWall* param = new StageObjWall(0, BACK_ALPHA, false);
+
+			param->Init(VGet((x * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
+							 (y * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),
+							 posZ));
+			// 行配置リストに格納
+			list.emplace_back(param);
+		}
+
+		// ステージ背景配置リストに格納
+		backGroundList_.emplace_back(list);
+	}
+}
+
+void StageBase::ChangeFrontObjects(int _stageType)
+{
+	// 要素外は処理終了
+	if (placeType_.size() <= _stageType) { return; }
+
+	for (auto& front : placeType_[_stageType])
+	{
+		for (auto& back : placeBackType_[_stageType])
+		{
+			if (front->GetTransform().pos.x == back->GetTransform().pos.x &&
+				front->GetTransform().pos.y == back->GetTransform().pos.y &&
+				front->GetObjType() != -1 && back->GetObjType() == -1)
+			{
+				const float ALPHA_FLONT = 0.1f;
+				front->SetAlpha(ALPHA_FLONT);
+			}
+		}
 	}
 }

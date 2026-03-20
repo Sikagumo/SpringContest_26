@@ -16,6 +16,9 @@ public:
 	// モデルのハンドルID
 	int modelId;
 
+	// モデル透過度
+	float alpha;
+
 	// 大きさ
 	VECTOR scl;
 	// 回転
@@ -100,9 +103,11 @@ public:
 
 	void GetScale(float _scale) { scl = VGet(_scale, _scale, _scale); };
 
-	void SetPosition(const VECTOR& pos);
+	/// @brief モデルの透過度割り当て
+	/// @param _alpha 指定透過率(0.0～1.0)
+	void SetAlpha(float _alpha);
 
-	const VECTOR& GetPosition() const { return pos; }
+
 private:
 
 	Transform* parent_;

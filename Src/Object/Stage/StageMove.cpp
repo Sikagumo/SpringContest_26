@@ -19,7 +19,7 @@ void StageMove::DrawDebug(void)
 }
 
 
-StageObjBase* StageMove::SetParam(int _blockType, float _posX, float _posY)
+StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 {
 	StageObjBase* ret = nullptr;
 
@@ -28,13 +28,13 @@ StageObjBase* StageMove::SetParam(int _blockType, float _posX, float _posY)
 	float scale = 1.0f;
 
 	// À•WŒvZ
-	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
-					  (_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
+	VECTOR pos = VGet((_x * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
+					  (_y * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
 					   STAGE_POS.z);
 
 	// ƒvƒŒƒCƒ„[‚P“o˜^
-	if (type == BLOCK_TYPE::PLATER_WIDTH &&
-		AsoUtility::EqualsVZero(playersPos_[0]))
+	if (type == BLOCK_TYPE::PLATER_WIDTH
+		&& AsoUtility::EqualsVZero(playersPos_[0]))
 	{
 		playersPos_[0] = pos;
 	}
@@ -50,7 +50,7 @@ StageObjBase* StageMove::SetParam(int _blockType, float _posX, float _posY)
 	// ƒS[ƒ‹“o˜^
 	else if (type == BLOCK_TYPE::GOAL)
 	{
-		ret = new StageObjGoal(_blockType);
+		ret = new StageObjGoal(_x, _y, _blockType);
 		ret->Init(pos);
 		goalPos_ = ret->GetTransform().pos;
 	}
@@ -58,13 +58,13 @@ StageObjBase* StageMove::SetParam(int _blockType, float _posX, float _posY)
 	// •Ç“o˜^
 	else if (type == BLOCK_TYPE::WALL)
 	{
-		ret = new StageObjWall(_blockType);
+		ret = new StageObjWall(_x, _y, _blockType);
 		ret->Init(pos);
 	}
 
 	return ret;
 }
-StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
+StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y)
 {
 	// ‰œs‚ª‚È‚¢ê‡‚Ínull‚Å•Ô‚·
 	if (stageType_ != TYPE::MOVE3D) { return nullptr; }
@@ -72,11 +72,9 @@ StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
 	StageObjBase* ret = nullptr;
 
 	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
-
-	float scale = 1.0f;
-
-	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
-					  (_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
+	
+	VECTOR pos = VGet((_x * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
+					  (_y * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),
 					  (STAGE_POS.z + BLOCK_OFFSET.z));
 
 	// ƒvƒŒƒCƒ„[‚P“o˜^
@@ -96,7 +94,7 @@ StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
 	// ƒS[ƒ‹“o˜^
 	else if (type == BLOCK_TYPE::GOAL)
 	{
-		ret = new StageObjGoal(_blockType);
+		ret = new StageObjGoal(_x, _y, _blockType);
 		ret->Init(pos);
 		goalPosBack_ = ret->GetTransform().pos;
 	}
@@ -104,7 +102,14 @@ StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
 	// •Ç“o˜^
 	else if (type == BLOCK_TYPE::WALL)
 	{
-		ret = new StageObjWall(_blockType);
+		ret = new StageObjWall(_x, _y, _blockType);
+		ret->Init(pos);
+	}
+
+	// –¢Š„“–A“§‰ßƒIƒuƒWƒFƒNƒg‚Ì’Ç‰Á
+	if (ret == nullptr)
+	{
+		ret = new StageObjWall(_x, _y, _blockType, BACK_ALPHA, false);
 		ret->Init(pos);
 	}
 

@@ -54,10 +54,10 @@ void InputManager::Init(void)
 	RegisterTrigger(TYPE::PLAYER2_CHANGE, { KEY_INPUT_RSHIFT }, { BTN::RB_RIGHT, BTN::RB_BOTTOM  }, { });
 
 	// ÉJÉÅÉâëÄçÏ
-	RegisterTrigger(TYPE::CAMERA_MOVE_RIGHT, { KEY_INPUT_L }, { }, { STICK::R_STICK_RIGHT });
-	RegisterTrigger(TYPE::CAMERA_MOVE_LEFT, { KEY_INPUT_J }, { }, { STICK::R_STICK_LEFT });
-	RegisterTrigger(TYPE::CAMERA_MOVE_UP, { KEY_INPUT_I }, { }, { STICK::R_STICK_UP });
-	RegisterTrigger(TYPE::CAMERA_MOVE_DOWN, { KEY_INPUT_K }, { }, { STICK::R_STICK_DOWN });
+	RegisterTrigger(TYPE::CAMERA_MOVE_LEFT,  { KEY_INPUT_J }, { }, { });
+	RegisterTrigger(TYPE::CAMERA_MOVE_RIGHT, { KEY_INPUT_L }, { }, { });
+	RegisterTrigger(TYPE::CAMERA_MOVE_UP,    { KEY_INPUT_I }, { }, { });
+	RegisterTrigger(TYPE::CAMERA_MOVE_DOWN,  { KEY_INPUT_K }, { }, { });
 
 	// ÉÅÉjÉÖÅ[ëÄçÏ
 	RegisterTrigger(TYPE::SELECT_LEFT,  { KEY_INPUT_A, KEY_INPUT_LEFT },  { BTN::L_BUTTON }, { STICK::L_STICK_LEFT });

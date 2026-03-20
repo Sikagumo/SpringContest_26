@@ -171,12 +171,12 @@ void CsvManager::LoadPlayerStatus(void)
 void CsvManager::LoadStages(void)
 {
 	// CSV読み込み
-	LoadStageMoveCsv(ResourceManager::PATH_CSV + PATH_STAGE_MOVE, STAGE_MOVE_X, STAGE_MOVE_Y, true);
+	LoadStageMoveCsv(ResourceManager::PATH_CSV + PATH_STAGE_MOVE, true);
 
-	LoadStageGravityCsv(ResourceManager::PATH_CSV + PATH_STAGE_GRAVITY, STAGE_GRAVITY_X, STAGE_GRAVITY_Y, true);
+	LoadStageGravityCsv(ResourceManager::PATH_CSV + PATH_STAGE_GRAVITY, true);
 }
 
-void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)
+void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 {
 	/*　csvファイル読み込み処理　*/
 
@@ -199,7 +199,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 	std::string fileContent = ReadCsvFile(_path);
 	std::istringstream fileStream(fileContent);
 
-	int linePos = (_ySize - 1); // 行数
+	int linePos = (STAGE_Y - 1); // 行数
 	int cellPos = 0; // セル数
 
 	// 行ごとに読み込み
@@ -219,10 +219,10 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 		while (getline(ss, text, ','))
 		{
 			// セル読み込み範囲を超えた場合、読み込み終了
-			if (cellPos > (_xSize * 2)) { break; }
+			if (cellPos > (STAGE_X * 2)) { break; }
 
 			// 前ステージと後ろステージの間はスキップ
-			if (cellPos == _xSize)
+			if (cellPos == STAGE_X)
 			{
 				cellPos++;
 				continue;
@@ -233,7 +233,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 			UtilityCommon::ChangeString(text, num, BLANK_NUM);
 
 			// セルの数値を格納
-			if (cellPos < _xSize)
+			if (cellPos < STAGE_X)
 			{
 				// 前のステージ格納
 				dataNums[linePos][cellPos] = num;
@@ -241,7 +241,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 			else
 			{
 				// 後ろのステージ格納
-				int cell = (cellPos - _xSize) - 1;
+				int cell = (cellPos - STAGE_X) - 1;
 				dataNumBacks[linePos][cell] = num;
 			}
 
@@ -250,16 +250,16 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 		}
 
 		// 列数がステージ幅未満の時、空白の値にする
-		while (cellPos <= (_xSize * 2))
+		while (cellPos <= (STAGE_X * 2))
 		{
-			if (cellPos == _xSize)
+			if (cellPos == STAGE_X)
 			{
 				cellPos++;
 				continue;
 			}
 
 			// セルの数値を格納
-			if (cellPos < _xSize)
+			if (cellPos < STAGE_X)
 			{
 				// 前のステージ格納
 				dataNums[linePos][cellPos] = BLANK_NUM;
@@ -267,7 +267,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 			else
 			{
 				// 後ろのステージ格納
-				int cell = (cellPos - _xSize) - 1;
+				int cell = (cellPos - STAGE_X) - 1;
 				dataNumBacks[linePos][cell] = BLANK_NUM;
 			}
 
@@ -283,25 +283,25 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 			stage_.moveBack.emplace_back(dataNumBacks);
 
 			isSkip = _isLabelSkip;
-			linePos = (_ySize - 1);
+			linePos = (STAGE_Y - 1);
 		}
 
 		cellPos = 0;
 	}
 
 	// 読み込まれていない領域を全て-1にする
-	if (linePos >= (_ySize - 1)) {
+	if (linePos >= (STAGE_Y - 1)) {
 		return;
 	}
 
 	while (linePos >= 0)
 	{
-		while (cellPos <= (_xSize * 2))
+		while (cellPos <= (STAGE_X * 2))
 		{
-			if (cellPos == _xSize - 1) { continue; }
+			if (cellPos == STAGE_X - 1) { continue; }
 
 			// セルの数値を格納
-			if (cellPos < _xSize)
+			if (cellPos < STAGE_X)
 			{
 				// 前のステージ格納
 				dataNums[linePos][cellPos] = BLANK_NUM;
@@ -322,7 +322,7 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, int _xSize, int _ySi
 	stage_.move.emplace_back(dataNums);
 	stage_.moveBack.emplace_back(dataNumBacks);
 }
-void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _ySize, bool _isLabelSkip)
+void CsvManager::LoadStageGravityCsv(const std::string& _path, bool _isLabelSkip)
 {
 	/*　csvファイル読み込み処理　*/
 
@@ -345,7 +345,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 	std::string fileContent = ReadCsvFile(_path);
 	std::istringstream fileStream(fileContent);
 
-	int linePos = (_ySize - 1); // 行数
+	int linePos = (STAGE_Y - 1); // 行数
 	int cellPos = 0; // セル数
 
 	// 行ごとに読み込み
@@ -365,10 +365,10 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 		while (getline(ss, text, ','))
 		{
 			// セル読み込み範囲を超えた場合、読み込み終了
-			if (cellPos > (_xSize * 2)) { break; }
+			if (cellPos > (STAGE_X * 2)) { break; }
 
 			// 前ステージと後ろステージの間はスキップ
-			if (cellPos == _xSize)
+			if (cellPos == STAGE_X)
 			{
 				cellPos++;
 				continue;
@@ -379,7 +379,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 			UtilityCommon::ChangeString(text, num, BLANK_NUM);
 
 			// セルの数値を格納
-			if (cellPos < _xSize)
+			if (cellPos < STAGE_X)
 			{
 				// 前のステージ格納
 				dataNums[linePos][cellPos] = num;
@@ -387,7 +387,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 			else
 			{
 				// 後ろのステージ格納
-				int cell = (cellPos - _xSize) - 1;
+				int cell = (cellPos - STAGE_X) - 1;
 				dataNumBacks[linePos][cell] = num;
 			}
 
@@ -396,16 +396,16 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 		}
 
 		// 列数がステージ幅未満の時、空白の値にする
-		while (cellPos <= (_xSize * 2))
+		while (cellPos <= (STAGE_X * 2))
 		{
-			if (cellPos == _xSize)
+			if (cellPos == STAGE_X)
 			{
 				cellPos++;
 				continue;
 			}
 
 			// セルの数値を格納
-			if (cellPos < _xSize)
+			if (cellPos < STAGE_X)
 			{
 				// 前のステージ格納
 				dataNums[linePos][cellPos] = BLANK_NUM;
@@ -413,7 +413,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 			else
 			{
 				// 後ろのステージ格納
-				int cell = (cellPos - _xSize) - 1;
+				int cell = (cellPos - STAGE_X) - 1;
 				dataNumBacks[linePos][cell] = BLANK_NUM;
 			}
 
@@ -429,25 +429,25 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 			stage_.gravityBack.emplace_back(dataNumBacks);
 
 			isSkip = _isLabelSkip;
-			linePos = (_ySize - 1);
+			linePos = (STAGE_Y - 1);
 		}
 
 		cellPos = 0;
 	}
 
 	// 読み込まれていない領域を全て-1にする
-	if (linePos >= (_ySize - 1)) {
+	if (linePos >= (STAGE_Y - 1)) {
 		return;
 	}
 
 	while (linePos >= 0)
 	{
-		while (cellPos <= (_xSize * 2))
+		while (cellPos <= (STAGE_X * 2))
 		{
-			if (cellPos == _xSize - 1) { continue; }
+			if (cellPos == STAGE_X - 1) { continue; }
 
 			// セルの数値を格納
-			if (cellPos < _xSize)
+			if (cellPos < STAGE_X)
 			{
 				// 前のステージ格納
 				dataNums[linePos][cellPos] = BLANK_NUM;

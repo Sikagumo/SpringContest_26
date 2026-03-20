@@ -23,7 +23,7 @@ public:
         MAX,
     };
 
-    StageGravity(void);
+    StageGravity(bool _isBack);
 
     ~StageGravity(void) override = default;
 
@@ -32,13 +32,8 @@ public:
 
 protected:
 
-    // 必要に応じて表示位置（Z軸など）をStageMoveとずらす場合はここを調整
-    static constexpr VECTOR STAGE_POS = { -1000.0f, -1000.0f, 850.0f };
-    static constexpr float BLOCK_SCALE = 1.0f;
-
-    static constexpr VECTOR BLOCK_OFFSET = { 200.0f, 200.0f, 200.0f };
 
     /// @brief ブロック状態割り当て
-    StageObjBase* SetParam(int _blockType, float _posX, float _posY) override;
-    StageObjBase* SetParamBack(int _blockType, float _posX, float _posY)override;
+    StageObjBase* SetParam(int _blockType, int _x, int _y) override;
+    StageObjBase* SetParamBack(int _blockType, int _x, int _y)override;
 };

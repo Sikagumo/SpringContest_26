@@ -48,6 +48,10 @@ private:
 
 	Player* player2_;
 
+	// Œð‘ã‚µ‚½‚©”Û‚©
+	bool isExecuteSwaped_;
+
+
 	// “ü‚ê‘Ö‚¦Œ ŒÀ‚Ì’è‹`
 	enum class SWAP_RIGHT
 	{

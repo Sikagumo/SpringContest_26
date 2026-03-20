@@ -40,8 +40,8 @@ public:
 	static constexpr float ROT_SPEED = 50.0f;
 
 	// カメラのクリップ範囲
-	static constexpr float VIEW_NEAR = 10.0f;
-	static constexpr float VIEW_FAR = 20000.0f;
+	static constexpr float VIEW_NEAR = 1.0f;
+	static constexpr float VIEW_FAR = 25000.0f;
 
 	// 追従位置からカメラ位置までの相対座標
 	static constexpr VECTOR FOLLOW_CAMERA_LOCAL_POS = { 0.0f, 250.0f, 0.0f };
