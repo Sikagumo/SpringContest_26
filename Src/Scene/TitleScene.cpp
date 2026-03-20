@@ -10,7 +10,9 @@
 
 
 TitleScene::TitleScene(void)
-	:SceneBase()
+	:SceneBase(),
+	isSelected_(false),
+	state_(TITLE_STATE::SELECT_START)
 {
 }
 

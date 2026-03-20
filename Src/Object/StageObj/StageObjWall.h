@@ -6,7 +6,7 @@ class StageObjWall : public StageObjBase
 {
 public:
 
-	StageObjWall(int _objType);
+	StageObjWall(int _objType, float _alpha = 1.0f, bool isCollision = true);
 
 	/// @brief 固定オブジェクトのため、更新しない
 	void Update(void)override {};
@@ -24,4 +24,9 @@ protected:
 	void InitTransform(void)override;
 
 	void InitCollider(void)override;
+
+
+private:
+
+	bool isCollision_;
 };

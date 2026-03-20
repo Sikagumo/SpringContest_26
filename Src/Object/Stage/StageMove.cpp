@@ -72,11 +72,9 @@ StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
 	StageObjBase* ret = nullptr;
 
 	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
-
-	float scale = 1.0f;
-
-	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
-					  (_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
+	
+	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
+					  (_posY * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),
 					  (STAGE_POS.z + BLOCK_OFFSET.z));
 
 	// プレイヤー１登録
@@ -105,6 +103,13 @@ StageObjBase* StageMove::SetParamBack(int _blockType, float _posX, float _posY)
 	else if (type == BLOCK_TYPE::WALL)
 	{
 		ret = new StageObjWall(_blockType);
+		ret->Init(pos);
+	}
+
+	// 未割当時、透過オブジェクトの追加
+	if (ret == nullptr)
+	{
+		ret = new StageObjWall(_blockType, BACK_ALPHA, false);
 		ret->Init(pos);
 	}
 

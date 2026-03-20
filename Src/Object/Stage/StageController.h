@@ -26,6 +26,8 @@ public:
 
 	void Draw(void);
 
+	void DrawPre(void);
+
 	void DrawDebug(void);
 
 	void Release(void);

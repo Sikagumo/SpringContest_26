@@ -4,8 +4,8 @@
 #include "../../Manager/ResourceManager.h"
 #include "../../Utility/AsoUtility.h"
 
-StageObjGoal::StageObjGoal(int _objType) :
-	StageObjBase::StageObjBase({ COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType)
+StageObjGoal::StageObjGoal(int _objType, float _alpha) :
+	StageObjBase::StageObjBase({ COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType, _alpha)
 {
 }
 

@@ -6,7 +6,7 @@ class StageObjGoal: public StageObjBase
 {
 public:
 
-	StageObjGoal(int _objType);
+	StageObjGoal(int _objType, float _alpha = 1.0f);
 
 	/// @brief 固定オブジェクトのため、更新しない
 	void Update(void)override {};

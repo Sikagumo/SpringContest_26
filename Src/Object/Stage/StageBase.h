@@ -29,6 +29,8 @@ public:
 
 	virtual void Draw(void);
 
+	void DrawPre(void);
+
 	virtual void DrawDebug(void) {};
 
 	virtual void Release(void);
@@ -46,6 +48,13 @@ public:
 
 protected:
 
+	static constexpr VECTOR STAGE_POS = { -1000.0f, -1000.0f, 850.0f };
+	static constexpr VECTOR BLOCK_OFFSET = { 199.9f, 199.9f, 200.0f };
+	static constexpr float BLOCK_SCALE = 1.0f;
+
+	static constexpr float FLONT_ALPHA = 0.65f;
+	static constexpr float BACK_ALPHA = 0.85f;
+
 	SceneManager& sceneMng_;
 	ResourceManager& resMng_;
 	CsvManager& csvMng_;
@@ -60,6 +69,7 @@ protected:
 	// 配置リスト
 	std::vector<std::vector<StageObjBase*>> placeType_;
 	std::vector<std::vector<StageObjBase*>> placeBackType_;
+	std::vector<std::vector<StageObjBase*>> backGroundList_;
 
 	// プレイヤー初期位置
 	VECTOR playersPos_[2];
@@ -74,6 +84,7 @@ protected:
 	/// @return ブロックの行リスト
 	void SetBlockTypeList(int _mapType, int _xMax, int _yMax);
 	void SetBlockBackTypeList(int _mapType, int _xMax, int _yMax);
+	void SetBlockBackList(int _xMax, int _yMax);
 
 	/// @brief ブロック状態割り当て
 	/// @param _blockType CSVのステージ配置の値
@@ -81,4 +92,6 @@ protected:
 	/// @param _posY 現在行数
 	virtual StageObjBase* SetParam(int _mapType, float _posX, float _posY) = 0;
 	virtual StageObjBase* SetParamBack(int _mapType, float _posX, float _posY) = 0;
+
+	void ChangeFrontObjects(int _stageType);
 };

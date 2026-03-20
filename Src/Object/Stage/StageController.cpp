@@ -13,7 +13,7 @@ StageController::StageController(void) :
 
 void StageController::Init(void)
 {
-	SetStageType(STAGE_TYPE::MOVE);
+	SetStageType(STAGE_TYPE::MOVE3D);
 }
 
 void StageController::Update(void)
@@ -24,6 +24,11 @@ void StageController::Update(void)
 void StageController::Draw(void)
 {
 	stage_->Draw();
+}
+
+void StageController::DrawPre(void)
+{
+	stage_->DrawPre();
 }
 
 void StageController::DrawDebug(void)

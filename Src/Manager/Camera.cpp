@@ -176,7 +176,7 @@ void Camera::ProcessMove(void)
 	if (GetJoypadNum() == 0)
 	{
 		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_DOWN)) { moveDir = AsoUtility::DIR_FORWARD; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_UP))  { moveDir = AsoUtility::DIR_BACK; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_UP))   { moveDir = AsoUtility::DIR_BACK; }
 		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_LEFT))  { moveDir = AsoUtility::DIR_LEFT; }
 		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_RIGHT)) { moveDir = AsoUtility::DIR_RIGHT; }
 	}

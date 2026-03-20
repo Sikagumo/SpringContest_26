@@ -21,6 +21,7 @@ GameScene::GameScene(void):
 	stage_(nullptr),
 	player1_(nullptr),
 	player2_(nullptr),
+	isExecuteSwaped_(false),
 	SceneBase()
 {
 }
@@ -123,11 +124,28 @@ void GameScene::Draw(void)
 {
 	skyDome_->Draw();
 
+	stage_->DrawPre();
+
+	if (isExecuteSwaped_)
+	{
+		player1_->Draw();
+	}
+	else
+	{
+		player2_->Draw();
+	}
+
 	stage_->Draw();
 
-	player1_->Draw();
+	if (isExecuteSwaped_)
+	{
+		player2_->Draw();
+	}
+	else
+	{
+		player1_->Draw();
+	}
 
-	player2_->Draw();
 
 	stage_->DrawDebug();
 }
@@ -160,30 +178,20 @@ void GameScene::PlayerSwap(void)
 	}
 #endif*/
 
-	//入れ替え入力の判定と実行
-	bool executeSwap = false;
-
 	// 1. 今どちらが権限を持っていて、かつ対応するボタンが押されたか
-	if (currentSwapRight_ == SWAP_RIGHT::P1)
-	{
-		// P1が権限保持中：P1のチェンジボタンだけをチェック
-		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1))
-		{
-			executeSwap = true;
-		}
-	}
-	else if (currentSwapRight_ == SWAP_RIGHT::P2)
-	{
-		// P2が権限保持中：P2のチェンジボタンだけをチェック
-		if (input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
-		{
-			executeSwap = true;
-		}
-	}
+	// 入れ替え入力の判定と実行
+	bool executeSwap
+		= (curSwapRight_ == SWAP_RIGHT::P1
+		   && input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1)
+		   || curSwapRight_ == SWAP_RIGHT::P2
+		   && input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2)
+			);
 
 	// 入れ替え実行と権限の譲渡
 	if (executeSwap)
 	{
+		isExecuteSwaped_ = ((isExecuteSwaped_) ? false : true);
+
 		// Transformを参照で取得
 		Transform& t1 = player1_->GetTransform();
 		Transform& t2 = player2_->GetTransform();
@@ -198,13 +206,13 @@ void GameScene::PlayerSwap(void)
 		t2.prePos = t2.pos;
 
 		// 権限を交互に切り替える
-		if (currentSwapRight_ == SWAP_RIGHT::P1)
+		if (curSwapRight_ == SWAP_RIGHT::P1)
 		{
-			currentSwapRight_ = SWAP_RIGHT::P2;
+			curSwapRight_ = SWAP_RIGHT::P2;
 		}
 		else
 		{
-			currentSwapRight_ = SWAP_RIGHT::P1;
+			curSwapRight_ = SWAP_RIGHT::P1;
 		}
 	}
 }

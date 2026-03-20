@@ -44,12 +44,16 @@ private:
 
 	Player* player2_;
 
+	// Œð‘ã‚µ‚½‚©”Û‚©
+	bool isExecuteSwaped_;
+
+
 	// “ü‚ê‘Ö‚¦Œ ŒÀ‚Ì’è‹`
 	enum class SWAP_RIGHT {
 		P1,
 		P2
 	};
-	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
+	SWAP_RIGHT curSwapRight_ = SWAP_RIGHT::P1;
 
 
 	void PlayerSwap(void);

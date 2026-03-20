@@ -1,12 +1,13 @@
 #include "StageObjBase.h"
 #include "../Actor/ActorBase.h"
+#include "../../Common/Vector2.h"
 
 
-StageObjBase::StageObjBase(const VECTOR& _collisionSize, int _objType):
+StageObjBase::StageObjBase(const VECTOR& _collisionSize, int _objType, float _alpha):
 	ActorBase::ActorBase(),
 	collisionPos_(Vector2F(0.0f, 0.0f)),
 	collisionSize_(Vector2F(_collisionSize.x, _collisionSize.y)),
-	type(_objType)
+	type(_objType), alpha_(_alpha)
 {
 }
 
@@ -21,6 +22,30 @@ void StageObjBase::Init(const VECTOR& _pos)
 	transform_.Update();
 }
 
+void StageObjBase::Draw(void)
+{
+	if (alpha_ < 1.0f)
+	{
+		// Zバッファへの書き込みを無効にして内側モデルを描画
+		//SetWriteZBuffer3D(FALSE);
+
+		//SetUseLighting(FALSE);
+
+		// ３Ｄモデルに含まれる１番目のメッシュの描画ブレンドモードを DX_BLENDMODE_ADD に変更する
+		MV1SetMeshDrawBlendMode(transform_.modelId, 0, DX_BLENDMODE_ALPHA);
+	}
+
+	ActorBase::Draw();
+
+	if (alpha_ < 1.0f)
+	{
+		//SetUseLighting(TRUE);
+		
+		// Zバッファへの書き込みを無効にして内側モデルを描画
+		//SetWriteZBuffer3D(TRUE);
+	}
+}
+
 const ColliderBase* StageObjBase::GetOwnCollider(void)
 {
 	if (ownColliders_.count(0) == 0)
@@ -28,4 +53,10 @@ const ColliderBase* StageObjBase::GetOwnCollider(void)
 		return nullptr;
 	}
 	return ownColliders_.at(0);
+}
+
+void StageObjBase::SetAlpha(float _alpha)
+{
+	alpha_ = _alpha;
+	transform_.SetAlpha(alpha_);
 }

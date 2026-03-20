@@ -35,6 +35,10 @@ public:
 
 	void Init(const VECTOR& _pos, STAGE_TYPE _stageType);
 
+	void Draw(void)override;
+
+	void Release(void)override;
+
 	void SetPlayerNo(PLAYER_NO no);
 	PLAYER_NO GetPlayerNo(void) { return playerNo_; };
 
@@ -110,9 +114,11 @@ private:
 	// 移動速度(通常)
 	static constexpr float SPEED_MOVE = 7.5f;
 
+
 	// 現在のステージ状態
 	STAGE_TYPE stageType_;
 
+	int lightHandle_;
 
 	// 操作
 	void ProcessMove(void);

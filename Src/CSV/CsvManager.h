@@ -15,13 +15,9 @@ public:
 	const char* PATH_STAGE_MOVE = "StageMove.csv";
 	const char* PATH_STAGE_GRAVITY = "StageGravity.csv";
 
-	// 移動ステージサイズ(ラベルは含めない)
-	static constexpr int STAGE_MOVE_X = 11;
-	static constexpr int STAGE_MOVE_Y = 11;
-
-	// 重力ステージサイズ
-	static constexpr int STAGE_GRAVITY_X = 11;
-	static constexpr int STAGE_GRAVITY_Y = 11;
+	// ステージサイズ(ラベルは含めない)
+	static constexpr int STAGE_X = 11;
+	static constexpr int STAGE_Y = 11;
 
 
 	/// @brief インスタンス生成処理
@@ -72,12 +68,12 @@ private:
 	struct StageMap
 	{
 		// 移動ステージ配置リスト
-		using MoveStagePlace = std::array<std::array<int, STAGE_MOVE_X>, STAGE_MOVE_Y>;
+		using MoveStagePlace = std::array<std::array<int, STAGE_X>, STAGE_Y>;
 		std::vector<MoveStagePlace> move;
 		std::vector<MoveStagePlace> moveBack;
 
 		// 重力ステージ配置リスト
-		using GravityStagePlace = std::array<std::array<int, STAGE_GRAVITY_X>, STAGE_GRAVITY_Y>;
+		using GravityStagePlace = std::array<std::array<int, STAGE_X>, STAGE_Y>;
 		std::vector<GravityStagePlace> gravity;
 		std::vector<GravityStagePlace> gravityBack;
 
@@ -106,6 +102,6 @@ private:
 
 	void LoadStages(void);
 
-	void LoadStageMoveCsv(const std::string& _path, int _xSize,  int _ySize, bool _isLabelSkip);
-	void LoadStageGravityCsv(const std::string& _path, int _xSize,  int _ySize, bool _isLabelSkip);
+	void LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip);
+	void LoadStageGravityCsv(const std::string& _path, bool _isLabelSkip);
 };

@@ -66,11 +66,9 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, float _posX, float _pos
 
 	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
 
-	float scale = 1.0f;
-
-	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * scale) + STAGE_POS.x),
-		(_posY * (BLOCK_OFFSET.y * scale) + STAGE_POS.y),
-		(STAGE_POS.z + BLOCK_OFFSET.z));
+	VECTOR pos = VGet((_posX * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
+					  (_posY * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),
+					  (STAGE_POS.z + BLOCK_OFFSET.z));
 
 	// ÉvÉåÉCÉÑÅ[ÇPìoò^
 	if (type == BLOCK_TYPE::PLAYER_DOWN
