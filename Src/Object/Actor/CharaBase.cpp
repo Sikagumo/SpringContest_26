@@ -367,8 +367,10 @@ void CharaBase::DrawPre(void)
 {
 	if (sceneMng_.GetIsDebugMode())
 	{
+#ifdef _DEBUG
 		// ƒ‚ƒfƒ‹Œü‚«•`‰æ
-		transform_.DrawModelDir();
+		//transform_.DrawModelDir();
+#endif
 	}
 }
 
