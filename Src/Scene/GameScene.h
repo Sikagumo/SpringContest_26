@@ -1,4 +1,5 @@
 #pragma once
+#include<DxLib.h>
 #include "SceneBase.h"
 class SkyDome;
 class StageBase;
@@ -35,9 +36,12 @@ public:
 
 private:
 
+	//入れ替えにかける合計フレーム数
+	static constexpr float SWAP_LIMIT_FRAME = 30.0f;
+	
+	
 	SkyDome* skyDome_;
 
-	StageBase* stageB_;
 	StageController* stage_;
 
 	Player* player1_;
@@ -45,15 +49,28 @@ private:
 	Player* player2_;
 
 	// 入れ替え権限の定義
-	enum class SWAP_RIGHT {
+	enum class SWAP_RIGHT
+	{
 		P1,
 		P2
 	};
 	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
 
+	// プレイヤーが入れ替え中かどうかのフラグ
+	bool isSwapping_ = false;
+	
+	//現在の経過フレーム数
+	float swapTimer_ = 0.0f;
 
+	//移動の開始座標と終了座標を保持
+	VECTOR p1StartPos_;
+	VECTOR p1EndPos_;
+	VECTOR p2StartPos_;
+	VECTOR p2EndPos_;
+	
+
+	// プレイヤー入れ替え処理
 	void PlayerSwap(void);
 
 	void SetStageType(void);
-
 };

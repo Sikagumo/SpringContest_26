@@ -30,7 +30,7 @@ void GameScene::Init(void)
 	// ステージ初期化
 	stage_ = new StageController();
 	stage_->Init();
-
+	
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
 	if (stage_->GetStageType() == StageController::STAGE_TYPE::MOVE ||
@@ -115,7 +115,6 @@ void GameScene::Update(void)
 
 	// カメラ更新
 	Camera* camera = sceneMng_.GetCamera();
-	//camera->SetFollow(&player_->GetTransform());
 	camera->Update();
 }
 
@@ -149,62 +148,146 @@ void GameScene::Release(void)
 
 void GameScene::PlayerSwap(void)
 {
-	/*
+	if (!isSwapping_)
+	{
+		stage_->Update();
+
+		skyDome_->Update();
+
+		player1_->Update();
+
+		player2_->Update();
+
+
+		// ゴール判定
+		// 親クラス StageBase で定義されている GetGoalPos() を使用
+		VECTOR goalPos = stage_->GetGoalPos();
+
+		// 判定の大きさ
+		float hitRange = 80.0f;
+
+		// 各プレイヤーとゴールの XY 距離判定
+		bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f, goalPos, hitRange);
+		bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f, goalPos, hitRange);
+
+		//二人が星に触れた状態になったらタイトルに
+		if (isP1Clear && isP2Clear)
+		{
+			sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+			return;
+		}
+
+		VECTOR pos1 = player1_->GetTransform().pos;
+		VECTOR pos2 = player2_->GetTransform().pos;
+
+		if (AsoUtility::IsHitCircleXY(pos1, 40.0f, pos2, 40.0f))
+		{
 #ifdef _DEBUG
-
-	VECTOR pos1 = player1_->GetTransform().pos;
-	VECTOR pos2 = player2_->GetTransform().pos;
-	if (AsoUtility::IsHitCircleXY(pos1, 40.0f, pos2, 40.0f))
-	{
-		printfDx("XY衝突中！\n");
-	}
-#endif*/
-
-	//入れ替え入力の判定と実行
-	bool executeSwap = false;
-
-	// 1. 今どちらが権限を持っていて、かつ対応するボタンが押されたか
-	if (currentSwapRight_ == SWAP_RIGHT::P1)
-	{
-		// P1が権限保持中：P1のチェンジボタンだけをチェック
-		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1))
-		{
-			executeSwap = true;
+			printfDx("XY衝突中！\n");
+#endif
 		}
-	}
-	else if (currentSwapRight_ == SWAP_RIGHT::P2)
-	{
-		// P2が権限保持中：P2のチェンジボタンだけをチェック
-		if (input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
-		{
-			executeSwap = true;
-		}
-	}
 
-	// 入れ替え実行と権限の譲渡
-	if (executeSwap)
-	{
-		// Transformを参照で取得
-		Transform& t1 = player1_->GetTransform();
-		Transform& t2 = player2_->GetTransform();
+		//入れ替え入力の判定と実行
+		bool executeSwap = false;
 
-		// 位置の入れ替え
-		VECTOR tempPos = t1.pos;
-		t1.pos = t2.pos;
-		t2.pos = tempPos;
-
-		// 物理挙動の安定化
-		t1.prePos = t1.pos;
-		t2.prePos = t2.pos;
-
-		// 権限を交互に切り替える
+		// 1. 今どちらが権限を持っていて、かつ対応するボタンが押されたか
 		if (currentSwapRight_ == SWAP_RIGHT::P1)
 		{
-			currentSwapRight_ = SWAP_RIGHT::P2;
+			// P1が権限保持中：P1のチェンジボタンだけをチェック
+			if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1))
+			{
+				executeSwap = true;
+				isSwapping_ = true;
+				swapTimer_ = 0;
+
+				//移動開始時の両者の位置を保持する
+				p1StartPos_ = player1_->GetTransform().pos;
+				p2StartPos_ = player2_->GetTransform().pos;
+
+				//目的地を保存する
+				p1EndPos_ = p2StartPos_;
+				p2EndPos_ = p1StartPos_;
+			}
 		}
-		else
+		else if (currentSwapRight_ == SWAP_RIGHT::P2)
 		{
-			currentSwapRight_ = SWAP_RIGHT::P1;
+			// P2が権限保持中：P2のチェンジボタンだけをチェック
+			if (input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
+			{
+				executeSwap = true;
+				isSwapping_ = true;
+				swapTimer_ = 0;
+
+				//移動開始時の両者の位置を保持する
+				p1StartPos_ = player1_->GetTransform().pos;
+				p2StartPos_ = player2_->GetTransform().pos;
+
+				//目的地を保存する
+				p1EndPos_ = p2StartPos_;
+				p2EndPos_ = p1StartPos_;
+
+			}
+		}
+
+	}
+	else
+	{
+		// 入れ替え実行と権限の譲渡
+		if (isSwapping_)
+		{
+			//	// Transformを参照で取得
+			//	Transform& t1 = player1_->GetTransform();
+			//	Transform& t2 = player2_->GetTransform();
+
+			//	// 位置の入れ替え
+			//	VECTOR temp = t1.pos;
+			//	t1.pos = t2.pos;
+			//	t2.pos = temp;
+
+			//	// 物理挙動の安定化
+			//	t1.prePos = t1.pos;
+			//	t2.prePos = t2.pos;
+
+			//	// 権限を交互に切り替える
+			//	if (currentSwapRight_ == SWAP_RIGHT::P1)
+			//	{
+			//		currentSwapRight_ = SWAP_RIGHT::P2;
+			//	}
+			//	else
+			//	{
+			//		currentSwapRight_ = SWAP_RIGHT::P1;
+			//	}
+			//}
+
+			// タイマー更新
+			swapTimer_ += 1.0f;
+			float t = swapTimer_ / SWAP_LIMIT_FRAME; // 0.0 ~ 1.0 に正規化
+
+			if (t > 1.0f) t = 1.0f;
+
+			// イージング関数の適用
+			float easedT = 1.0f - powf(1.0f - t, 3.0f);
+
+			// プレイヤー1の座標を更新
+			Transform& t1 = player1_->GetTransform();
+			t1.pos.x = p1StartPos_.x + (p1EndPos_.x - p1StartPos_.x) * easedT;
+			t1.pos.y = p1StartPos_.y + (p1EndPos_.y - p1StartPos_.y) * easedT;
+			t1.prePos = t1.pos;
+
+			// プレイヤー2の座標を更新
+			Transform& t2 = player2_->GetTransform();
+			t2.pos.x = p2StartPos_.x + (p2EndPos_.x - p2StartPos_.x) * easedT;
+			t2.pos.y = p2StartPos_.y + (p2EndPos_.y - p2StartPos_.y) * easedT;
+			t2.prePos = t2.pos;
+
+			// 移動完了判定
+			if (t >= 1.0f)
+			{
+				// ここで権限を譲渡する
+				isSwapping_ = false;
+				currentSwapRight_ = (currentSwapRight_ == SWAP_RIGHT::P1)
+							? SWAP_RIGHT::P2 : SWAP_RIGHT::P1;
+			}
 		}
 	}
 }

@@ -90,7 +90,7 @@ void ActorBase::AddHitCollider(const ColliderBase* hitCollider)
 }
 void ActorBase::RemoveHitCollider(const ColliderBase::TAG _targetTag)
 {
-	const int SIZE = (hitColliders_.size() - 1);
+	const int SIZE = (static_cast<int>(hitColliders_.size()) - 1);
 	for (int i = SIZE; i >= 0; i--)
 	{
 		// 指定のタグの当たり判定を外す

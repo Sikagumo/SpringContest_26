@@ -299,15 +299,16 @@ void Player::ProcessMove(void)
 	// 重力の適用
 	if (stageType_ == STAGE_TYPE::GRAVITY)
 	{
+		const float GRAVITY_POW = 9.8f;
 		if (playerNo_ == PLAYER_NO::P1)
 		{
 			//下重力 
-			movePow_.y -= 2.0f;
+			movePow_.y -= GRAVITY_POW;
 		}
 		else if (playerNo_ == PLAYER_NO::P2)
 		{
 			//上重力
-			movePow_.y += 2.0f;
+			movePow_.y += GRAVITY_POW;
 		}
 	}
 
