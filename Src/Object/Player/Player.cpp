@@ -13,8 +13,11 @@
 
 Player::Player(PLAYER_NO _playerNo, const VECTOR& _pos)
 	:CharaBase::CharaBase(),
+	input_(InputManager::GetInstance()),
 	playerNo_(_playerNo),
-	stageType_(STAGE_TYPE::MAX)
+	stageType_(STAGE_TYPE::MAX),
+	frameEyeDamage_(-1), frameEyeDefault_(-1),
+	isChangeModel_(false)
 {
 	transform_.pos = _pos;
 }
@@ -28,35 +31,79 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 {
 	if (stageType_ == stageType) { return; }
 
+	float modelScale = 1.0f;
+
 	stageType_ = stageType;
 
 	// モデル種類変更
 	ResourceManager::SRC src = ResourceManager::SRC::MODEL_PLAYER;
 
-	if (playerNo_ == PLAYER_NO::P1)
+	if (stageType == STAGE_TYPE::MOVE)
 	{
-		if (stageType == STAGE_TYPE::GRAVITY)
-		{
-			src = ResourceManager::SRC::MODEL_PLAYER_WIDTH;
-		}
-		else if (stageType == STAGE_TYPE::MOVE)
-		{
-			src = ResourceManager::SRC::MODEL_PLAYER_WIDTH;
-		}
+		src = ResourceManager::SRC::MODEL_PLAYER_MOVE;
 	}
-	else if (playerNo_ == PLAYER_NO::P2)
+	else if (stageType == STAGE_TYPE::GRAVITY)
 	{
-		if (stageType == STAGE_TYPE::GRAVITY)
-		{
-			src = ResourceManager::SRC::MODEL_PLAYER_HEIGHT;
-		}
-		else if (stageType == STAGE_TYPE::MOVE)
-		{
-			src = ResourceManager::SRC::MODEL_PLAYER_HEIGHT;
-		}
+		src = ResourceManager::SRC::MODEL_PLAYER_GRAVITY;
+		modelScale = 0.75f;
 	}
+
 	// モデル割り当て
+	transform_.SetScale(modelScale);
 	transform_.SetModel(resMng_.LoadModelDuplicate(src));
+
+	// プレイヤー別のマテリアル割り当て
+	COLOR_F matCol = MV1GetMaterialDifColor(transform_.modelId, 0);
+	matCol = ((playerNo_ == PLAYER_NO::P1) ? COLOR_F(1.0f, 0.25f, 0.25f, 1.0f) : COLOR_F(0.25f, 0.25f, 1.0f, 1.0f));
+	MV1SetMaterialDifColor(transform_.modelId, 0, matCol);
+
+	/* モデルの部分非表示 */
+	const std::string FRAME_NAME_DAMAGE = "Damage";
+	const std::string FRAME_NAME_EYE = "Eye";
+
+	std::string frameName = "";
+	bool isVisible = true;
+
+	for (int i = 0; i < MV1GetFrameNum(transform_.modelId); i++)
+	{
+		frameName = MV1GetFrameName(transform_.modelId, i);
+
+		// ダメージ目を非表示
+		if (frameName.find(FRAME_NAME_DAMAGE) != std::string::npos)
+		{
+			isVisible = false;
+
+			if (stageType_ == STAGE_TYPE::MOVE)
+			{
+				if (playerNo_ == PLAYER_NO::P1
+					&& frameName.find("Width") != std::string::npos
+					|| playerNo_ == PLAYER_NO::P2
+					&& frameName.find("Height") != std::string::npos)
+				{
+					isVisible = ((isChangeModel_) ? true : false);
+					frameEyeDamage_ = i;
+				}
+			}
+		}
+		else if (frameName.find(FRAME_NAME_EYE) != std::string::npos)
+		{
+			if (stageType_ == STAGE_TYPE::MOVE)
+			{
+				isVisible = false;
+
+				if (playerNo_ == PLAYER_NO::P1
+					&& frameName.find("Width") != std::string::npos
+					|| playerNo_ == PLAYER_NO::P2
+					&& frameName.find("Height") != std::string::npos)
+				{
+					isVisible = ((isChangeModel_) ? false : true);
+					frameEyeDefault_ = i;
+				}
+			}
+		}
+
+		MV1SetFrameVisible(transform_.modelId, i, isVisible);
+	}
 }
 
 void Player::InitLoadPost(void)
@@ -67,6 +114,8 @@ void Player::InitLoadPost(void)
 void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 {
 	CharaBase::Init();
+
+	isChangeModel_ = false;
 
 	transform_.pos = _pos;
 	SetGameStageType(_stageType);
@@ -190,7 +239,27 @@ void Player::UpdateProcess(void)
 
 void Player::UpdateProcessPost(void)
 {
-	
+	if (frameEyeDamage_ == -1 || frameEyeDefault_ == -1) { return; }
+
+	/* モデルの見た目を変更する */
+	if (isChangeModel_)
+	{
+		if (MV1GetFrameVisible(transform_.modelId, frameEyeDamage_)) { return; }
+		
+		// ダメージ目有効化
+		MV1SetFrameVisible(transform_.modelId, frameEyeDamage_, true);
+
+		// 通常目無効化
+		MV1SetFrameVisible(transform_.modelId, frameEyeDefault_, false);
+	}
+	else if (!MV1GetFrameVisible(transform_.modelId, frameEyeDefault_))
+	{
+		// 通常目有効化
+		MV1SetFrameVisible(transform_.modelId, frameEyeDefault_, true);
+
+		// ダメージ目無効化
+		MV1SetFrameVisible(transform_.modelId, frameEyeDamage_, false);
+	}
 }
 
 void Player::CollisionReserve(void)
@@ -246,13 +315,13 @@ void Player::ProcessMove(void)
 
 	if (playerNo_ == PLAYER_NO::P1)
 	{
-		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
-		//if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT, Input::JOYPAD_NO::PAD1))
+		//if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
+		//if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
+		if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT, Input::JOYPAD_NO::PAD1))
 		{
 			dir.x -= 1.0f;
 		}
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT, Input::JOYPAD_NO::PAD1))
+		if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT, Input::JOYPAD_NO::PAD1))
 		{
 			dir.x += 1.0f;
 		}
@@ -262,22 +331,22 @@ void Player::ProcessMove(void)
 		// --- 修正箇所：重力モードなら左右、そうでなければ元の上下操作 ---
 		if (stageType_ == STAGE_TYPE::GRAVITY)
 		{
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT, Input::JOYPAD_NO::PAD2))
+			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT, Input::JOYPAD_NO::PAD2))
 			{
 				dir.x -= 1.0f;
 			}
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT, Input::JOYPAD_NO::PAD2))
+			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT, Input::JOYPAD_NO::PAD2))
 			{
 				dir.x += 1.0f;
 			}
 		}
 		else
 		{
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2))
+			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2))
 			{
 				dir.y += 1.0f;
 			}
-			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
+			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
 			{
 				dir.y -= 1.0f;
 			}
@@ -286,7 +355,7 @@ void Player::ProcessMove(void)
 
 	if (GetJoypadNum() > 0)
 	{
-		//dir = InputManager::GetInstance().GetDirXY_LStick(Input::JOYPAD_NO::PAD1);
+		//dir = input_.GetDirXY_LStick(Input::JOYPAD_NO::PAD1);
 	}
 	else
 	{
@@ -357,3 +426,4 @@ void Player::PlayAnim(Player::ANIM_TYPE _type, bool _isLoop)
 
 	animation_->Play(type, _isLoop);
 }
+

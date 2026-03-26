@@ -62,6 +62,10 @@ public:
 	void SetModel(int modelHId);
 
 
+	/// @brief モデルのスケール割り当て
+	/// @param _scl 倍率(default:1.0)
+	void SetScale(float _scl);
+
 	/// @brief 数値初期
 	void InitTransform(const VECTOR& _scl,const Quaternion& _rot, const Quaternion& _rotLocal, const VECTOR& _pos);
 	void InitTransform(float _scl,const Quaternion& _rot, const Quaternion& _rotLocal, const VECTOR& _pos);

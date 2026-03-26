@@ -10,7 +10,7 @@ public:
 	// F‚ÌŠ„‡(0`255)
 	struct Color
 	{
-		int r = 0, g = 0, b = 0, a = 255;
+		unsigned int r = 0, g = 0, b = 0, a = 255;
 	};
 
 	

@@ -1,5 +1,6 @@
 #pragma once
 #include "../Actor/CharaBase.h"
+#include "../../Manager/InputManager.h"
 
 class Player : public CharaBase
 {
@@ -43,6 +44,11 @@ public:
 	PLAYER_NO GetPlayerNo(void) { return playerNo_; };
 
 	void SetGameStageType(STAGE_TYPE stageType);
+
+	void ActiveIsChangeModel(void) { isChangeModel_ = true; };
+
+	bool GetIsChangeModel(void) { return isChangeModel_; }
+
 
 protected:
 
@@ -114,11 +120,21 @@ private:
 	// 移動速度(通常)
 	static constexpr float SPEED_MOVE = 7.5f;
 
+	// 入力
+	InputManager& input_;
 
 	// 現在のステージ状態
 	STAGE_TYPE stageType_;
 
 	int lightHandle_;
+
+	// モデルの見た目を変更するか否か
+	bool isChangeModel_;
+
+	int frameEyeDefault_;
+
+	int frameEyeDamage_;
+
 
 	// 操作
 	void ProcessMove(void);

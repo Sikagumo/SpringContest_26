@@ -110,7 +110,12 @@ void Transform::Release(void)
 void Transform::SetModel(int model)
 {
 	modelId = model;
+	Update();
+}
 
+void Transform::SetScale(float _scl)
+{
+	scl = VGet(_scl, _scl, _scl);
 	Update();
 }
 
