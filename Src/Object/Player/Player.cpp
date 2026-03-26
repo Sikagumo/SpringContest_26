@@ -166,17 +166,22 @@ void Player::InitTransform(void)
 
 	constexpr float MODEL_SCALE = 1.0f;
 	float rotY = (playerNo_ == PLAYER_NO::P1) ? 90.0f : 0.0f;
-	float rotZ = 0.0f;
+	float localRotX = ((playerNo_ == PLAYER_NO::P1) ? -90.0f : 0.0f);
+	float localRotY = ((playerNo_ == PLAYER_NO::P1) ? 0.0f : 0.0f);
+	float localRotZ = ((playerNo_ == PLAYER_NO::P1) ? 180.0f : 0.0f);
+
+	Quaternion rotLocal = Quaternion::Mult(Quaternion::AngleAxis(localRotX, AsoUtility::AXIS_X),
+										   Quaternion::AngleAxis(localRotY, AsoUtility::AXIS_Y));
 
 	// P2かつ重力モードならZ軸で180度回転（逆さま）
 	if (playerNo_ == PLAYER_NO::P2 && stageType_ == STAGE_TYPE::GRAVITY)
 	{
-		rotZ = 180.0f;
+		localRotZ = 180.0f;
 	}
-
+	
 	transform_.InitTransform(MODEL_SCALE,
 		Quaternion::AngleAxis(rotY, AsoUtility::AXIS_Y),
-		Quaternion::AngleAxis(rotZ, AsoUtility::AXIS_Z)); // 180度反転
+		rotLocal.Mult(Quaternion::AngleAxis(localRotZ, AsoUtility::AXIS_Z))); // 180度反転
 
 }
 

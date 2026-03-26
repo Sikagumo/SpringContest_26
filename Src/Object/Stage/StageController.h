@@ -40,7 +40,8 @@ public:
 
 	const VECTOR& GetPlayerPos(int _num) { return stage_->GetPlayerPos(_num); };
 
-	const VECTOR& GetGoalPos(void) { return stage_->GetGoalPos(); };
+	const VECTOR& GetGoalPos(int _num);
+
 
 	/// @brief ステージの当たり判定を全登録
 	/// @param _actor 割り当てる対象

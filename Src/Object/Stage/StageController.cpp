@@ -85,6 +85,13 @@ void StageController::SetStageType(StageController::STAGE_TYPE _type)
 	stage_->Init();
 }
 
+const VECTOR& StageController::GetGoalPos(int _num)
+{
+	return ((_num == 0)
+			? stage_->GetGoalPos() :
+			  stage_->GetGoalBackPos());
+}
+
 void StageController::ChangeStages(void)
 {
 	if (stageType_ == STAGE_TYPE::CLEAR) { return; }

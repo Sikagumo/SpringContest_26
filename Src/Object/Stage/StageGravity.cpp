@@ -49,6 +49,11 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
         ret = new StageObjGoal(_x, _y, _blockType);
         ret->Init(pos);
         goalPos_ = ret->GetTransform().pos;
+
+		if (stageType_ == TYPE::GRAVITY)
+		{
+			goalPosBack_ = ret->GetTransform().pos;
+		}
     }
 
     // •Ç“o˜^

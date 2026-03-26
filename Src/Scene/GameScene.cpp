@@ -89,16 +89,13 @@ void GameScene::Update(void)
 	player2_->Update();
 
 
-	// ゴール判定
-	// 親クラス StageBase で定義されている GetGoalPos() を使用
-	VECTOR goalPos = stage_->GetGoalPos();
-
-	// 判定の大きさ
-	const float GOAL_HIT_RANGE = 80.0f;
-
 	// 各プレイヤーとゴールの XY 距離判定
-	bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f, goalPos, GOAL_HIT_RANGE);
-	bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f, goalPos, GOAL_HIT_RANGE);
+	bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f,
+											   stage_->GetGoalPos(static_cast<int>(Player::PLAYER_NO::P1)),
+											   GOAL_HIT_RANGE);
+	bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f,
+											   stage_->GetGoalPos(static_cast<int>(Player::PLAYER_NO::P2)),
+											   GOAL_HIT_RANGE);
 
 	//二人が星に触れた状態になったらタイトルに
 	if (stage_->GetIsTypeEquals(StageController::STAGE_TYPE::CLEAR))
@@ -167,16 +164,13 @@ void GameScene::PlayerSwap(void)
 {
 	if (!isSwapping_)
 	{
-		// ゴール判定
-		// 親クラス StageBase で定義されている GetGoalPos() を使用
-		VECTOR goalPos = stage_->GetGoalPos();
-
-		// 判定の大きさ
-		float hitRange = 80.0f;
-
 		// 各プレイヤーとゴールの XY 距離判定
-		bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f, goalPos, hitRange);
-		bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f, goalPos, hitRange);
+		bool isP1Clear = AsoUtility::IsHitCircleXY(player1_->GetTransform().pos, 20.0f,
+											       stage_->GetGoalPos(static_cast<int>(Player::PLAYER_NO::P1)),
+												   GOAL_HIT_RANGE);
+		bool isP2Clear = AsoUtility::IsHitCircleXY(player2_->GetTransform().pos, 20.0f,
+												   stage_->GetGoalPos(static_cast<int>(Player::PLAYER_NO::P2)),
+												   GOAL_HIT_RANGE);
 
 		//二人が星に触れた状態になったらタイトルに
 		if (isP1Clear && isP2Clear)

@@ -39,6 +39,7 @@ private:
 	//“ü‚ê‘Ö‚¦‚É‚©‚¯‚é‡ŒvƒtƒŒ[ƒ€”
 	static constexpr float SWAP_LIMIT_FRAME = 30.0f;
 	
+	static constexpr float GOAL_HIT_RANGE = 80.0f;
 	
 	SkyDome* skyDome_;
 
