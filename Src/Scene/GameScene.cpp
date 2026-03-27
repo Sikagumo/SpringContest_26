@@ -309,6 +309,8 @@ void GameScene::SetStageType(void)
 	stage_->AddStageColliders(*player2_);
 
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
+	VECTOR stagePos = AsoUtility::VECTOR_ZERO;
+
 
 	if (stage_->GetStageType() == StageController::STAGE_TYPE::MOVE ||
 		stage_->GetStageType() == StageController::STAGE_TYPE::MOVE3D)
@@ -323,12 +325,12 @@ void GameScene::SetStageType(void)
 
 	if (player1_ != nullptr)
 	{
-		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
+		stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
 		player1_->Init(stagePos, pStageType);
 	}
 	if (player2_ != nullptr)
 	{
-		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
+		stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
 		player2_->Init(stagePos, pStageType);
 	}
 }

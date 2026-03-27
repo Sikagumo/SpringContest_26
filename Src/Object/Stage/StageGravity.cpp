@@ -37,7 +37,7 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 
     // プレイヤー2 (上重力) 登録
     else if (type == BLOCK_TYPE::PLAYER_UP
-			 && stageType_ == TYPE::MOVE
+			 && stageType_ == TYPE::GRAVITY
 			 && AsoUtility::EqualsVZero(playersPos_[1]))
     {
         playersPos_[1] = pos;
