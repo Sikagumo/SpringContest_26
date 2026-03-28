@@ -63,6 +63,7 @@
     <ClCompile Include="Src\Utility\MatrixUtility.cpp" />
     <ClCompile Include="Src\Utility\UtilityCommon.cpp" />
     <ClCompile Include="Src\Object\Stage\StageGravity.cpp" />
+    <ClCompile Include="Src\Object\StageObj\StageObjTrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Common\FpsController.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="Src\Utility\MatrixUtility.h" />
     <ClInclude Include="Src\Utility\UtilityCommon.h" />
     <ClInclude Include="Src\Object\Stage\StageGravity.h" />
+    <ClInclude Include="Src\Object\StageObj\StageObjTrap.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

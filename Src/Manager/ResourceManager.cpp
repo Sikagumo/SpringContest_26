@@ -70,6 +70,7 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_BLANK, PATH_MODEL + "Blocks/Block_Blank.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_STONE, PATH_MODEL + "Blocks/Block_Stone.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_GOAL, PATH_MODEL + "Goal/Goal.mv1");
+	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_TRAP, PATH_MODEL + "Goal/Goal.mv1");
 
 	/* BGM */
 	_SetResource(LOAD_TYPE::SOUND, SRC::BGM_TITLE, PATH_BGM + "TitleBGM.mp3");

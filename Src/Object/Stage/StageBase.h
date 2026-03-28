@@ -34,6 +34,9 @@ public:
 
 	const VECTOR& GetGoalPos(void) { return goalPos_; };
 
+	//外部空罠のリストを取得する関数
+	const std::vector<VECTOR>& GetTrapPos() const { return trapPositions_; }
+
 	/// @brief ステージの当たり判定を全登録
 	/// @param _actor 割り当てる対象
 	void AddStageColliders(ActorBase& _actor);
@@ -54,8 +57,12 @@ protected:
 
 	// プレイヤー初期位置
 	VECTOR playersPos_[2];
-	VECTOR goalPos_;
 
+	//罠の配置
+	VECTOR goalPos_;
+	//罠の座標を格納するリストを追加
+	std::vector<VECTOR>trapPositions_;
+	
 
 	virtual void InitList(void) = 0;
 

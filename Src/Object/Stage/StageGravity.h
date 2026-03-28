@@ -18,6 +18,7 @@ public:
         PLAYER_DOWN = 1, // 下重力プレイヤー（P1など）
         PLAYER_UP = 2,   // 上重力プレイヤー（P2など）
         GOAL = 3,        // ゴール
+        TRAP = 4,        //トラップ
         MAX,
     };
 

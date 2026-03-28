@@ -28,7 +28,7 @@ GameScene::GameScene(void):
 void GameScene::Init(void)
 {
 	// ステージ初期化
-	SetStageType(STAGE_TYPE::MOVE   );
+	SetStageType(STAGE_TYPE::GRAVITY);
 
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
@@ -47,10 +47,12 @@ void GameScene::Init(void)
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
 	player1_ = new Player(Player::PLAYER_NO::P1, stagePos);
 	player1_->Init(stagePos, pStageType);
+	p1InitialPos_ = stagePos;
 	
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
 	player2_ = new Player(Player::PLAYER_NO::P2, stagePos);
 	player2_->Init(stagePos, pStageType);
+	p2InitialPos_ = stagePos;
 	
 	// ステージ当たり判定登録
 	stage_->AddStageColliders(*player1_);
@@ -76,7 +78,7 @@ void GameScene::Update(void)
 	}
 #endif
 
-	if (!isSwapping_)
+	if (!isSwapping_ && !isRespawning_)
 	{
 		stage_->Update();
 
@@ -86,6 +88,34 @@ void GameScene::Update(void)
 
 		player2_->Update();
 
+		//トラップ判定
+		//親クラス StageBaseで定義されている GetTrapPos()を使用
+		const auto& trapList = stage_->GetTrapPos();
+
+		Player* targetPlayers[] = { player1_, player2_ };
+
+		for (Player* p : targetPlayers)
+		{
+			//プレイヤーの現在位置を取得
+			VECTOR pPos = p->GetTransform().pos;
+
+			//リストの中にあるトラップを一つずつ取り出して判定
+			for (const VECTOR& tPos : trapList)
+			{
+				//判定：プレイヤー判定20.0f,トラップ半径25.0f
+				if (AsoUtility::IsHitCircleXY(pPos, 20.0f, tPos, 60.0f))
+				{
+					isRespawning_ = true;
+					respawnTimer_ = 0.0f;
+
+					p1DeathPos_ = player1_->GetTransform().pos;	
+					p2DeathPos_ = player2_->GetTransform().pos;
+
+					//他の処理を中断（ゴール判定など)
+					return;
+				}
+			}
+		}
 
 		// ゴール判定
 		// 親クラス StageBase で定義されている GetGoalPos() を使用
@@ -118,7 +148,7 @@ void GameScene::Update(void)
 		//入れ替え入力の判定と実行
 		bool executeSwap = false;
 
-		// 1. 今どちらが権限を持っていて、かつ対応するボタンが押されたか
+		//今どちらが権限を持っていて、かつ対応するボタンが押されたか
 		if (currentSwapRight_ == SWAP_RIGHT::P1)
 		{
 			// P1が権限保持中：P1のチェンジボタンだけをチェック
@@ -135,6 +165,9 @@ void GameScene::Update(void)
 				//目的地を保存する
 				p1EndPos_ = p2StartPos_;
 				p2EndPos_ = p1StartPos_;
+
+				//交代中にゴールするのを阻止する
+				return;
 			}
 		}
 		else if (currentSwapRight_ == SWAP_RIGHT::P2)
@@ -154,6 +187,8 @@ void GameScene::Update(void)
 				p1EndPos_ = p2StartPos_;
 				p2EndPos_ = p1StartPos_;
 
+				//交代中にゴールするのを阻止する
+				return;
 			}
 		}
 
@@ -163,58 +198,12 @@ void GameScene::Update(void)
 		// 入れ替え実行と権限の譲渡
 		if (isSwapping_)
 		{
-			//	// Transformを参照で取得
-			//	Transform& t1 = player1_->GetTransform();
-			//	Transform& t2 = player2_->GetTransform();
+			UpdateSwap();
+		}
 
-			//	// 位置の入れ替え
-			//	VECTOR temp = t1.pos;
-			//	t1.pos = t2.pos;
-			//	t2.pos = temp;
-
-			//	// 物理挙動の安定化
-			//	t1.prePos = t1.pos;
-			//	t2.prePos = t2.pos;
-
-			//	// 権限を交互に切り替える
-			//	if (currentSwapRight_ == SWAP_RIGHT::P1)
-			//	{
-			//		currentSwapRight_ = SWAP_RIGHT::P2;
-			//	}
-			//	else
-			//	{
-			//		currentSwapRight_ = SWAP_RIGHT::P1;
-			//	}
-			//}
-				// タイマー更新
-			swapTimer_ += 1.0f;
-			float t = swapTimer_ / SWAP_LIMIT_FRAME; // 0.0 ~ 1.0 に正規化
-
-			if (t > 1.0f) t = 1.0f;
-
-			// イージング関数の適用
-			float easedT = 1.0f - powf(1.0f - t, 3.0f);
-
-			// プレイヤー1の座標を更新
-			Transform& t1 = player1_->GetTransform();
-			t1.pos.x = p1StartPos_.x + (p1EndPos_.x - p1StartPos_.x) * easedT;
-			t1.pos.y = p1StartPos_.y + (p1EndPos_.y - p1StartPos_.y) * easedT;
-			t1.prePos = t1.pos;
-
-			// プレイヤー2の座標を更新
-			Transform& t2 = player2_->GetTransform();
-			t2.pos.x = p2StartPos_.x + (p2EndPos_.x - p2StartPos_.x) * easedT;
-			t2.pos.y = p2StartPos_.y + (p2EndPos_.y - p2StartPos_.y) * easedT;
-			t2.prePos = t2.pos;
-
-			// 移動完了判定
-			if (t >= 1.0f)
-			{
-				isSwapping_ = false;
-				//ここで権限を譲渡する
-				currentSwapRight_ = (currentSwapRight_ == SWAP_RIGHT::P1)
-							? SWAP_RIGHT::P2 : SWAP_RIGHT::P1;
-			}
+		if (isRespawning_)
+		{
+			UpdateRespawn();
 		}
 	}
 	// カメラ更新
@@ -250,6 +239,92 @@ void GameScene::Release(void)
 
 	player2_->Release();
 	delete player2_;
+}
+
+void GameScene::UpdateSwap(void)
+{
+	//	// Transformを参照で取得
+//	Transform& t1 = player1_->GetTransform();
+//	Transform& t2 = player2_->GetTransform();
+
+//	// 位置の入れ替え
+//	VECTOR temp = t1.pos;
+//	t1.pos = t2.pos;
+//	t2.pos = temp;
+
+//	// 物理挙動の安定化
+//	t1.prePos = t1.pos;
+//	t2.prePos = t2.pos;
+
+//	// 権限を交互に切り替える
+//	if (currentSwapRight_ == SWAP_RIGHT::P1)
+//	{
+//		currentSwapRight_ = SWAP_RIGHT::P2;
+//	}
+//	else
+//	{
+//		currentSwapRight_ = SWAP_RIGHT::P1;
+//	}
+//}
+	// タイマー更新
+	swapTimer_ += 1.0f;
+	float t = swapTimer_ / SWAP_LIMIT_FRAME; // 0.0 ~ 1.0 に正規化
+
+	if (t > 1.0f) t = 1.0f;
+
+	// イージング関数の適用
+	float easedT = 1.0f - powf(1.0f - t, 3.0f);
+
+	// プレイヤー1の座標を更新
+	Transform& t1 = player1_->GetTransform();
+	t1.pos.x = p1StartPos_.x + (p1EndPos_.x - p1StartPos_.x) * easedT;
+	t1.pos.y = p1StartPos_.y + (p1EndPos_.y - p1StartPos_.y) * easedT;
+	t1.prePos = t1.pos;
+
+	// プレイヤー2の座標を更新
+	Transform& t2 = player2_->GetTransform();
+	t2.pos.x = p2StartPos_.x + (p2EndPos_.x - p2StartPos_.x) * easedT;
+	t2.pos.y = p2StartPos_.y + (p2EndPos_.y - p2StartPos_.y) * easedT;
+	t2.prePos = t2.pos;
+
+	// 移動完了判定
+	if (t >= 1.0f)
+	{
+		isSwapping_ = false;
+		//ここで権限を譲渡する
+		currentSwapRight_ = (currentSwapRight_ == SWAP_RIGHT::P1)
+			? SWAP_RIGHT::P2 : SWAP_RIGHT::P1;
+	}
+}
+
+void GameScene::UpdateRespawn(void)
+{
+	//タイマー更新
+	respawnTimer_ += 1.0f;
+	float t = respawnTimer_ / RESPAWN_LIMIT_FRAME;
+
+	if (t > 1.0f) t = 1.0f;
+
+	//イージング関数の適用
+	float easedT = 1.0f - powf(1.0f - t, 3.0f);
+
+	//プレイヤー１の座標を補間
+	Transform& t1 = player1_->GetTransform();
+	t1.pos.x = p1DeathPos_.x + (p1InitialPos_.x - p1DeathPos_.x) * easedT;
+	t1.pos.y = p1DeathPos_.y + (p1InitialPos_.y - p1DeathPos_.y) * easedT;
+	t1.prePos = t1.pos;
+
+	// プレイヤー2の座標を補間（死んだ場所 -> 初期位置）
+	Transform& t2 = player2_->GetTransform();
+	t2.pos.x = p2DeathPos_.x + (p2InitialPos_.x - p2DeathPos_.x) * easedT;
+	t2.pos.y = p2DeathPos_.y + (p2InitialPos_.y - p2DeathPos_.y) * easedT;
+	t2.prePos = t2.pos;
+
+	// 完了判定
+	if (t >= 1.0f)
+	{
+		isRespawning_ = false;
+	}
 }
 
 void GameScene::SetStageType(GameScene::STAGE_TYPE _type)

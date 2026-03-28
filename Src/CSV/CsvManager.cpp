@@ -417,7 +417,7 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, int _xSize, int _
 		cellPos = 0;
 	}
 
-	// --- C³‰ÓŠFŽc‚è‚Ì—Ìˆæ‚ð -1 ‚Å–„‚ß‚éˆ—‚à‰º‚©‚çã‚Ö ---
+
 	while (linePos >= 0)
 	{
 		while (cellPos < _xSize)

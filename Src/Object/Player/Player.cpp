@@ -232,7 +232,7 @@ void Player::ProcessMove(void)
 	}
 	else if (playerNo_ == PLAYER_NO::P2)
 	{
-		// --- 修正箇所：重力モードなら左右、そうでなければ元の上下操作 ---
+		//修正箇所：重力モードなら左右、そうでなければ元の上下操作
 		if (stageType_ == STAGE_TYPE::GRAVITY)
 		{
 			if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT, Input::JOYPAD_NO::PAD2))

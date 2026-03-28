@@ -35,6 +35,12 @@ public:
 	// 解放
 	void Release(void) override;
 
+	//入れ替え演出
+	void UpdateSwap(void);
+
+	//罠復活演出
+	void UpdateRespawn(void);
+
 	STAGE_TYPE GetStageType(void){ return stageType_; };
 
 
@@ -70,4 +76,17 @@ private:
 	VECTOR p1EndPos_;
 	VECTOR p2StartPos_;
 	VECTOR p2EndPos_;
+
+	//復活演出用に追加
+	bool  isRespawning_ = false;       // 復活演出中かどうかのフラグ
+	float respawnTimer_ = 0.0f;        // 復活演出の経過フレーム
+	const float RESPAWN_LIMIT_FRAME = 60.0f; // 1秒（60フレーム）かけて戻る
+
+	// 復活地点
+	VECTOR p1InitialPos_;
+	VECTOR p2InitialPos_;
+
+	// 死亡した瞬間の座標（イージングの開始地点）
+	VECTOR p1DeathPos_;
+	VECTOR p2DeathPos_;
 };
