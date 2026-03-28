@@ -109,7 +109,7 @@ void Application::Run(void)
 		// ƒQ[ƒ€I—¹
 		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PAUSE))
 		{
-			isGame_ = false;
+			//isGame_ = false;
 		}
 
 		if (sceneManager.GetIsDebugMode())

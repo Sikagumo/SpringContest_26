@@ -46,8 +46,8 @@ void SoundManager::SetSounds(void)
 	/* BGM */
 
 	// タイトルシーン
-	//src = static_cast<int>(ResourceManager::SRC::BGM_TITLE);
-	//SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_TITLE, true);
+	src = static_cast<int>(ResourceManager::SRC::BGM_TITLE);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_TITLE, true);
 
 	// ゲームシーン
 	src = static_cast<int>(ResourceManager::SRC::BGM_GAME);

@@ -19,9 +19,9 @@
 GameScene::GameScene(void):
 	skyDome_(nullptr),
 	stage_(nullptr),
-	player1_(nullptr),
-	player2_(nullptr),
+	player1_(nullptr), player2_(nullptr),
 	isExecuteSwaped_(false),
+	state_(GAME_STATE::NONE),
 	SceneBase()
 {
 }
@@ -67,18 +67,21 @@ void GameScene::Init(void)
 	// ƒJƒƒ‰
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
+
+	state_ = GAME_STATE::ACTIVE;
 }
 
 void GameScene::Update(void)
 {
-
-	// ƒV[ƒ“‘JˆÚ
-#ifdef _DEBUG
-	if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION))
+	// ˆêŽž’âŽ~ó‘Ô‚ÌØ‘Ö
+	if (input_.IsTrgDown(InputManager::TYPE::PAUSE)
+		&& state_ != GAME_STATE::CLEAR)
 	{
-		sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+		state_ = ((state_ == GAME_STATE::ACTIVE) ? GAME_STATE::PAUSE : GAME_STATE::ACTIVE);
 	}
-#endif
+
+	if (state_ == GAME_STATE::PAUSE) { return; }
+
 
 	stage_->Update();
 

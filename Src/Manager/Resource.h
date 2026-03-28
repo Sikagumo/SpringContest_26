@@ -31,11 +31,13 @@ public:
 	/// @brief 複数画像時のコンストラクタ
 	/// @param _type 読み込むファイルの種類
 	/// @param _path ファイルパス
+	/// @param _allNum 画像数
 	/// @param _numX 横画像数
 	/// @param _numY 縦画像数
 	/// @param _sizeX 画像１枚の横サイズ
 	/// @param _sizeY 画像１枚の縦サイズ
-	Resource(LOAD_TYPE _type, const std::string& _path, int _numX, int _numY, int _sizeX, int _sizeY);
+	Resource(LOAD_TYPE _type, const std::string& _path
+			 , int _allNum, int _numX, int _numY, int _sizeX, int _sizeY);
 
 	/// @brief デフォルトデストラクタ
 	~Resource(void) = default;
@@ -57,9 +59,10 @@ public:
 	/// @brief ハンドルID取得処理
 	int GetHandleId(void)const { return handleId_; };
 
-	int* GetHandleIds(void)const { return handleIds_; };
-
 	std::string GetHandlePath(void)const { return path_; };
+
+	/// @brief 読み込むファイルの対象の種類の取得処理 
+	LOAD_TYPE GetLoadType(void) { return resType_; };
 
 
 private:
@@ -76,11 +79,19 @@ private:
 
 	/* 複数画像読み込み用 */
 
-	int* handleIds_; // 複数Idのポインタ
-	int numX_;		 // 横画像数
-	int numY_;		 // 縦画像数
-	int sizeX_;		 // 横画像サイズ
-	int sizeY_;		 // 縦画像サイズ
+	// 画像数
+	const int allNum_;
+
+	// 軸別の最大画像数
+	const int numX_;
+	const int numY_;
+
+	// 横画像サイズ
+	const int sizeX_;
+	const int sizeY_;
+
+	// 複数画像のハンドルID
+	std::vector<int> handleIds_;
 
 	// モデル複製用リスト
 	std::vector<int> duplicationModelIds_;

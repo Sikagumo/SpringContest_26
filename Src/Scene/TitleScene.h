@@ -55,18 +55,40 @@ private:
 	// 決定したか否か
 	bool isSelected_;
 
-	static constexpr COLOR_U8 COLOR_SELECT = COLOR_U8(100, 50, 50);
-	static constexpr COLOR_U8 COLOR_SELECT_NOT = COLOR_U8(200, 0, 0);
+	static constexpr float SELECT_UI_SCALE = (1.0f - 0.0f);
+	static constexpr float SELECT_NOT_UI_SCALE = (1.0f - 0.5f);
+
+	static constexpr int SELECT_UI_OFFSET = 500;
+
+	static constexpr int SELECT_NOT_SUB = (255 - 200);
+
+	enum class SELECT_IMAGE
+	{
+		BACK,
+		MOVE_NOT_SELECT,
+		GRAVITY_NOT_SELECT,
+
+		MOVE_SELECT,
+		GRAVITY_SELECT,
+
+		MAX,
+	};
 
 	struct SelectUI
 	{
 		Vector2* pos;
 		unsigned int color;
 	};
-	std::array<SelectUI , 3 > selectUI_;
+
+	std::array<SelectUI, 3> selectUIParam_;
+
+	int selectUIHandle_[static_cast<int>(SELECT_IMAGE::MAX)];
 
 	// タイトル状態更新処理
 	std::function<void(void)> updateStateFunc_;
+
+	// 状態別描画処理
+	std::function<void(void)> drawStateFunc_;
 
 
 	void Update_SelectStart(void);
@@ -74,6 +96,10 @@ private:
 	void Update_SelectMove(void);
 	void Update_SelectGravity(void);
 	void Update_SelectCancel(void);
+
+	void Draw_SelectMove(void);
+	void Draw_SelectGravity(void);
+	void Draw_SelectCancel(void);
 
 	void ChangeStateProc(TITLE_STATE _selectUp, TITLE_STATE _selectDown);
 };

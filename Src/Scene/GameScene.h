@@ -11,6 +11,13 @@ class GameScene : public SceneBase
 
 public:
 
+	enum class GAME_STATE
+	{
+		NONE = -1,
+		ACTIVE,
+		PAUSE,
+		CLEAR,
+	};
 	
 	// コンストラクタ
 	GameScene(void);
@@ -41,6 +48,8 @@ private:
 	
 	static constexpr float GOAL_HIT_RANGE = 80.0f;
 	
+	GAME_STATE state_;
+
 	SkyDome* skyDome_;
 
 	StageController* stage_;
