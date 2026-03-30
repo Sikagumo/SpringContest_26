@@ -293,7 +293,7 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 		case SCENE_ID::TITLE:
 		{
 			scene_ = new TitleScene();
-			//soundSrc = static_cast<int>(ResourceManager::SRC::BGM_TITLE);
+			soundSrc = static_cast<int>(ResourceManager::SRC::BGM_TITLE);
 		}
 		break;
 
@@ -311,13 +311,11 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 
 	if (soundSrc != -1)
 	{
-		// BGMÄ¶
-		SoundManager::GetInstance().Play(soundSrc, true);
-	}
-	else
-	{
 		// BGM’â~
 		SoundManager::GetInstance().StopAllChoice(true);
+
+		// BGMÄ¶
+		SoundManager::GetInstance().Play(soundSrc, true);
 	}
 
 	// ŠeƒV[ƒ“‚Ì‰Šú‰»

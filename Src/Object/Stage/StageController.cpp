@@ -13,7 +13,7 @@ StageController::StageController(void) :
 
 void StageController::Init(void)
 {
-	SetStageType(STAGE_TYPE::MOVE3D);
+	SetStageType(STAGE_TYPE::MOVE);
 }
 
 void StageController::Update(void)

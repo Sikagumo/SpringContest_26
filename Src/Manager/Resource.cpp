@@ -6,26 +6,31 @@
 
 Resource::Resource(void):
 	resType_(LOAD_TYPE::NONE), path_(""),
-	numX_(-1), numY_(-1),
+	allNum_(0), numX_(0), numY_(0),
 	sizeX_(-1), sizeY_(-1),
-	handleId_(-1), handleIds_(nullptr)
+	handleId_(-1)
 {
 }
 
 Resource::Resource(LOAD_TYPE type, const std::string& path):
 	resType_(type), path_(path),
-	numX_(-1), numY_(-1),
+	allNum_(0), numX_(0), numY_(0),
 	sizeX_(-1), sizeY_(-1),
-	handleId_(-1), handleIds_(nullptr)
+	handleId_(-1)
 {
 }
 
-Resource::Resource(LOAD_TYPE type, const std::string& path, int numX, int numY, int sizeX, int sizeY):
+Resource::Resource(LOAD_TYPE type, const std::string& path
+				  , int allNum, int numX, int numY, int sizeX, int sizeY):
 	resType_(type), path_(path),
-	numX_(numX), numY_(numY),
+	allNum_(allNum), numX_(numX), numY_(numY),
 	sizeX_(sizeX), sizeY_(sizeY),
-	handleId_(-1), handleIds_(nullptr)
+	handleId_(-1)
 {
+	for (int i = 0; i < allNum_; i++)
+	{
+		handleIds_.emplace_back(-1);
+	}
 }
 
 
@@ -43,9 +48,8 @@ void Resource::Load(void)
 
 		case LOAD_TYPE::IMAGES:
 		{
-			handleIds_ = new int[numX_ * numY_];
 			LoadDivGraph(path_.c_str(),
-				        (numX_ * numY_), numX_, numY_,
+				         allNum_, numX_, numY_,
 				         sizeX_, sizeY_,
 				        (&handleIds_[0]));
 		}
@@ -88,8 +92,7 @@ void Resource::Release(void)
 		// 複数画像
 		case LOAD_TYPE::IMAGES:
 		{
-			int max = (numX_ * numY_);
-			for (int i = 0; i < max; i++)
+			for (int i = 0; i < allNum_; i++)
 			{
 				DeleteGraph(handleIds_[i]);
 			}
@@ -139,11 +142,7 @@ void Resource::Release(void)
 
 void Resource::CopyHandle(int* images)
 {
-	// 複数IDがない時、処理終了
-	if (handleIds_ == nullptr) return;
-
-	int max = (numX_ * numY_);
-	for (int i = 0; i < max; i++)
+	for (int i = 0; i < allNum_; i++)
 	{
 		// ハンドル割り当て
 		images[i] = handleIds_[i];

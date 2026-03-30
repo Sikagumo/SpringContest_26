@@ -106,12 +106,6 @@ void Application::Run(void)
 
 		sceneManager.Draw();
 
-		// ƒQ[ƒ€I—¹
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PAUSE))
-		{
-			isGame_ = false;
-		}
-
 		if (sceneManager.GetIsDebugMode())
 		{
 			// •½‹ÏFPS•`‰æ

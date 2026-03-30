@@ -20,7 +20,6 @@ GameScene::GameScene(void):
 	  skyDome_(nullptr)
 	, stage_(nullptr)
 	, player1_(PlayerParam()), player2_(PlayerParam())
-	, isExecuteSwaped_(false)
 	, SceneBase()
 {
 }
@@ -68,25 +67,29 @@ void GameScene::Init(void)
 	// カメラ
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
+
+	state_ = GAME_STATE::ACTIVE;
 }
 
 void GameScene::Update(void)
 {
-
-	// シーン遷移
-#ifdef _DEBUG
-	if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION))
+	// 一時停止状態の切替
+	if (input_.IsTrgDown(InputManager::TYPE::PAUSE)
+		&& state_ != GAME_STATE::CLEAR)
 	{
-		sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+		state_ = ((state_ == GAME_STATE::ACTIVE) ? GAME_STATE::PAUSE : GAME_STATE::ACTIVE);
 	}
-#endif
+	
+	// 一時停止時、以下の処理を終了
+	if (state_ == GAME_STATE::PAUSE) { return; }
 
+	// プレイヤー更新処理
 	player1_.player->Update();
-
 	player2_.player->Update();
 
 	if (!isSwapping_ && !isRespawning_)
 	{
+
 		stage_->Update();
 
 		skyDome_->Update();
@@ -384,7 +387,7 @@ void GameScene::SetStageType(void)
 		pStageType = Player::STAGE_TYPE::MOVE;
 	}
 	else if (stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY ||
-		stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY3D)
+			 stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY3D)
 	{
 		pStageType = Player::STAGE_TYPE::GRAVITY;
 	}

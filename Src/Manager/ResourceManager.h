@@ -15,6 +15,8 @@ public:
 		
 		// 画像
 		IMG_SHADOW,
+		IMGS_TEXT,
+		IMGS_UI,
 
 		// モデル
 		MODEL_PLAYER,
@@ -95,7 +97,11 @@ public:
 	/// @param _src 読み込み対象
 	const int LoadHandleId(SRC _src);
 	const int LoadHandleId(int _src) { return LoadHandleId(static_cast<SRC>(_src)); };
-	const int& LoadHandleIds(SRC _src);
+
+	/// @brief 複数画像のハンドルを画像ハンドルに割り当て
+	/// @param _src 読み込み対象
+	/// @param target 
+	void LoadHandleIds(SRC _src, int* target);
 
 	/// @brief 3Dモデル重複利用時の読み込み
 	/// @param src 読み込み対象
@@ -140,11 +146,17 @@ private:
 	/// @brief リソースを取得する処理
 	void SetResource(void);
 
-	/// @brief リソース取得処理
+	/// @brief リソース取得処理(複数画像)
 	/// @param _loadType 読み込み方法
 	/// @param _src リソース対象
 	/// @param _path パス
-	void _SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path);
+	/// @param _allNum 画像の数
+	/// @param _numX 最大横画像数
+	/// @param _numY 最大縦画像数
+	/// @param _sizeX 各画像の横サイズ
+	/// @param _sizeY 各画像の縦サイズ
+	void _SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path
+					  , int _allNum = -1, int _numX = -1, int _numY = -1, int _sizeX = -1, int _sizeY = -1);
 
 	/// @brief 内部ロード処理
 	/// @param _source 読み込み対象

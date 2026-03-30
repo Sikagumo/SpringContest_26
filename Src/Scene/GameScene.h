@@ -12,6 +12,13 @@ class GameScene : public SceneBase
 
 public:
 
+	enum class GAME_STATE
+	{
+		NONE = -1,
+		ACTIVE,
+		PAUSE,
+		CLEAR,
+	};
 	
 	// コンストラクタ
 	GameScene(void);
@@ -48,6 +55,8 @@ private:
 	
 	static constexpr float GOAL_HIT_RANGE = 80.0f;
 	
+	GAME_STATE state_;
+
 	SkyDome* skyDome_;
 
 	StageController* stage_;
@@ -74,9 +83,6 @@ private:
 
 	PlayerParam player1_;
 	PlayerParam player2_;
-
-	// 交代したか否か
-	bool isExecuteSwaped_;
 
 
 	// 入れ替え権限の定義

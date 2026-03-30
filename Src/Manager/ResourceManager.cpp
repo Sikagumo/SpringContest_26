@@ -57,9 +57,26 @@ void ResourceManager::Init(void)
 void ResourceManager::SetResource(void)
 {
 	using LOAD_TYPE = Resource::LOAD_TYPE;
+	int allNum, numX, numY, sizeX, sizeY = 0;
 
 	/* 画像 */
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_SHADOW, PATH_IMAGE + "Shadow.png");
+
+	allNum = 5;
+	numX = 3;
+	numY = 2;
+	sizeX = 522;
+	sizeY = 823;
+	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI, PATH_IMAGE + "SelectUI.png"
+				 , allNum, numX, numY, sizeX, sizeY);
+
+	allNum = 4;
+	numX = 1;
+	numY = 4;
+	sizeX = 1024;
+	sizeY = 112;
+	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT, PATH_IMAGE + "Text.png"
+				 , allNum, numX, numY, sizeX, sizeY);
 
 	/* モデル */
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER, PATH_MODEL + "Player/Player.mv1");
@@ -81,11 +98,23 @@ void ResourceManager::SetResource(void)
 	/* サウンドエフェクト */
 
 }
-void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path)
+
+void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path
+								   , int _allNum, int _numX, int _numY, int _sizeX, int _sizeY)
 {
 	Resource res;
-	res = Resource(_loadType, _path);
-	resourcesMap_.emplace(_src, res);
+	if (_allNum == -1)
+	{
+		// その他読み込み
+		resourcesMap_.emplace(_src, Resource(_loadType, _path));
+	}
+	else
+	{
+		// 複数画像読み込み
+		resourcesMap_.emplace(_src,
+			Resource(_loadType, _path, _allNum, _numX, _numY, _sizeX, _sizeY));
+	}
+	
 }
 
 
@@ -135,9 +164,13 @@ const int ResourceManager::LoadHandleId(SRC _src)
 {
 	return Load(_src).GetHandleId();
 }
-const int& ResourceManager::LoadHandleIds(SRC _src)
+void ResourceManager::LoadHandleIds(SRC _src, int* _target)
 {
-	return *Load(_src).GetHandleIds();
+	// 複数画像ではない場合、処理終了
+	if (resourcesMap_[_src].GetLoadType() != Resource::LOAD_TYPE::IMAGES) { return; }
+
+	// 複数画像の対象にコピー
+	Load(_src).CopyHandle(_target);
 }
 
 std::string ResourceManager::GetHandlePath(SRC _src)
