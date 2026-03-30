@@ -55,7 +55,6 @@
     <ClCompile Include="Src\Object\Stage\Stage.cpp" />
     <ClCompile Include="Src\Object\Stage\StageBase.cpp" />
     <ClCompile Include="Src\Object\Stage\StageController.cpp" />
-    <ClCompile Include="Src\Object\Stage\StageGravity.cpp" />
     <ClCompile Include="Src\Object\Stage\StageMove.cpp" />
     <ClCompile Include="Src\Scene\DebugScene.cpp" />
     <ClCompile Include="Src\Scene\GameScene.cpp" />
@@ -64,6 +63,8 @@
     <ClCompile Include="Src\Utility\AsoUtility.cpp" />
     <ClCompile Include="Src\Utility\MatrixUtility.cpp" />
     <ClCompile Include="Src\Utility\UtilityCommon.cpp" />
+    <ClCompile Include="Src\Object\Stage\StageGravity.cpp" />
+    <ClCompile Include="Src\Object\StageObj\StageObjTrap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Common\FpsController.h" />
@@ -102,7 +103,6 @@
     <ClInclude Include="Src\Object\Stage\Stage.h" />
     <ClInclude Include="Src\Object\Stage\StageBase.h" />
     <ClInclude Include="Src\Object\Stage\StageController.h" />
-    <ClInclude Include="Src\Object\Stage\StageGravity.h" />
     <ClInclude Include="Src\Object\Stage\StageMove.h" />
     <ClInclude Include="Src\Scene\DebugScene.h" />
     <ClInclude Include="Src\Scene\GameScene.h" />
@@ -111,6 +111,8 @@
     <ClInclude Include="Src\Utility\AsoUtility.h" />
     <ClInclude Include="Src\Utility\MatrixUtility.h" />
     <ClInclude Include="Src\Utility\UtilityCommon.h" />
+    <ClInclude Include="Src\Object\Stage\StageGravity.h" />
+    <ClInclude Include="Src\Object\StageObj\StageObjTrap.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

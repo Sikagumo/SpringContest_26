@@ -27,6 +27,7 @@ public:
 		MODEL_STAGE_BLANK,
 		MODEL_STAGE_STONE,
 		MODEL_GOAL,
+		MODEL_TRAP,
 
 		// 外部アニメーション
 

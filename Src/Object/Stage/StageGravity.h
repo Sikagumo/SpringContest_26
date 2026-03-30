@@ -13,13 +13,12 @@ class StageGravity : public StageBase
 public:
     enum class BLOCK_TYPE
     {
-        BLANK = -1,  // 空白or未割当
-        WALL,        // 壁
-        PLAYER_DOWN, // 下重力プレイヤー（P1など）
-        PLAYER_UP,   // 上重力プレイヤー（P2など）
-
-        GOAL,        // ゴール
-
+        BLANK = -1,    // 空白or未割当
+        WALL  = 0,     // 壁
+        PLAYER_DOWN = 1, // 下重力プレイヤー（P1など）
+        PLAYER_UP	= 2, // 上重力プレイヤー（P2など）
+        GOAL = 3,        // ゴール
+        TRAP = 4,        //トラップ
         MAX,
     };
 

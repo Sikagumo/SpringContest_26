@@ -434,11 +434,12 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, bool _isLabelSkip
 
 		cellPos = 0;
 	}
-
+	/*
 	// “Ç‚Ýž‚Ü‚ê‚Ä‚¢‚È‚¢—Ìˆæ‚ð‘S‚Ä-1‚É‚·‚é
 	if (linePos >= (STAGE_Y - 1)) {
 		return;
 	}
+	*/
 
 	while (linePos >= 0)
 	{

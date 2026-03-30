@@ -6,10 +6,11 @@
 #include "../StageObj/StageObjBase.h"
 #include "../StageObj/StageObjWall.h"
 #include "../StageObj/StageObjGoal.h"
+#include "../StageObj/StageObjTrap.h"
 
 StageGravity::StageGravity(bool _isBack)
-    : StageBase::StageBase(((_isBack) ? TYPE::GRAVITY3D : TYPE::GRAVITY),
-							CsvManager::GetInstance().GetStageGravityMapNum())
+    : StageBase::StageBase(((_isBack) ? TYPE::GRAVITY3D : TYPE::GRAVITY)
+    					   , CsvManager::GetInstance().GetStageGravityMapNum())
 {
 }
 
@@ -61,6 +62,15 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
     {
         ret = new StageObjWall(_x, _y, _blockType);
         ret->Init(pos);
+    }
+    //トラップ登録
+    else if (type == BLOCK_TYPE::TRAP)
+    {
+        ret = new StageObjTrap(_blockType);
+        ret->Init(pos);
+        
+        //トラップの座標をリストに保存する
+        trapPositions_.push_back(ret->GetTransform().pos);
     }
 
     return ret;
