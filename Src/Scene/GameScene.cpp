@@ -1,8 +1,11 @@
 #include "GameScene.h"
 #include <DxLib.h>
+#include <cmath>
+#include "../Application.h"
 #include "../Manager/SceneManager.h"
 #include "../Manager/ResourceManager.h"
 #include "../Manager/InputManager.h"
+#include "../Manager/SoundManager.h"
 #include "../Object/Actor/ActorBase.h"
 #include "../Object/Common/Transform.h"
 #include "../Object/StageObj/StageObjBase.h"
@@ -21,7 +24,14 @@ GameScene::GameScene(void):
 	, stage_(nullptr)
 	, player1_(PlayerParam()), player2_(PlayerParam())
 	, SceneBase()
+	, gameTimer_(GAME_TIME)
+	, isTimeActive_(false)
 {
+	for (int& time : timeText_)  { time = -1; }
+	for (int& ui : uiText_)  { ui = -1; }
+
+	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT, uiText_);
+	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT_TIME, timeText_);
 }
 
 void GameScene::Init(void)
@@ -69,6 +79,10 @@ void GameScene::Init(void)
 	camera->Init();
 
 	state_ = GAME_STATE::ACTIVE;
+
+
+	isTimeActive_ = false;
+	gameTimer_ = GAME_TIME;
 }
 
 void GameScene::Update(void)
@@ -77,11 +91,44 @@ void GameScene::Update(void)
 	if (input_.IsTrgDown(InputManager::TYPE::PAUSE)
 		&& state_ != GAME_STATE::CLEAR)
 	{
-		state_ = ((state_ == GAME_STATE::ACTIVE) ? GAME_STATE::PAUSE : GAME_STATE::ACTIVE);
+		sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CLICK), false);
+
+		if (state_ == GAME_STATE::ACTIVE)
+		{
+			state_ = GAME_STATE::PAUSE;
+			sound_.Stop(static_cast<int>(ResourceManager::SRC::BGM_GAME));
+		}
+		else
+		{
+			state_ = GAME_STATE::ACTIVE;
+			sound_.Play(static_cast<int>(ResourceManager::SRC::BGM_GAME), true);
+		}
 	}
 	
 	// 一時停止時、以下の処理を終了
 	if (state_ == GAME_STATE::PAUSE) { return; }
+
+	if (stage_->GetIsStageClear())
+	{
+		sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+		return;
+	}
+
+	// 時間減少
+	if (isTimeActive_)
+	{
+		gameTimer_ -= sceneMng_.GetDeltaTime();
+	}
+
+	// 移動操作時、ゲーム開始
+	else if (input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_UP)
+			 || input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_DOWN)
+			 || input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_LEFT)
+			 || input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_RIGHT)
+			 || input_.IsTrgDown(InputManager::TYPE::PLAYER_CHANGE))
+	{
+		isTimeActive_ = true;
+	}
 
 	// プレイヤー更新処理
 	player1_.player->Update();
@@ -89,19 +136,19 @@ void GameScene::Update(void)
 
 	if (!isSwapping_ && !isRespawning_)
 	{
-
 		stage_->Update();
 
 		skyDome_->Update();
 
 		
 		// 罠の衝突処理(罠に衝突時、以下の処理を終了)
-		if (TrapProcess()) { return; };
+		//if (TrapProcess()) { return; };
 
 		// ゴール処理(ゴール中は以下の処理を終了)
 		if (GoalProcess()) { return; }
 
 #ifdef _DEBUG
+		/*
 		VECTOR pos1 = player1_.player->GetTransform().pos;
 		VECTOR pos2 = player2_.player->GetTransform().pos;
 
@@ -109,7 +156,7 @@ void GameScene::Update(void)
 		{
 
 			printfDx("XY衝突中！\n");
-		}
+		}*/
 #endif
 
 		//入れ替え入力の判定と実行
@@ -204,6 +251,30 @@ void GameScene::Draw(void)
 	}
 
 	stage_->DrawDebug();
+
+	DrawTimer();
+
+	if (state_ == GAME_STATE::PAUSE)
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+		DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0x0, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y, 1.0, 0.0f,
+					  uiText_[0], true);
+
+		DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y + 250, 1.0, 0.0f,
+					  uiText_[1], true);
+	}
+
+	if (stage_->GetIsStageClear())
+	{
+		SetDrawBlendMode(DX_BLENDMODE_ALPHA, 200);
+		DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y, 0xffff00, true);
+		SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+		DrawFormatString(0, 0, 0xff0000, "げーむくりあ～");
+	}
 }
 
 void GameScene::Release(void)
@@ -352,7 +423,7 @@ bool GameScene::GoalProcess(void)
 	{
 		ret = true;
 
-		if (stage_->GetIsTypeEquals(StageController::STAGE_TYPE::CLEAR))
+		if (stage_->GetIsStageClear())
 		{
 			sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
 		}
@@ -365,8 +436,63 @@ bool GameScene::GoalProcess(void)
 	return ret;
 }
 
+void GameScene::DrawTimer(void)
+{
+	const float TEXT_SCALE = 0.5f;
+	const int TEXT_SIZE = static_cast<int>((80 * TEXT_SCALE));
+
+	int x = Application::SCREEN_HALF_X - 100;
+	int arrayNum = 0;
+
+	// 小数点以下の数値
+	float frac = (gameTimer_ - std::floor(gameTimer_));
+
+
+	DrawRotaGraph(x, TEXT_SIZE,
+				  TEXT_SCALE, 0.0, uiText_[7], true);
+
+	// 100の位
+	x += TEXT_SIZE + 150;
+	arrayNum = static_cast<int>(gameTimer_ / 100.0f);
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+	// 10の位
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(gameTimer_ / 10.0f) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+	// 1の位
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(gameTimer_) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+	// 小数点
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(gameTimer_) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[10], true);
+
+	// 第1小数点
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(frac * 10.0f) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+	// 第2小数点
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(frac * 100.0f) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+}
+
 void GameScene::SetStageType(void)
 {
+	// 時間を停止
+	isTimeActive_ = false;
+
 	// ステージ当たり判定を削除
 	player1_.player->RemoveHitCollider(ColliderBase::TAG::STAGE);
 	player1_.player->RemoveHitCollider(ColliderBase::TAG::GOAL);

@@ -39,8 +39,18 @@ void SoundManager::SetSounds(void)
 	int src = -1;
 
 	/* サウンドエフェクト */
-	//src = static_cast<int>(ResourceManager::SRC::SE_CLICK);
-	//SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_CLICK);
+
+	// クリック音声
+	src = static_cast<int>(ResourceManager::SRC::SE_CLICK);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_CLICK);
+
+	// 選択音声
+	src = static_cast<int>(ResourceManager::SRC::SE_SELECT);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_SELECT);
+
+	// 選択音声
+	src = static_cast<int>(ResourceManager::SRC::SE_FANFALE);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_FANFARE);
 
 
 	/* BGM */

@@ -40,7 +40,7 @@ SceneManager::SceneManager(void) :
 	bool isDebug = false;
 
 #ifdef _DEBUG
-	isDebug = true;
+	//isDebug = true;
 #endif
 
 	isDebugMode_ = isDebug;
@@ -84,7 +84,7 @@ void SceneManager::Init3D(void)
 		BACKGROUND_COLOR_B);
 
 	// Zバッファを有効にする
-	SetUseZBuffer3D(true);
+	SetUseZBuffer3D(TRUE);
 
 	// Zバッファへの書き込みを有効にする
 	SetWriteZBuffer3D(true);
@@ -157,7 +157,7 @@ void SceneManager::Update(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance().IsTrgDown(InputManager::TYPE::DEBUG_MODE))
 	{
-		isDebugMode_ = !isDebugMode_;
+		//isDebugMode_ = !isDebugMode_;
 	}
 #endif
 }
@@ -208,11 +208,12 @@ void SceneManager::Draw(void)
 	fader_->Draw();
 
 #ifdef _DEBUG
+	/*
 	std::string text = "NONE";
 	text = ((sceneId_ == SCENE_ID::TITLE) ? "TITLE" : text);
 	text = ((sceneId_ == SCENE_ID::GAME) ? "GAME" : text);
 	text = ((sceneId_ == SCENE_ID::DEBUG) ? "DEBUG" : text);
-	DrawString(0, 0, text.c_str(), 0xffffff);
+	DrawString(0, 0, text.c_str(), 0xffffff);*/
 #endif
 
 }

@@ -34,10 +34,11 @@ void InputManager::Init(void)
 	using MOUSE = Input::MOUSE;
 
 	// ÉvÉåÉCÉÑÅ[ëÄçÏ
-	RegisterTrigger(TYPE::PLAYER_MOVE_UP, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
-	RegisterTrigger(TYPE::PLAYER_MOVE_DOWN, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
-	RegisterTrigger(TYPE::PLAYER_MOVE_LEFT, { KEY_INPUT_A }, { }, { STICK::L_STICK_LEFT });
-	RegisterTrigger(TYPE::PLAYER_MOVE_RIGHT, { KEY_INPUT_D }, { }, { STICK::L_STICK_RIGHT });
+	RegisterTrigger(TYPE::PLAYER_MOVE_UP, { KEY_INPUT_W, KEY_INPUT_UP }, { }, { STICK::L_STICK_UP });
+	RegisterTrigger(TYPE::PLAYER_MOVE_DOWN, { KEY_INPUT_S, KEY_INPUT_DOWN }, { }, { STICK::L_STICK_DOWN });
+	RegisterTrigger(TYPE::PLAYER_MOVE_LEFT, { KEY_INPUT_A, KEY_INPUT_LEFT }, { }, { STICK::L_STICK_LEFT });
+	RegisterTrigger(TYPE::PLAYER_MOVE_RIGHT, { KEY_INPUT_D, KEY_INPUT_RIGHT }, { }, { STICK::L_STICK_RIGHT });
+	RegisterTrigger(TYPE::PLAYER_CHANGE, { KEY_INPUT_LSHIFT, KEY_INPUT_RSHIFT }, { BTN::RB_RIGHT, BTN::RB_BOTTOM }, { });
 
 	RegisterTrigger(TYPE::PLAYER1_MOVE_BACK, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
 	RegisterTrigger(TYPE::PLAYER1_MOVE_FRONT, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });

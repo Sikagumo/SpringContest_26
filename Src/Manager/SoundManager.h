@@ -9,21 +9,8 @@ class SoundManager
 {
 public:
 
-	enum class SRC
-	{
-		NONE = -1,
-		BGM_TITLE,
-		BGM_GAME,
-		BGM_CLEAR,
-		BGM_GAMEOVER,
-
-		SE_CLICK,  // クリック
-		SE_SWORD_JUB, // 弱攻撃
-		SE_SWORD_STRONG, // 強攻撃
-		SE_SWORD_SPECIAL, // 必殺攻撃
-		SE_KNOCK,  // 撃破
-	};
-
+	// ピッチの増減値
+	static constexpr float PITCH_RANGE_DEF = 1.0f;
 
 	// マスターボリューム
 	static constexpr int VOLUME_MASTER_MAX = 255;
@@ -31,27 +18,26 @@ public:
 	static constexpr float VOLUME_MASTER_NUM = (VOLUME_MASTER_MAX / 100);
 
 
+	/* BGM音量 */
+
 	// タイトルBGM音量
-	static constexpr float VOLUME_TITLE = 0.75f;
+	static constexpr float VOLUME_TITLE = 1.0f;
 
 	// ゲームシーンBGM音量
 	static constexpr float VOLUME_GAME = 0.75f;
 
 
+	/* BGM音量 */
+
 	// クリックSEの音量
 	static constexpr float VOLUME_CLICK = 0.9f;
 
-	// 弱攻撃SEの音量
-	static constexpr float VOLUME_JUB = 1.0f;
+	// 選択SEの音量
+	static constexpr float VOLUME_SELECT = 0.9f;
 
-	// 強攻撃SEの音量
-	static constexpr float VOLUME_STRONG = 0.95f;
+	// ファンファーレSEの音量
+	static constexpr float VOLUME_FANFARE = 1.0f;
 
-	// 撃破SEの音量
-	static constexpr float VOLUME_KNOCK = 1.5f;
-
-	// ピッチの増減値
-	static constexpr float PITCH_RANGE_DEF = 1.0f;
 
 
 	/// @brief インスタンス生成

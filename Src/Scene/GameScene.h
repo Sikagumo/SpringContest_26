@@ -1,5 +1,6 @@
 #pragma once
 #include<DxLib.h>
+#include<array>
 #include "SceneBase.h"
 #include "../Utility/AsoUtility.h"
 class SkyDome;
@@ -55,6 +56,14 @@ private:
 	
 	static constexpr float GOAL_HIT_RANGE = 80.0f;
 	
+	static constexpr float GAME_TIME = 300.0f;
+
+	float gameTimer_;
+
+	// 時間を減少するか否か
+	bool isTimeActive_;
+
+
 	GAME_STATE state_;
 
 	SkyDome* skyDome_;
@@ -93,6 +102,9 @@ private:
 	};
 	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
 
+	int timeText_[11];
+	int uiText_[8];
+
 	//入れ替え中かどうかのフラグ
 	bool isSwapping_ = false;
 
@@ -119,4 +131,6 @@ private:
 	/// @brief ゴール処理
 	/// @return ゴールしているか否かの判定
 	bool GoalProcess(void);
+
+	void DrawTimer(void);
 };

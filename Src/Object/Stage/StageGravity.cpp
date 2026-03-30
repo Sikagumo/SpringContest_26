@@ -92,6 +92,7 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y)
 	if (type == BLOCK_TYPE::PLAYER_DOWN
 		&& AsoUtility::EqualsVZero(playersPos_[0]))
 	{
+		pos.z += PLAYER_OFFSET_Z;
 		playersPos_[0] = pos;
 	}
 
@@ -99,6 +100,7 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y)
 	else if (type == BLOCK_TYPE::PLAYER_UP
 		&& AsoUtility::EqualsVZero(playersPos_[1]))
 	{
+		pos.z += PLAYER_OFFSET_Z;
 		playersPos_[1] = pos;
 	}
 

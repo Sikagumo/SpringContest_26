@@ -28,11 +28,11 @@ void StageObjBase::Draw(void)
 	if (alpha_ < 1.0f)
 	{
 		// Zバッファへの書き込みを無効にして内側モデルを描画
-		//SetWriteZBuffer3D(FALSE);
+		SetWriteZBuffer3D(FALSE);
 
-		//SetUseLighting(FALSE);
+		SetUseLighting(FALSE);
 
-		// ３Ｄモデルに含まれる１番目のメッシュの描画ブレンドモードを DX_BLENDMODE_ADD に変更する
+		// モデルの１番目のメッシュの描画ブレンドモード
 		MV1SetMeshDrawBlendMode(transform_.modelId, 0, DX_BLENDMODE_ALPHA);
 	}
 
@@ -40,10 +40,13 @@ void StageObjBase::Draw(void)
 
 	if (alpha_ < 1.0f)
 	{
-		//SetUseLighting(TRUE);
+		SetUseLighting(TRUE);
 		
 		// Zバッファへの書き込みを無効にして内側モデルを描画
-		//SetWriteZBuffer3D(TRUE);
+		SetWriteZBuffer3D(TRUE);
+
+		// モデルの１番目のメッシュの描画ブレンドモード
+		MV1SetMeshDrawBlendMode(transform_.modelId, 0, DX_BLENDMODE_NOBLEND);
 	}
 }
 

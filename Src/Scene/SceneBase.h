@@ -2,6 +2,7 @@
 class ResourceManager;
 class SceneManager;
 class InputManager;
+class SoundManager;
 
 class SceneBase
 {
@@ -36,4 +37,7 @@ protected:
 
 	// “ü—ÍŠÇ—
 	InputManager& input_;
+
+	// ‰¹ºŠÇ—
+	SoundManager& sound_;
 };

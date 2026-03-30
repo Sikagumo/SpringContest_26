@@ -6,13 +6,16 @@
 
 StageController::StageController(void) :
 	stageType_(STAGE_TYPE::NONE), stage_(nullptr),
-	isStageClear_(false)
+	isStageClear_(false),
+	stageNum_(0)
 {
 }
 
 
 void StageController::Init(void)
 {
+	stageNum_ = 0;
+
 	SetStageType(STAGE_TYPE::MOVE);
 }
 
@@ -36,6 +39,7 @@ void StageController::DrawDebug(void)
 	stage_->DrawDebug();
 
 #ifdef _DEBUG
+	/*
 	std::string text = "";
 	switch (stageType_)
 	{
@@ -48,7 +52,7 @@ void StageController::DrawDebug(void)
 		default: { text = "Stage:None"; } break;
 	}
 
-	DrawString(0, 32, text.c_str(), 0xff0000);
+	DrawString(0, 32, text.c_str(), 0xff0000);*/
 #endif
 }
 
@@ -79,10 +83,29 @@ void StageController::SetStageType(StageController::STAGE_TYPE _type)
 			 _type == STAGE_TYPE::GRAVITY3D)
 	{
 		// 重力ステージ(GRAVITY3D時、奥行追加)
-		stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
+		isStageClear_ = true;
+		//stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
+		stage_ = new StageMove((_type == STAGE_TYPE::MOVE3D));
 	}
 
 	stage_->Init();
+
+	bool isChoice = false;
+
+	while (isChoice)
+	{
+		isChoice = false;
+
+		for (int stage : clearStageNum_)
+		{
+			// ステージが同一時、再抽選
+			if (stage == stage_->GetStageNum())
+			{
+				isChoice = true;
+				stage_->Init();
+			}
+		}
+	}
 }
 
 const VECTOR& StageController::GetGoalPos(int _num)

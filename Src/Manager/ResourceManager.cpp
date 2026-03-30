@@ -60,28 +60,45 @@ void ResourceManager::SetResource(void)
 	int allNum, numX, numY, sizeX, sizeY = 0;
 
 	/* 画像 */
+	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_TITLE, PATH_IMAGE + "Title.png");
+	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_TITLE_BACK, PATH_IMAGE + "TitleBack.jpg");
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_SHADOW, PATH_IMAGE + "Shadow.png");
+
+	/* 複数画像 */
+	allNum = 3;
+	numX = 1;
+	numY = 3;
+	sizeX = 440;
+	sizeY = 145;
+	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI_TITLE, PATH_IMAGE + "TitleUI.png"
+				 , allNum, numX, numY, sizeX, sizeY);
 
 	allNum = 5;
 	numX = 3;
 	numY = 2;
 	sizeX = 522;
 	sizeY = 823;
-	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI, PATH_IMAGE + "SelectUI.png"
+	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI_SELECT, PATH_IMAGE + "SelectUI.png"
 				 , allNum, numX, numY, sizeX, sizeY);
 
-	allNum = 4;
+	allNum = 8;
 	numX = 1;
-	numY = 4;
+	numY = 8;
 	sizeX = 1024;
 	sizeY = 112;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT, PATH_IMAGE + "Text.png"
 				 , allNum, numX, numY, sizeX, sizeY);
 
+	allNum = 11;
+	numX = 11;
+	numY = 1;
+	sizeX = 80;
+	sizeY = 80;
+	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT_TIME, PATH_IMAGE + "TextTime.png"
+				 , allNum, numX, numY, sizeX, sizeY);
+
 	/* モデル */
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER, PATH_MODEL + "Player/Player.mv1");
-	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_WIDTH, PATH_MODEL + "Player/PlayerMoveWidth.mv1");
- 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_HEIGHT, PATH_MODEL + "Player/PlayerMoveHeight.mv1");
  	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_MOVE, PATH_MODEL + "Player/PlayerMoveArrow.mv1");
  	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_GRAVITY, PATH_MODEL + "Player/PlayerGravity.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_SKYDOME, PATH_MODEL + "SkyDome/SkyDome.mv1");
@@ -96,7 +113,9 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::SOUND, SRC::BGM_GAME, PATH_BGM + "GameBGM.mp3");
 
 	/* サウンドエフェクト */
-
+	_SetResource(LOAD_TYPE::SOUND, SRC::SE_CLICK, PATH_SE + "Click.mp3");
+	_SetResource(LOAD_TYPE::SOUND, SRC::SE_SELECT, PATH_SE + "Select.mp3");
+	_SetResource(LOAD_TYPE::SOUND, SRC::SE_FANFALE, PATH_SE + "Fanfare.mp3");
 }
 
 void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path
@@ -171,6 +190,13 @@ void ResourceManager::LoadHandleIds(SRC _src, int* _target)
 
 	// 複数画像の対象にコピー
 	Load(_src).CopyHandle(_target);
+
+	if (*_target == -1)
+	{
+#ifdef _DEBUG
+		OutputDebugString("\n複数画像が読み込まれませんでした。画像数/画像１枚のサイズ/画像パス名を確認してください。\n");
+#endif
+	}
 }
 
 std::string ResourceManager::GetHandlePath(SRC _src)

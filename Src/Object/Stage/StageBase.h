@@ -35,6 +35,9 @@ public:
 
 	virtual void Release(void);
 
+	/// @brief ステージ再抽選処理
+	/// @param _exclusionList ステージ番号の除外リスト
+	void StageReChoice(std::vector<int> _exclusionList);
 
 	const VECTOR& GetPlayerPos(int _num) { return playersPos_[_num]; };
 
@@ -45,8 +48,10 @@ public:
 	const std::vector<VECTOR>& GetTrapPos(void) const { return trapPositions_; }
 
 	/// @brief ステージの当たり判定を全登録
-	/// @param _actor 割り当てる対象
+	/// @param _actor 割り当てる対象1
 	void AddStageColliders(ActorBase& _actor);
+
+	int GetStageNum(void) { return stageNum_; };
 
 
 protected:
@@ -54,6 +59,7 @@ protected:
 	static constexpr VECTOR STAGE_POS = { -1000.0f, -1000.0f, 850.0f };
 	static constexpr VECTOR BLOCK_OFFSET = { 199.9f, 199.9f, 200.0f };
 	static constexpr float BLOCK_SCALE = 1.0f;
+	static constexpr float PLAYER_OFFSET_Z = -10.0f;
 
 	static constexpr float FLONT_ALPHA = 0.65f;
 	static constexpr float BACK_ALPHA = 0.85f;
@@ -62,6 +68,7 @@ protected:
 	ResourceManager& resMng_;
 	CsvManager& csvMng_;
 	
+	int stageNum_;
 
 	TYPE stageType_;
 
@@ -85,6 +92,9 @@ protected:
 	//罠の座標を格納するリストを追加
 	std::vector<VECTOR>trapPositions_;
 	
+	/// @brief ステージ指定処理
+	/// @param _stageNum 指定番号
+	void StageChoice(int _stageNum);
 
 	/// @brief ブロック配置処理
 	/// @param _type マップの種類

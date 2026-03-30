@@ -13,15 +13,19 @@ public:
 	{
 		NONE = -1,
 		
-		// 画像
+		/* 単一画像 */
+		IMG_TITLE,
+		IMG_TITLE_BACK,
 		IMG_SHADOW,
+
+		/* 複数画像 */
 		IMGS_TEXT,
-		IMGS_UI,
+		IMGS_TEXT_TIME,
+		IMGS_UI_TITLE,
+		IMGS_UI_SELECT,
 
 		// モデル
 		MODEL_PLAYER,
-		MODEL_PLAYER_WIDTH, // 横移動
-		MODEL_PLAYER_HEIGHT,// 縦移動
 		MODEL_PLAYER_MOVE,
 		MODEL_PLAYER_GRAVITY,
 
@@ -37,11 +41,15 @@ public:
 
 		// 映像
 		
-		// BGM
+		/* BGM */
 		BGM_TITLE,
 		BGM_GAME,
 		
-		// サウンドエフェクト
+		/* サウンドエフェクト */
+		SE_CLICK,
+		SE_SELECT,
+		SE_CHANGE,
+		SE_FANFALE,
 	};
 
 

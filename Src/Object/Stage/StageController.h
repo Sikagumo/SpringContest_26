@@ -1,5 +1,6 @@
 #pragma once
 #include "./StageBase.h"
+#include <vector>
 #include <DxLib.h>
 class ActorBase;
 
@@ -57,11 +58,24 @@ public:
 
 private:
 
+	const std::vector<STAGE_TYPE> STAGE_MOVE_TYPE
+				= { STAGE_TYPE::MOVE, STAGE_TYPE::MOVE, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D };
+
+	const std::vector<STAGE_TYPE> STAGE_GRAVITYTYPE
+				= { STAGE_TYPE::GRAVITY, STAGE_TYPE::GRAVITY, STAGE_TYPE::GRAVITY3D,  STAGE_TYPE::GRAVITY3D, STAGE_TYPE::GRAVITY3D };
+
+
+	int stageNum_;
+
 	STAGE_TYPE stageType_;
 
 	StageBase* stage_;
 
 	bool isStageClear_;
+
+	// クリアしたステージ番号
+	std::vector<int> clearStageNum_;
+
 
 	void SetStageType(STAGE_TYPE _type);
 };

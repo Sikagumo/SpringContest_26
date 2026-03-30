@@ -28,7 +28,7 @@ StageBase::StageBase(TYPE stageType, int mapNum, int mapBackNum) :
 
 void StageBase::Init(void)
 {
-	int rand = GetRand(mapNumMax_ - 1);
+	stageNum_ = GetRand(mapNumMax_ - 1);
 
 	for (VECTOR& pos : playersPos_)
 	{
@@ -36,18 +36,27 @@ void StageBase::Init(void)
 	}
 	goalPos_ = goalPosBack_ = AsoUtility::VECTOR_ZERO;
 
+	StageChoice(stageNum_);
+	
+}
+void StageBase::StageChoice(int _stageNum)
+{
+	int num = _stageNum;
+
+	// リスト外の場合、０番を読み込む
+	if (num >= (mapNumMax_ - 1) || num < 0) { stageNum_ = num = 0; }
 
 	// ステージ配置処理
-	SetBlockTypeList(rand, CsvManager::STAGE_X, CsvManager::STAGE_Y);
+	SetBlockTypeList(num, CsvManager::STAGE_X, CsvManager::STAGE_Y);
 
 	// ステージ奥配置処理
 	if (stageType_ == TYPE::MOVE3D ||
 		stageType_ == TYPE::GRAVITY3D)
 	{
-		SetBlockBackTypeList(rand, CsvManager::STAGE_X, CsvManager::STAGE_Y);
+		SetBlockBackTypeList(num, CsvManager::STAGE_X, CsvManager::STAGE_Y);
 
 		// 前ステージの透過
-		ChangeFrontObjects(rand);
+		ChangeFrontObjects(num);
 	}
 
 	SetBlockBackList(CsvManager::STAGE_X, CsvManager::STAGE_Y);
@@ -138,6 +147,45 @@ void StageBase::Release(void)
 	}
 }
 
+void StageBase::StageReChoice(std::vector<int> _exclusionList)
+{
+	// 抽選リスト
+	std::vector<int> choiceList;
+	choiceList.clear();
+
+	for (int i = 0; i < mapNumMax_; i++)
+	{
+		bool isChoice = true;
+
+		for (int& exclusion : _exclusionList)
+		{
+			// 除外リストにある場合、抽選リストから除外
+			if (i == exclusion)
+			{
+				isChoice = false;
+				break;
+			}
+		}
+
+		// 抽選リストに格納
+		if (isChoice)
+		{
+			choiceList.emplace_back(i);
+		}
+	}
+
+	// 抽選リストがない場合、処理を
+	if (choiceList.size() == 0)
+	{
+		StageChoice(0);
+		return;
+	}
+
+	// 抽選リストからステージを指定
+	int rand = GetRand(choiceList.size());
+	StageChoice(choiceList[rand]);
+}
+
 void StageBase::AddStageColliders(ActorBase& _actor)
 {
 	/*　当たり判定全登録　*/
@@ -167,11 +215,15 @@ void StageBase::AddStageColliders(ActorBase& _actor)
 	}
 }
 
+
+
 void StageBase::SetBlockTypeList(int _mapType, int _xMax, int _yMax)
 {
 	// マップ数を超えたとき、(最大数-1)に補正する
 	int type = ((_mapType >= mapNumMax_) ? (mapNumMax_ - 1) : _mapType);
 	int mapNum = -1;
+	
+	placeType_.clear();
 
 	for (int y = 0; y < _yMax; y++)
 	{
@@ -213,6 +265,8 @@ void StageBase::SetBlockBackTypeList(int _mapType, int _xMax, int _yMax)
 	// マップ数を超えたとき、(最大数-1)に補正する
 	int type = ((_mapType >= mapNumMax_) ? (mapNumMax_ - 1) : _mapType);
 	int mapNum = -1;
+
+	placeBackType_.clear();
 
 	for (int y = 0; y < _yMax; y++)
 	{

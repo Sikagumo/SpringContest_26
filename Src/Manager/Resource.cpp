@@ -27,6 +27,8 @@ Resource::Resource(LOAD_TYPE type, const std::string& path
 	sizeX_(sizeX), sizeY_(sizeY),
 	handleId_(-1)
 {
+	handleIds_.clear();
+
 	for (int i = 0; i < allNum_; i++)
 	{
 		handleIds_.emplace_back(-1);

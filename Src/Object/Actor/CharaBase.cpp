@@ -265,7 +265,7 @@ void CharaBase::DrawLate(void)
 	/*　前描画　*/
 
 	// 丸影の描画
-	DrawShadowRound();
+	//DrawShadowRound();
 }
 void CharaBase::DrawShadowRound(void)
 {
@@ -280,8 +280,8 @@ void CharaBase::DrawShadowRound(void)
 	// ライティングを無効にする
 	SetUseLighting(FALSE);
 
-	// Ｚバッファを有効にする
-	SetUseZBuffer3D(TRUE);
+	// Ｚバッファを無効にする
+	SetUseZBuffer3D(FALSE);
 
 	// テクスチャアドレスモードを CLAMP にする( テクスチャの端より先は端のドットが延々続く )
 	SetTextureAddressMode(DX_TEXADDRESS_CLAMP);
@@ -359,8 +359,8 @@ void CharaBase::DrawShadowRound(void)
 	// ライティングを有効にする
 	SetUseLighting(TRUE);
 
-	// Ｚバッファを無効にする
-	SetUseZBuffer3D(FALSE);
+	// Ｚバッファを有効にする
+	SetUseZBuffer3D(TRUE);
 }
 
 void CharaBase::DrawPre(void)

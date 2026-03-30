@@ -19,6 +19,7 @@ public:
 		PLAYER_MOVE_LEFT,  // ˆÚ“®¶
 		PLAYER_MOVE_UP,  // ˆÚ“®ã
 		PLAYER_MOVE_DOWN, // ˆÚ“®‰º
+		PLAYER_CHANGE, // ˆÊ’uˆÚ“®
 		
 		PLAYER1_MOVE_RIGHT, // ˆÚ“®‰E
 		PLAYER1_MOVE_LEFT,  // ˆÚ“®¶

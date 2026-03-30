@@ -5,7 +5,7 @@
 #include "../Application.h"
 #include "../Object/Common/Transform.h"
 #include "../Utility/UtilityCommon.h"
-#include "../Common/Vector2.h"
+#include "../Common/Vector2F.h"
 class AnimationController;
 class SkyDome;
 
@@ -55,14 +55,29 @@ private:
 	// 決定したか否か
 	bool isSelected_;
 
+	static constexpr float TITLE_UI_SCALE = (1.0f - 0.0f);
+	static constexpr float TITLE_NOT_UI_SCALE = (1.0f - 0.25f);
+
 	static constexpr float SELECT_UI_SCALE = (1.0f - 0.0f);
 	static constexpr float SELECT_NOT_UI_SCALE = (1.0f - 0.5f);
 
+	static constexpr int TITLE_UI_OFFSET = 250;
 	static constexpr int SELECT_UI_OFFSET = 500;
 
-	static constexpr int SELECT_NOT_SUB = (255 - 200);
+	static constexpr int TITLE_NOT_SUB = (255 - 200);
+	static constexpr int SELECT_ALPHA = (255 - 100);
 
-	enum class SELECT_IMAGE
+	enum class TITLE_UI_IMAGE
+	{
+		SELECT_START,
+		GAME_END,
+		SELECT_CHARA,
+
+		MAX
+	};
+	int titleUIHandle_[static_cast<int>(TITLE_UI_IMAGE::MAX)];
+
+	enum class SELECT_UI_IMAGE
 	{
 		BACK,
 		MOVE_NOT_SELECT,
@@ -73,22 +88,23 @@ private:
 
 		MAX,
 	};
+	int selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::MAX)];
 
-	struct SelectUI
-	{
-		Vector2* pos;
-		unsigned int color;
-	};
+	// タイトル画像
+	int titleImage_;
+	int titleBackImage_;
 
-	std::array<SelectUI, 3> selectUIParam_;
+	static constexpr int BACK_HALF_X = (2040 / 2) * 2;
+	
+	std::array<Vector2F, 3> backImagesPos_;
 
-	int selectUIHandle_[static_cast<int>(SELECT_IMAGE::MAX)];
 
 	// タイトル状態更新処理
 	std::function<void(void)> updateStateFunc_;
 
 	// 状態別描画処理
-	std::function<void(void)> drawStateFunc_;
+	std::function<void(void)> drawFuncTitle_;
+	std::function<void(void)> drawFuncSelect_;
 
 
 	void Update_SelectStart(void);
@@ -97,6 +113,8 @@ private:
 	void Update_SelectGravity(void);
 	void Update_SelectCancel(void);
 
+	void Draw_SelectStart(void);
+	void Draw_GameEnd(void);
 	void Draw_SelectMove(void);
 	void Draw_SelectGravity(void);
 	void Draw_SelectCancel(void);

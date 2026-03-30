@@ -85,15 +85,6 @@ void Camera::SetBeforeDraw(void)
 
 void Camera::DrawDebug(void)
 {
-#ifdef _DEBUG
-	DrawFormatString(0, 16, 0xffffff, "camera[pos(%.1f, %.1f, %.1f),(rot(%.1f, %.1f, %.1f)]", 
-		transform_.pos.x, transform_.pos.y, transform_.pos.z,
-		AsoUtility::Rad2Deg(transform_.rot.x),
-		AsoUtility::Rad2Deg(transform_.rot.y),
-		AsoUtility::Rad2Deg(transform_.rot.z)
-		);
-					 
-#endif
 }
 
 void Camera::Release(void)
