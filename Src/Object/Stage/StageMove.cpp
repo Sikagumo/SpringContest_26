@@ -6,10 +6,11 @@
 #include "../StageObj/StageObjBase.h"
 #include "../StageObj/StageObjWall.h"
 #include "../StageObj/StageObjGoal.h"
+#include "../StageObj/StageObjTrap.h"
 
 StageMove::StageMove(bool _isBack)
-	:StageBase::StageBase(((_isBack) ? TYPE::MOVE3D : TYPE::MOVE),
-							CsvManager::GetInstance().GetStageMoveMapNum())
+	: StageBase::StageBase(((_isBack) ? TYPE::MOVE3D : TYPE::MOVE)
+						   , CsvManager::GetInstance().GetStageMoveMapNum())
 {
 
 }
@@ -67,6 +68,16 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 		ret->Init(pos);
 	}
 
+	//トラップ登録
+	else if (type == BLOCK_TYPE::TRAP)
+	{
+		ret = new StageObjTrap(_x, _y, _blockType);
+		ret->Init(pos);
+
+		//トラップの座標をリストに保存する
+		trapPositions_.push_back(ret->GetTransform().pos);
+	}
+
 	return ret;
 }
 StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y)
@@ -109,6 +120,16 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y)
 	{
 		ret = new StageObjWall(_x, _y, _blockType);
 		ret->Init(pos);
+	}
+
+	//トラップ登録
+	else if (type == BLOCK_TYPE::TRAP)
+	{
+		ret = new StageObjTrap(_x, _y, _blockType);
+		ret->Init(pos);
+
+		//トラップの座標をリストに保存する
+		trapPositions_.push_back(ret->GetTransform().pos);
 	}
 
 	// 未割当時、透過オブジェクトの追加

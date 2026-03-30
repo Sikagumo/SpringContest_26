@@ -5,7 +5,7 @@
 class StageObjTrap : public StageObjBase
 {
 public:
-	StageObjTrap(int _objType);
+	StageObjTrap(int _x, int _y, int _objType, float _alpha = 1.0f);
 
 	/// @brief 固定オブジェクトのため、更新しない
 	void Update(void)override {};

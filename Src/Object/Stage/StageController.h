@@ -42,6 +42,8 @@ public:
 
 	const VECTOR& GetGoalPos(int _num);
 
+	const std::vector<VECTOR>& GetTrapPos(void) const { return stage_->GetTrapPos(); }
+
 
 	/// @brief ステージの当たり判定を全登録
 	/// @param _actor 割り当てる対象

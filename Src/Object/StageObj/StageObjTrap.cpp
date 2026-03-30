@@ -4,8 +4,8 @@
 #include "../../Manager/ResourceManager.h"
 #include "../../Utility/AsoUtility.h"
 
-StageObjTrap::StageObjTrap(int _objType) :
-StageObjBase::StageObjBase({ COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType)
+StageObjTrap::StageObjTrap(int _x, int _y, int _objType, float _alpha) :
+	StageObjBase::StageObjBase(_x, _y, { COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType, _alpha)
 {
 }
 

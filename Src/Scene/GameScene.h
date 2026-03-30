@@ -1,6 +1,7 @@
 #pragma once
 #include<DxLib.h>
 #include "SceneBase.h"
+#include "../Utility/AsoUtility.h"
 class SkyDome;
 class StageBase;
 class StageController;
@@ -51,9 +52,28 @@ private:
 
 	StageController* stage_;
 
-	Player* player1_;
+	struct PlayerParam
+	{
+		PlayerParam(void):
+			player(nullptr),
+			startPos(AsoUtility::VECTOR_ZERO),endPos(AsoUtility::VECTOR_ZERO),
+			initialPos(AsoUtility::VECTOR_ZERO), deathPos(AsoUtility::VECTOR_ZERO)
+		{}
+		Player* player;
 
-	Player* player2_;
+		//移動の開始座標と終了座標を保持
+		VECTOR startPos;
+		VECTOR endPos;
+
+		// 復活地点
+		VECTOR initialPos;
+
+		// 死亡した瞬間の座標（イージングの開始地点）
+		VECTOR deathPos;
+	};
+
+	PlayerParam player1_;
+	PlayerParam player2_;
 
 	// 交代したか否か
 	bool isExecuteSwaped_;
@@ -73,16 +93,10 @@ private:
 	//現在の経過フレーム数
 	float swapTimer_ = 0.0f;
 
-	//移動の開始座標と終了座標を保持
-	VECTOR p1StartPos_;
-	VECTOR p1EndPos_;
-	VECTOR p2StartPos_;
-	VECTOR p2EndPos_;
-
 	/* 復活演出 */
 	
 	// 復活演出中かどうか
-	bool  isRespawning_ = false;
+	bool isRespawning_ = false;
 	
 	// 復活演出の経過フレーム
 	float respawnTimer_ = 0.0f;
@@ -90,17 +104,13 @@ private:
 	// 1秒（60フレーム）かけて戻る
 	const float RESPAWN_LIMIT_FRAME = 60.0f;
 
-	// 復活地点
-	VECTOR p1InitialPos_;
-	VECTOR p2InitialPos_;
-
-	// 死亡した瞬間の座標（イージングの開始地点）
-	VECTOR p1DeathPos_;
-	VECTOR p2DeathPos_;
-	
-	
-	// プレイヤー入れ替え処理
-	void PlayerSwap(void);
-
 	void SetStageType(void);
+
+	/// @brief 罠の衝突処理
+	/// @return 衝突時:true
+	bool TrapProcess(void);
+
+	/// @brief ゴール処理
+	/// @return ゴールしているか否かの判定
+	bool GoalProcess(void);
 };

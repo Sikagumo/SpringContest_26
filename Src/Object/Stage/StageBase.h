@@ -77,11 +77,10 @@ protected:
 	// プレイヤー初期位置
 	VECTOR playersPos_[2];
 
+	//罠の配置
 	VECTOR goalPos_;
 	VECTOR goalPosBack_;
 
-	//罠の配置
-	VECTOR goalPos_;
 	
 	//罠の座標を格納するリストを追加
 	std::vector<VECTOR>trapPositions_;

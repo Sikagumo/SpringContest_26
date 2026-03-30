@@ -130,13 +130,11 @@ void Player::Draw(void)
 {
 	// ライティングを無効化
 	SetUseLighting(FALSE);
-	//SetUseZBuffer3D(FALSE);
 
 	ActorBase::Draw();
 
 	// ライティングを無効化
 	SetUseLighting(TRUE);
-	//SetUseZBuffer3D(TRUE);
 
 	const float LIGHT_POS_Z = 0.0f;
 	VECTOR lightPos = VAdd(transform_.pos, VGet(0.0f, 0.0f, LIGHT_POS_Z));

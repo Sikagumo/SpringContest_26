@@ -196,9 +196,7 @@ void StageBase::SetBlockTypeList(int _mapType, int _xMax, int _yMax)
 			if (mapNum <= -1) { continue; }
 
 			// ステージ情報割り当て
-			StageObjBase* param = SetParam(mapNum,
-										   static_cast<float>(x),
-										   static_cast<float>(y));
+			StageObjBase* param = SetParam(mapNum, x, y);
 			if (param == nullptr) { continue; }
 
 			// 行配置リストに格納
@@ -234,9 +232,7 @@ void StageBase::SetBlockBackTypeList(int _mapType, int _xMax, int _yMax)
 			}
 
 			// ステージ情報割り当て
-			StageObjBase* param = SetParamBack(mapNum,
-										   static_cast<float>(x),
-										   static_cast<float>(y));
+			StageObjBase* param = SetParamBack(mapNum, x, y);
 			if (param == nullptr) { continue; }
 
 			// 行配置リストに格納
@@ -264,7 +260,7 @@ void StageBase::SetBlockBackList(int _xMax, int _yMax)
 		for (int x = 0; x < _xMax; x++)
 		{
 			// ステージ情報割り当て
-			StageObjWall* param = new StageObjWall(0, BACK_ALPHA, false);
+			StageObjWall* param = new StageObjWall(x, y, 0, BACK_ALPHA, false);
 
 			param->Init(VGet((x * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
 							 (y * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),

@@ -20,6 +20,7 @@ public:
 		PLATER_HEIGHT, // 縦移動プレイヤー
 
 		GOAL, // ゴール
+		TRAP, // 罠
 
 		MAX,
 	};
