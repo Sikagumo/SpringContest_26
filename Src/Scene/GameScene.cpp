@@ -130,6 +130,10 @@ void GameScene::Update(void)
 		isTimeActive_ = true;
 	}
 
+
+	player1_.player->SetAuthority(currentSwapRight_ == SWAP_RIGHT::P1);
+	player2_.player->SetAuthority(currentSwapRight_ == SWAP_RIGHT::P2);
+
 	// プレイヤー更新処理
 	player1_.player->Update();
 	player2_.player->Update();

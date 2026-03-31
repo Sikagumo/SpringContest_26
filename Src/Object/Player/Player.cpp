@@ -115,6 +115,9 @@ void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 {
 	CharaBase::Init();
 
+	arrowHandle_ = ResourceManager::GetInstance().LoadHandleId(ResourceManager::SRC::IMG_PLAYER_ARROW);
+
+
 	isChangeModel_ = false;
 
 	transform_.pos = _pos;
@@ -133,7 +136,27 @@ void Player::Draw(void)
 
 	ActorBase::Draw();
 
-	// ライティングを無効化
+
+	//矢印の描画処理
+	if (hasAuthority_ && arrowHandle_ != -1)
+	{
+
+		SetUseLighting(FALSE);         // ライティング計算をオフ
+
+		// Zバッファ設定（壁を透かす）
+		SetUseZBuffer3D(FALSE);
+		SetWriteZBuffer3D(FALSE);
+
+
+		// 矢印を描画
+		DrawBillboard3D(VAdd(transform_.pos, VGet(0, 130.0f, 0)), 0.5f, 0.5f, 90.0f, 0.0f, arrowHandle_, TRUE);
+
+		// 設定を元に戻す
+		SetUseZBuffer3D(TRUE);
+		SetWriteZBuffer3D(TRUE);
+	}
+
+	// ライティングの設定を戻す
 	SetUseLighting(TRUE);
 
 	const float LIGHT_POS_Z = 0.0f;

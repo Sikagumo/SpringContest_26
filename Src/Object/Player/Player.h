@@ -49,7 +49,8 @@ public:
 
 	bool GetIsChangeModel(void) { return isChangeModel_; }
 
-
+	//åë„å†å¿Çê›íËÇ∑ÇÈ
+	void SetAuthority(bool hasAuth) { hasAuthority_ = hasAuth; }
 protected:
 
 
@@ -145,4 +146,7 @@ private:
 	void PlayAnim(ANIM_TYPE type, bool _isLoop = true);
 
 	PLAYER_NO playerNo_;
+
+	bool hasAuthority_ = false;
+	int arrowHandle_ = -1;
 };
