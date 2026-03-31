@@ -48,9 +48,18 @@ void SoundManager::SetSounds(void)
 	src = static_cast<int>(ResourceManager::SRC::SE_SELECT);
 	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_SELECT);
 
+	src = static_cast<int>(ResourceManager::SRC::SE_CHANGE);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_CHANGE);
+
 	// ëIëâπê∫
 	src = static_cast<int>(ResourceManager::SRC::SE_FANFALE);
 	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_FANFARE);
+
+	src = static_cast<int>(ResourceManager::SRC::SE_COUNT);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_COUNT_DOWN);
+
+	src = static_cast<int>(ResourceManager::SRC::SE_COUNT_SHORT);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_COUNT_DOWN);
 
 
 	/* BGM */

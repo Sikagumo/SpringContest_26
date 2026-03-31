@@ -11,7 +11,8 @@
 ResourceManager* ResourceManager::instance_ = nullptr;
 
 // リソースファイルのパス
-#ifdef _DEBUG
+//#ifdef _DEBUG
+#ifndef _DEBUG
 const std::string PATH_DATA = "Data/";
 
 // 暗号化済みのリソースフォルダパス
@@ -81,9 +82,9 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI_SELECT, PATH_IMAGE + "SelectUI.png"
 				 , allNum, numX, numY, sizeX, sizeY);
 
-	allNum = 8;
+	allNum = 9;
 	numX = 1;
-	numY = 8;
+	numY = 9;
 	sizeX = 1024;
 	sizeY = 112;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT, PATH_IMAGE + "Text.png"
@@ -115,7 +116,10 @@ void ResourceManager::SetResource(void)
 	/* サウンドエフェクト */
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_CLICK, PATH_SE + "Click.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_SELECT, PATH_SE + "Select.mp3");
+	_SetResource(LOAD_TYPE::SOUND, SRC::SE_CHANGE, PATH_SE + "Change.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_FANFALE, PATH_SE + "Fanfare.mp3");
+	_SetResource(LOAD_TYPE::SOUND, SRC::SE_COUNT, PATH_SE + "CountDown.mp3");
+	_SetResource(LOAD_TYPE::SOUND, SRC::SE_COUNT_SHORT, PATH_SE + "CountDownShort.mp3");
 }
 
 void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path

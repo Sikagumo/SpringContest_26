@@ -24,7 +24,7 @@ public:
 	static constexpr float VOLUME_TITLE = 1.0f;
 
 	// ゲームシーンBGM音量
-	static constexpr float VOLUME_GAME = 0.75f;
+	static constexpr float VOLUME_GAME = 0.6f;
 
 
 	/* BGM音量 */
@@ -35,8 +35,13 @@ public:
 	// 選択SEの音量
 	static constexpr float VOLUME_SELECT = 0.9f;
 
+	// 選択SEの音量
+	static constexpr float VOLUME_CHANGE = 1.0f;
+
 	// ファンファーレSEの音量
 	static constexpr float VOLUME_FANFARE = 1.0f;
+
+	static constexpr float VOLUME_COUNT_DOWN = 0.9f;
 
 
 

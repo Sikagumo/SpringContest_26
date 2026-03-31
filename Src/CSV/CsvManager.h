@@ -45,17 +45,12 @@ public:
 	int GetStageMoveNum(int _type, int x, int y);
 	int GetStageBackMoveNum(int _type, int x, int y);
 
-	/// @brief ステージ数取得
-	int GetStageMoveMapNum(void) { return static_cast<int>(stage_.move.size()); };
-	int GetStageBackMoveMapNum(void) { return static_cast<int>(stage_.moveBack.size()); };
-
-
 	int GetStageGravityNum(int _type, int x, int y);
 	int GetStageBackGravityNum(int _type, int x, int y);
 
 	/// @brief ステージ数取得
+	int GetStageMoveMapNum(void) { return static_cast<int>(stage_.move.size()); };
 	int GetStageGravityMapNum(void) { return static_cast<int>(stage_.gravity.size()); };
-	int GetStageBackGravityMapNum(void) { return static_cast<int>(stage_.gravityBack.size()); };
 
 private:
 

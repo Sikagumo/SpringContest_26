@@ -24,7 +24,6 @@ public:
 		NONE,
 		TITLE,
 		GAME,
-		DEBUG
 	};
 	
 	// インスタンスの生成
@@ -49,7 +48,7 @@ public:
 	void Destroy(void);
 
 	// 状態遷移
-	void ChangeScene(SCENE_ID nextId);
+	void ChangeScene(SCENE_ID _nextId);
 
 	// シーンIDの取得
 	SCENE_ID GetSceneID(void);
@@ -63,7 +62,11 @@ public:
 	// デバッグ状態取得
 	bool GetIsDebugMode(void) { return isDebugMode_; };
 
-	
+	/// @brief 移動ステージを選択するか否か
+	void SetIsStageMove(bool _isChoiceMove) { isChoiceMove_ = _isChoiceMove; };
+	bool GetIsStageMove(void) { return isChoiceMove_; };
+
+
 private:
 
 	// 静的インスタンス
@@ -91,6 +94,9 @@ private:
 	bool isDebugMode_;
 
 	int shadowMapHandle_;
+
+	// 移動ステージを選択したか否か
+	bool isChoiceMove_;
 	
 
 	// デフォルトコンストラクタをprivateにして、

@@ -23,7 +23,7 @@ public:
 	virtual ~StageBase(void) = default;
 
 
-	virtual void Init(void);
+	void Init(int _curStageNum);
 
 	virtual void Update(void);
 
@@ -35,9 +35,6 @@ public:
 
 	virtual void Release(void);
 
-	/// @brief ステージ再抽選処理
-	/// @param _exclusionList ステージ番号の除外リスト
-	void StageReChoice(std::vector<int> _exclusionList);
 
 	const VECTOR& GetPlayerPos(int _num) { return playersPos_[_num]; };
 
@@ -51,7 +48,7 @@ public:
 	/// @param _actor 割り当てる対象1
 	void AddStageColliders(ActorBase& _actor);
 
-	int GetStageNum(void) { return stageNum_; };
+	int GetStageNum(void) { return curStageNum_; };
 
 
 protected:
@@ -68,7 +65,7 @@ protected:
 	ResourceManager& resMng_;
 	CsvManager& csvMng_;
 	
-	int stageNum_;
+	int curStageNum_;
 
 	TYPE stageType_;
 

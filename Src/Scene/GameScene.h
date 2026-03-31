@@ -1,6 +1,7 @@
 #pragma once
 #include<DxLib.h>
 #include<array>
+#include <functional>
 #include "SceneBase.h"
 #include "../Utility/AsoUtility.h"
 class SkyDome;
@@ -17,8 +18,10 @@ public:
 	{
 		NONE = -1,
 		ACTIVE,
+		GOAL,
 		PAUSE,
-		CLEAR,
+		GAME_CLEAR,
+		GAME_OVER,
 	};
 	
 	// コンストラクタ
@@ -61,8 +64,15 @@ private:
 	float gameTimer_;
 
 	// 時間を減少するか否か
-	bool isTimeActive_;
+	bool isGameTimeActive_;
 
+	static constexpr float TIME_START = 2.0f;
+	static constexpr float TIME_PAUSE = 0.0f;
+	static constexpr float TIME_GAME_END = 2.0f;
+	static constexpr float TIME_CLEAR = 0.5f;
+
+	float performTime_;
+	bool isPerform_;
 
 	GAME_STATE state_;
 
@@ -77,6 +87,7 @@ private:
 			startPos(AsoUtility::VECTOR_ZERO),endPos(AsoUtility::VECTOR_ZERO),
 			initialPos(AsoUtility::VECTOR_ZERO), deathPos(AsoUtility::VECTOR_ZERO)
 		{}
+
 		Player* player;
 
 		//移動の開始座標と終了座標を保持
@@ -102,14 +113,32 @@ private:
 	};
 	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
 
+	// ゲーム状態別の処理
+	std::function<void(void)> updateGameStateProc_;
+
 	int timeText_[11];
-	int uiText_[8];
+
+	enum class UI_TEXT
+	{
+		PAUSE_MAIN,
+		PAUSE_SUB,
+		DECISION_SUB,
+		GAME_START,
+		GAME_END,
+		GAME_OVER,
+		GAME_CLEAR,
+		TIME_LIMIT,
+		TIME_CLEAR,
+		MAX
+	};
+	int uiText_[static_cast<int>(UI_TEXT::MAX)];
 
 	//入れ替え中かどうかのフラグ
 	bool isSwapping_ = false;
 
 	//現在の経過フレーム数
 	float swapTimer_ = 0.0f;
+
 
 	/* 復活演出 */
 	
@@ -122,6 +151,7 @@ private:
 	// 1秒（60フレーム）かけて戻る
 	const float RESPAWN_LIMIT_FRAME = 60.0f;
 
+
 	void SetStageType(void);
 
 	/// @brief 罠の衝突処理
@@ -133,4 +163,12 @@ private:
 	bool GoalProcess(void);
 
 	void DrawTimer(void);
+
+	void ChangeState(GAME_STATE _state);
+
+	void Update_Active(void);
+	void Update_Goal(void);
+	void Update_Pause(void);
+	void Update_Clear(void);
+	void Update_GameOver(void);
 };

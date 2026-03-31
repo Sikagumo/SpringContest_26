@@ -15,10 +15,10 @@ public:
 		MOVE3D,
 		GRAVITY,
 		GRAVITY3D,
-		CLEAR
+		GAME_CLEAR
 	};
 
-	StageController(void);
+	StageController(bool _isMoveStage);
 	~StageController(void) = default;
 
 	void Init(void);
@@ -59,13 +59,18 @@ public:
 private:
 
 	const std::vector<STAGE_TYPE> STAGE_MOVE_TYPE
-				= { STAGE_TYPE::MOVE, STAGE_TYPE::MOVE, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D };
+				= { STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D };
 
-	const std::vector<STAGE_TYPE> STAGE_GRAVITYTYPE
+	const std::vector<STAGE_TYPE> STAGE_GRAVITY_TYPE
 				= { STAGE_TYPE::GRAVITY, STAGE_TYPE::GRAVITY, STAGE_TYPE::GRAVITY3D,  STAGE_TYPE::GRAVITY3D, STAGE_TYPE::GRAVITY3D };
 
+	// ステージ数
+	const int STAGE_SIZE_MAX;
 
-	int stageNum_;
+	// 移動ステージか否か
+	bool isMoveStage_;
+
+	int curStageNum_;
 
 	STAGE_TYPE stageType_;
 
@@ -74,8 +79,12 @@ private:
 	bool isStageClear_;
 
 	// クリアしたステージ番号
-	std::vector<int> clearStageNum_;
+	std::vector<int> clearStageNums_;
 
 
 	void SetStageType(STAGE_TYPE _type);
+
+	/// @brief クリアしたステージ番号以外を抽選
+	/// @return ステージ番号
+	int GetStageChoice(void);
 };

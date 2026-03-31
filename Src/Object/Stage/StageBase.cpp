@@ -17,18 +17,15 @@ StageBase::StageBase(TYPE stageType, int mapNum, int mapBackNum) :
 	sceneMng_(SceneManager::GetInstance()),
 	csvMng_(CsvManager::GetInstance()),
 	stageType_(stageType),
-	mapNumMax_(mapNum), mapBackNumMax_(mapBackNum)
+	mapNumMax_(mapNum), mapBackNumMax_(mapBackNum),
+	playersPos_{ AsoUtility::VECTOR_ZERO , AsoUtility::VECTOR_ZERO },
+	goalPos_(AsoUtility::VECTOR_ZERO), goalPosBack_(AsoUtility::VECTOR_ZERO)
 {
-	for (VECTOR& pos : playersPos_)
-	{
-		pos = AsoUtility::VECTOR_ZERO;
-	}
-	goalPos_ = goalPosBack_ = AsoUtility::VECTOR_ZERO;
 }
 
-void StageBase::Init(void)
+void StageBase::Init(int _curStageNum)
 {
-	stageNum_ = GetRand(mapNumMax_ - 1);
+	curStageNum_ = GetRand(mapNumMax_ - 1);
 
 	for (VECTOR& pos : playersPos_)
 	{
@@ -36,7 +33,7 @@ void StageBase::Init(void)
 	}
 	goalPos_ = goalPosBack_ = AsoUtility::VECTOR_ZERO;
 
-	StageChoice(stageNum_);
+	StageChoice(curStageNum_);
 	
 }
 void StageBase::StageChoice(int _stageNum)
@@ -44,7 +41,7 @@ void StageBase::StageChoice(int _stageNum)
 	int num = _stageNum;
 
 	// リスト外の場合、０番を読み込む
-	if (num >= (mapNumMax_ - 1) || num < 0) { stageNum_ = num = 0; }
+	if (num >= (mapNumMax_ - 1) || num < 0) { curStageNum_ = num = 0; }
 
 	// ステージ配置処理
 	SetBlockTypeList(num, CsvManager::STAGE_X, CsvManager::STAGE_Y);
@@ -147,44 +144,7 @@ void StageBase::Release(void)
 	}
 }
 
-void StageBase::StageReChoice(std::vector<int> _exclusionList)
-{
-	// 抽選リスト
-	std::vector<int> choiceList;
-	choiceList.clear();
 
-	for (int i = 0; i < mapNumMax_; i++)
-	{
-		bool isChoice = true;
-
-		for (int& exclusion : _exclusionList)
-		{
-			// 除外リストにある場合、抽選リストから除外
-			if (i == exclusion)
-			{
-				isChoice = false;
-				break;
-			}
-		}
-
-		// 抽選リストに格納
-		if (isChoice)
-		{
-			choiceList.emplace_back(i);
-		}
-	}
-
-	// 抽選リストがない場合、処理を
-	if (choiceList.size() == 0)
-	{
-		StageChoice(0);
-		return;
-	}
-
-	// 抽選リストからステージを指定
-	int rand = GetRand(choiceList.size());
-	StageChoice(choiceList[rand]);
-}
 
 void StageBase::AddStageColliders(ActorBase& _actor)
 {

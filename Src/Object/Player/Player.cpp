@@ -331,7 +331,6 @@ void Player::ProcessMove(void)
 	}
 	else if (playerNo_ == PLAYER_NO::P2)
 	{
-		//修正箇所：重力モードなら左右、そうでなければ元の上下操作
 		if (stageType_ == STAGE_TYPE::GRAVITY)
 		{
 			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT, Input::JOYPAD_NO::PAD2))
@@ -356,19 +355,8 @@ void Player::ProcessMove(void)
 		}
 	}
 
-	if (GetJoypadNum() > 0)
-	{
-		//dir = input_.GetDirXY_LStick(Input::JOYPAD_NO::PAD1);
-	}
-	else
-	{
-		
-	}
-
 	if (!AsoUtility::EqualsVZero(dir))
 	{
-		//movePow_ = AsoUtility::VECTOR_ZERO;
-
 		// ダッシュ入力時にダッシュ加速度にする
 		moveSpeed_ = SPEED_MOVE;
 

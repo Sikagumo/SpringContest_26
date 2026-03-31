@@ -4,19 +4,29 @@
 #include "./StageMove.h"
 #include "./StageGravity.h"
 
-StageController::StageController(void) :
-	stageType_(STAGE_TYPE::NONE), stage_(nullptr),
-	isStageClear_(false),
-	stageNum_(0)
+StageController::StageController(bool _isMoveStage)
+	: isMoveStage_(_isMoveStage)
+	, stageType_(STAGE_TYPE::NONE), stage_(nullptr)
+	, isStageClear_(false)
+	, curStageNum_(0)
+	, STAGE_SIZE_MAX(((_isMoveStage == true)
+						? CsvManager::GetInstance().GetStageMoveMapNum()
+						: CsvManager::GetInstance().GetStageGravityMapNum()))
 {
+	
 }
 
 
 void StageController::Init(void)
 {
-	stageNum_ = 0;
+	curStageNum_ = 0;
 
-	SetStageType(STAGE_TYPE::MOVE);
+	clearStageNums_.clear();
+
+	// ステージを生成
+	SetStageType((isMoveStage_ == true)
+					? STAGE_MOVE_TYPE[curStageNum_]
+					: STAGE_GRAVITY_TYPE[curStageNum_]);
 }
 
 void StageController::Update(void)
@@ -38,8 +48,8 @@ void StageController::DrawDebug(void)
 {
 	stage_->DrawDebug();
 
-#ifdef _DEBUG
 	/*
+#ifdef _DEBUG
 	std::string text = "";
 	switch (stageType_)
 	{
@@ -52,8 +62,8 @@ void StageController::DrawDebug(void)
 		default: { text = "Stage:None"; } break;
 	}
 
-	DrawString(0, 32, text.c_str(), 0xff0000);*/
-#endif
+	DrawString(0, 32, text.c_str(), 0xff0000);
+#endif*/
 }
 
 void StageController::Release(void)
@@ -83,29 +93,49 @@ void StageController::SetStageType(StageController::STAGE_TYPE _type)
 			 _type == STAGE_TYPE::GRAVITY3D)
 	{
 		// 重力ステージ(GRAVITY3D時、奥行追加)
-		isStageClear_ = true;
-		//stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
-		stage_ = new StageMove((_type == STAGE_TYPE::MOVE3D));
+		stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
 	}
 
-	stage_->Init();
+	stage_->Init(GetStageChoice());
+}
 
-	bool isChoice = false;
+int StageController::GetStageChoice(void)
+{
+	// 抽選リストがない場合、ステージ０番目を指定
+	int retStageNum = 0;
 
-	while (isChoice)
+	// 抽選リスト
+	std::vector<int> choiceList;
+	choiceList.clear();
+
+	for (int i = 0; i < STAGE_SIZE_MAX; i++)
 	{
-		isChoice = false;
+		bool isChoice = true;
 
-		for (int stage : clearStageNum_)
+		for (int& exclusion : clearStageNums_)
 		{
-			// ステージが同一時、再抽選
-			if (stage == stage_->GetStageNum())
+			// 除外リストにある場合、抽選リストから除外
+			if (i == exclusion)
 			{
-				isChoice = true;
-				stage_->Init();
+				isChoice = false;
+				break;
 			}
 		}
+
+		// 抽選リストに格納
+		if (isChoice)
+		{
+			choiceList.emplace_back(i);
+		}
 	}
+
+	if (choiceList.size() != 0)
+	{
+		// 抽選リストからステージを指定
+		retStageNum = GetRand(static_cast<int>(choiceList.size()));
+	}
+
+	return retStageNum;
 }
 
 const VECTOR& StageController::GetGoalPos(int _num)
@@ -117,10 +147,21 @@ const VECTOR& StageController::GetGoalPos(int _num)
 
 void StageController::ChangeStages(void)
 {
-	if (stageType_ == STAGE_TYPE::CLEAR) { return; }
+	// クリアしたステージ番号を格納
+	clearStageNums_.emplace_back(stage_->GetStageNum());
+	
+	// 選択したステージの進行する最大回数
+	const size_t CHOICE_STAGE_MAX = ((isMoveStage_) ? STAGE_MOVE_TYPE.size() : STAGE_GRAVITY_TYPE.size());
 
-	int stageType = static_cast<int>(stageType_) + 1;
-	stageType_ = static_cast<STAGE_TYPE>(stageType);
-
-	SetStageType(stageType_);
+	if (++curStageNum_ < CHOICE_STAGE_MAX)
+	{
+		// ステージが全て進行していない時、ステージを再生成
+		SetStageType((isMoveStage_ == true)
+						? STAGE_MOVE_TYPE[curStageNum_]
+						: STAGE_GRAVITY_TYPE[curStageNum_]);
+	}
+	else
+	{
+		isStageClear_ = true;
+	}
 }

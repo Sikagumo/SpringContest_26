@@ -43,7 +43,8 @@ void CsvManager::Destroy(void)
 
 CsvManager::CsvManager(void)
 {
-#ifndef _DEBUG
+//#ifndef _DEBUG
+#ifdef _DEBUG
 	// リリースビルド時のみDXアーカイブを使用
 	SetUseDXArchiveFlag(TRUE);
 #endif
@@ -52,8 +53,6 @@ CsvManager::CsvManager(void)
 
 void CsvManager::Load(void)
 {
-	//LoadPlayerStatus();
-
 	LoadStages();
 }
 
@@ -61,7 +60,8 @@ std::string CsvManager::ReadCsvFile(const std::string& path)
 {
 	std::string content;
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
+#ifndef _DEBUG
 	// デバッグビルド：通常のファイルシステムから読み込み
 	std::ifstream file(path);
 

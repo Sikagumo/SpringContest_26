@@ -12,7 +12,7 @@ public:
 	enum class SRC
 	{
 		NONE = -1,
-		
+
 		/* 単一画像 */
 		IMG_TITLE,
 		IMG_TITLE_BACK,
@@ -40,16 +40,18 @@ public:
 		// エフェクト
 
 		// 映像
-		
+
 		/* BGM */
 		BGM_TITLE,
 		BGM_GAME,
-		
+
 		/* サウンドエフェクト */
 		SE_CLICK,
 		SE_SELECT,
 		SE_CHANGE,
 		SE_FANFALE,
+		SE_COUNT,
+		SE_COUNT_SHORT,
 	};
 
 

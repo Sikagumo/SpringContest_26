@@ -5,7 +5,6 @@
 #include "../Common/Fader.h"
 #include "../Scene/TitleScene.h"
 #include "../Scene/GameScene.h"
-#include "../Scene/DebugScene.h"
 #include "../Utility/AsoUtility.h"
 #include "./InputManager.h"
 #include "./Camera.h"
@@ -28,19 +27,21 @@ SceneManager& SceneManager::GetInstance(void)
 	return *instance_;
 }
 
-SceneManager::SceneManager(void) :
-	sceneId_(SCENE_ID::NONE),
-	waitSceneId_(SCENE_ID::NONE),
-	scene_(nullptr), fader_(nullptr),
-	camera_(nullptr),
-	deltaTime_(1.0f / 60.0f),
-	isSceneChanging_(false),
-	isDebugMode_(false)
+SceneManager::SceneManager(void)
+	: sceneId_(SCENE_ID::NONE)
+	, waitSceneId_(SCENE_ID::NONE)
+	, scene_(nullptr), fader_(nullptr)
+	, camera_(nullptr)
+	, deltaTime_(1.0f / 60.0f)
+	, isSceneChanging_(false)
+	, isDebugMode_(false)
+	, isChoiceMove_(true)
 {
 	bool isDebug = false;
 
-#ifdef _DEBUG
-	//isDebug = true;
+//#ifdef _DEBUG
+#ifndef _DEBUG
+	isDebug = true;
 #endif
 
 	isDebugMode_ = isDebug;
@@ -284,39 +285,25 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 	// åªç›ÇÃÉVÅ[ÉìÇâï˙
 	if (scene_ != nullptr)
 	{
+		// BGMí‚é~
+		SoundManager::GetInstance().StopAllChoice(true);
+
 		delete scene_;
 	}
-
-	int soundSrc = -1;
 
 	switch (sceneId_)
 	{
 		case SCENE_ID::TITLE:
 		{
 			scene_ = new TitleScene();
-			soundSrc = static_cast<int>(ResourceManager::SRC::BGM_TITLE);
 		}
 		break;
 
 		case SCENE_ID::GAME:
 		{
 			scene_ = new GameScene();
-			soundSrc = static_cast<int>(ResourceManager::SRC::BGM_GAME);
 		}
 		break;
-
-		case SCENE_ID::DEBUG:
-			scene_ = new DebugScene();
-		break;
-	}
-
-	if (soundSrc != -1)
-	{
-		// BGMí‚é~
-		SoundManager::GetInstance().StopAllChoice(true);
-
-		// BGMçƒê∂
-		SoundManager::GetInstance().Play(soundSrc, true);
 	}
 
 	// äeÉVÅ[ÉìÇÃèâä˙âª
@@ -343,6 +330,7 @@ void SceneManager::Fade(void)
 			isSceneChanging_ = false;
 		}
 		break;
+
 	case Fader::STATE::FADE_OUT:
 		// à√ì]íÜ
 		if (fader_->IsEnd())
