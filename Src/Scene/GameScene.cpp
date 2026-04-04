@@ -146,7 +146,7 @@ void GameScene::Update(void)
 
 		
 		// 罠の衝突処理(罠に衝突時、以下の処理を終了)
-		//if (TrapProcess()) { return; };
+		if (TrapProcess()) { return; };
 
 		// ゴール処理(ゴール中は以下の処理を終了)
 		if (GoalProcess()) { return; }
@@ -347,12 +347,14 @@ void GameScene::UpdateRespawn(void)
 	Transform& t1 = player1_.player->GetTransform();
 	t1.pos.x = player1_.deathPos.x + (player1_.initialPos.x - player1_.deathPos.x) * easedT;
 	t1.pos.y = player1_.deathPos.y + (player1_.initialPos.y - player1_.deathPos.y) * easedT;
+	t1.pos.z = player1_.deathPos.z + (player1_.initialPos.z - player1_.deathPos.z) * easedT;
 	t1.prePos = t1.pos;
 
 	// プレイヤー2の座標を補間（死んだ場所 -> 初期位置）
 	Transform& t2 = player2_.player->GetTransform();
 	t2.pos.x = player2_.deathPos.x + (player2_.initialPos.x - player2_.deathPos.x) * easedT;
 	t2.pos.y = player2_.deathPos.y + (player2_.initialPos.y - player2_.deathPos.y) * easedT;
+	t2.pos.z = player2_.deathPos.z + (player2_.initialPos.z - player2_.deathPos.z) * easedT;
 	t2.prePos = t2.pos;
 
 	// 完了判定
@@ -383,6 +385,7 @@ bool GameScene::TrapProcess(void)
 			//判定：プレイヤー判定20.0f,トラップ半径25.0f
 			if (AsoUtility::IsHitCircleXY(pPos, 20.0f, tPos, 60.0f))
 			{
+				if(fabsf(pPos.z - tPos.z) < 40.0f)
 				isRespawning_ = true;
 				respawnTimer_ = 0.0f;
 
@@ -526,10 +529,12 @@ void GameScene::SetStageType(void)
 	{
 		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
 		player1_.player->Init(stagePos, pStageType);
+		player1_.initialPos = stagePos;
 	}
 	if (player2_.player != nullptr)
 	{
 		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
 		player2_.player->Init(stagePos, pStageType);
+		player2_.initialPos = stagePos;
 	}
 }
