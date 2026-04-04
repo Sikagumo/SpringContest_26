@@ -28,6 +28,11 @@ public:
 	/// @param _blue 青の割合(0.1～1.0)
 	static unsigned int SetColor(float _red, float _green, float _blue);
 
+	/// @brief 色の割合を float化
+	/// @param _color 色の割合(0 ～ 255)
+	/// @return 色の割合(0.0 ～ 1.0)
+	static COLOR_F GetColorRate(const Color& _color);
+
 
 	/// @brief 文字列→int型変換																							
 	/// @param _text 対象のテキスト

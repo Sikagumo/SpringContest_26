@@ -118,19 +118,6 @@ private:
 
 	int timeText_[11];
 
-	enum class UI_TEXT
-	{
-		PAUSE_MAIN,
-		PAUSE_SUB,
-		DECISION_SUB,
-		GAME_START,
-		GAME_END,
-		GAME_OVER,
-		GAME_CLEAR,
-		TIME_LIMIT,
-		TIME_CLEAR,
-		MAX
-	};
 	int uiText_[static_cast<int>(UI_TEXT::MAX)];
 
 	//“ü‚ê‘Ö‚¦’†‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO

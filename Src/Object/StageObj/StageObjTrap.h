@@ -5,6 +5,9 @@
 class StageObjTrap : public StageObjBase
 {
 public:
+
+	static constexpr float COLLISION_RADIUS = 100.0f;
+
 	StageObjTrap(int _x, int _y, int _objType, float _alpha = 1.0f);
 
 	/// @brief 固定オブジェクトのため、更新しない
@@ -13,7 +16,6 @@ public:
 protected:
 
 	static constexpr float BLOCK_SCALE = 0.15f;
-	static constexpr float COLLISION_RADIUS = 100.0f;
 	static constexpr float COLLISION_SIZE_X = 10.0f;
 	static constexpr float COLLISION_SIZE_Y = 10.0f;
 	static constexpr VECTOR MODEL_OFFSET = { 0.0f, 0.0f, 0.0f };

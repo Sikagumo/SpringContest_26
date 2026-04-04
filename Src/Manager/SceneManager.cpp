@@ -39,8 +39,7 @@ SceneManager::SceneManager(void)
 {
 	bool isDebug = false;
 
-//#ifdef _DEBUG
-#ifndef _DEBUG
+#ifdef _DEBUG
 	isDebug = true;
 #endif
 
@@ -158,7 +157,7 @@ void SceneManager::Update(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance().IsTrgDown(InputManager::TYPE::DEBUG_MODE))
 	{
-		//isDebugMode_ = !isDebugMode_;
+		isDebugMode_ = !isDebugMode_;
 	}
 #endif
 }
@@ -175,8 +174,10 @@ void SceneManager::Draw(void)
 
 	SetDrawArea(0, 0, Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y);
 	SetCameraScreenCenter(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y);
+
 	// シャドウマップへの描画の準備
 	ShadowMap_DrawSetup(shadowMapHandle_);
+	
 
 	// 各シーンの描画処理
 	scene_->Draw();
@@ -192,12 +193,14 @@ void SceneManager::Draw(void)
 
 	// シャドウマップへの描画の準備
 	SetUseShadowMap(0, shadowMapHandle_);
+	
 
 	// 各シーンの描画処理
 	scene_->Draw();
 	
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
+
 
 	// カメラ描画
 	camera_->DrawDebug();

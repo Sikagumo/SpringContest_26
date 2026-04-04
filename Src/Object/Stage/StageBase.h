@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include "../../Utility/UtilityCommon.h"
 #include "../../Common/Vector2.h"
 #include "../Common/Transform.h"
 #include "../Actor/ActorBase.h"
@@ -10,6 +11,19 @@ class CsvManager;
 class StageBase
 {
 public:
+
+	enum class BLOCK_TYPE
+	{
+		BLANK = -1,    // 空白or未割当
+		WALL,		   // 壁
+		PLAYER_WIDTH,  // 横プレイヤー
+		PLAYER_HEIGHT, // 縦プレイヤー
+
+		GOAL, // ゴール
+		TRAP, // 罠
+
+		MAX,
+	};
 
 	enum class TYPE
 	{
@@ -23,7 +37,7 @@ public:
 	virtual ~StageBase(void) = default;
 
 
-	void Init(int _curStageNum);
+	void Init(int _stageNum);
 
 	virtual void Update(void);
 
@@ -53,13 +67,17 @@ public:
 
 protected:
 
+	static constexpr UtilityCommon::Color WALL_COLOR_FLONT = UtilityCommon::Color(255, 255, 0, 255);
+	static constexpr UtilityCommon::Color WALL_COLOR_BACK = UtilityCommon::Color(0, 255, 0, 255);
+	static constexpr UtilityCommon::Color WALL_COLOR_BACKGROUND = UtilityCommon::Color(255, 200, 255, 255);
+
 	static constexpr VECTOR STAGE_POS = { -1000.0f, -1000.0f, 850.0f };
 	static constexpr VECTOR BLOCK_OFFSET = { 199.9f, 199.9f, 200.0f };
 	static constexpr float BLOCK_SCALE = 1.0f;
 	static constexpr float PLAYER_OFFSET_Z = -10.0f;
 
-	static constexpr float FLONT_ALPHA = 0.65f;
-	static constexpr float BACK_ALPHA = 0.85f;
+	static constexpr float FRONT_ALPHA = 0.65f;
+	static constexpr float BACK_ALPHA = 0.65f;
 
 	SceneManager& sceneMng_;
 	ResourceManager& resMng_;
@@ -76,7 +94,8 @@ protected:
 	// 配置リスト
 	std::vector<std::vector<StageObjBase*>> placeType_;
 	std::vector<std::vector<StageObjBase*>> placeBackType_;
-	std::vector<std::vector<StageObjBase*>> backGroundList_;
+	std::vector<StageObjBase*> placeBackBlankList_;
+	std::vector<StageObjBase*> backGroundList_;
 
 	// プレイヤー初期位置
 	VECTOR playersPos_[2];
@@ -100,14 +119,18 @@ protected:
 	/// @return ブロックの行リスト
 	void SetBlockTypeList(int _mapType, int _xMax, int _yMax);
 	void SetBlockBackTypeList(int _mapType, int _xMax, int _yMax);
-	void SetBlockBackList(int _xMax, int _yMax);
+	void SetBackGroundList(int _xMax, int _yMax);
 
 	/// @brief ブロック状態割り当て
 	/// @param _blockType CSVのステージ配置の値
 	/// @param _posX 現在列数
 	/// @param _posY 現在行数
-	virtual StageObjBase* SetParam(int _mapType, int _x, int _y) = 0;
-	virtual StageObjBase* SetParamBack(int _mapType, int _x, int _y) = 0;
+	virtual StageObjBase* SetParam(int _blockType, int _x, int _y) = 0;
+	virtual StageObjBase* SetParamBack(int _blockType, int _x, int _y, float _alpha = 1.0f, bool _isCollision = true) = 0;
 
-	void ChangeFrontObjects(int _stageType);
+	void ChangeFrontObjects(void);
+
+	/// @brief  後ろステージに同座標の壁が存在するか否か
+	/// @param _pos 判定する位置
+	bool _IsHasBackWallAt(const Vector2& _pos)const;
 };

@@ -8,7 +8,7 @@ StageObjBase::StageObjBase(int _x, int _y, const VECTOR& _collisionSize, int _ob
 	x(_x), y(_y),
 	collisionPos_(Vector2F(0.0f, 0.0f)),
 	collisionSize_(Vector2F(_collisionSize.x, _collisionSize.y)),
-	type(_objType), alpha_(_alpha)
+	objType_(_objType), alpha_(_alpha)
 {
 }
 
@@ -62,5 +62,5 @@ const ColliderBase* StageObjBase::GetOwnCollider(void)
 void StageObjBase::SetAlpha(float _alpha)
 {
 	alpha_ = _alpha;
-	transform_.SetAlpha(alpha_);
+	transform_.SetAlpha(_alpha);
 }

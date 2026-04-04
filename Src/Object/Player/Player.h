@@ -29,6 +29,9 @@ public:
 		P2
 	};
 
+	// 衝突判定用カプセル球体半径
+	static constexpr float COL_CAPSULE_RADIUS = 20.0f;
+
 
 	Player(PLAYER_NO _playerNo, const VECTOR& _pos);
 
@@ -45,8 +48,8 @@ public:
 
 	void SetGameStageType(STAGE_TYPE stageType);
 
-	void ActiveIsChangeModel(void) { isChangeModel_ = true; };
 
+	void SetIsChangeModel(bool _isChangeModel) { isChangeModel_ = _isChangeModel; };
 	bool GetIsChangeModel(void) { return isChangeModel_; }
 
 
@@ -78,6 +81,10 @@ protected:
 
 private:
 
+	static constexpr COLOR_F P1_COLOR = COLOR_F(1.0f, 0.25f, 0.25f, 1.0f);
+	static constexpr COLOR_F P2_COLOR = COLOR_F(0.25f, 0.25f, 1.0f, 1.0f);
+
+
 	// 衝突判定用線分開始
 	static constexpr VECTOR COL_LINE_START_LOCAL_POS = { 0.0f, 80.0f, 0.0f };
 
@@ -103,9 +110,6 @@ private:
 	// 衝突判定用カプセル下部球体
 	static constexpr VECTOR COL_CAPSULE_DOWN_POS_P2 = { 0.0f, -90.0f, 0.0f };
 
-
-	// 衝突判定用カプセル球体半径
-	static constexpr float COL_CAPSULE_RADIUS = 20.0f;
 	
 
 	// ジャンプ力
@@ -142,7 +146,7 @@ private:
 	// ジャンプ
 	void ProcessJump(void);
 
-	void PlayAnim(ANIM_TYPE type, bool _isLoop = true);
+	void PlayAnim(ANIM_TYPE objType_, bool _isLoop = true);
 
 	PLAYER_NO playerNo_;
 };

@@ -9,8 +9,9 @@
 #include <memory>
 #include <cassert>
 
-#include "./StatusPlayer.h"
 #include "../Manager/ResourceManager.h"
+#include "../Utility/UtilityCommon.h"
+
 
 CsvManager* CsvManager::instance_ = nullptr;
 
@@ -43,8 +44,7 @@ void CsvManager::Destroy(void)
 
 CsvManager::CsvManager(void)
 {
-//#ifndef _DEBUG
-#ifdef _DEBUG
+#ifndef _DEBUG
 	// リリースビルド時のみDXアーカイブを使用
 	SetUseDXArchiveFlag(TRUE);
 #endif
@@ -60,8 +60,7 @@ std::string CsvManager::ReadCsvFile(const std::string& path)
 {
 	std::string content;
 
-//#ifdef _DEBUG
-#ifndef _DEBUG
+#ifdef _DEBUG
 	// デバッグビルド：通常のファイルシステムから読み込み
 	std::ifstream file(path);
 
@@ -110,63 +109,6 @@ std::string CsvManager::ReadCsvFile(const std::string& path)
 	return content;
 }
 
-
-void CsvManager::LoadPlayerStatus(void)
-{
-	/*　csvファイル読み込み処理　*/
-
-	// 文字列の一時格納配列
-	int max = static_cast<int>(StatusPlayer::PARAM::MAX);
-	std::string dataText[static_cast<int>(StatusPlayer::PARAM::MAX)];
-
-	// 行
-	std::string line;
-	std::string path = (ResourceManager::PATH_CSV + PATH_PLAYER);
-
-	// セーブファイルパス
-
-	// CSVファイルの内容を取得
-	std::string fileContent = ReadCsvFile(path);
-	std::istringstream fileStream(fileContent);
-
-	int length = 0;
-	int param = 0; // 種類
-
-
-	// 行読み込み
-	while (getline(fileStream, line))
-	{
-		std::stringstream ss(line);
-		std::string text;
-
-		if (param == 0)
-		{
-			// ラベルはスキップ
-			param++;
-			length = 0;
-			continue;
-		}
-
-		// 列読み込み(コンマごと)
-		while (getline(ss, text, ','))
-		{
-			// カンマごとに区別されていない
-			if (length < max)
-			{
-				dataText[length] = text;
-				length++;
-			}
-		}
-
-		length = 0;
-		param++;
-	}
-
-
-	// 数値読込
-	player_ = std::make_unique<StatusPlayer>();
-	player_->LoadStatusParam(std::to_array(dataText));
-}
 
 void CsvManager::LoadStages(void)
 {
@@ -470,11 +412,6 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, bool _isLabelSkip
 	stage_.gravityBack.emplace_back(dataNumBacks);
 }
 
-
-std::string& CsvManager::GetHandlePathPlayer(void)
-{
-	return player_->GetHandlePath();
-}
 
 int CsvManager::GetStageMoveNum(int _type, int x, int y)
 {

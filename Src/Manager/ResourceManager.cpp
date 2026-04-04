@@ -5,14 +5,11 @@
 #include <unordered_map>
 #include "../Application.h"
 #include "../CSV/CsvManager.h"
-#include "../CSV/StatusPlayer.h"
-#include "../CSV/StatusEnemy.h"
 
 ResourceManager* ResourceManager::instance_ = nullptr;
 
 // リソースファイルのパス
-//#ifdef _DEBUG
-#ifndef _DEBUG
+#ifdef _DEBUG
 const std::string PATH_DATA = "Data/";
 
 // 暗号化済みのリソースフォルダパス
@@ -82,9 +79,9 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI_SELECT, PATH_IMAGE + "SelectUI.png"
 				 , allNum, numX, numY, sizeX, sizeY);
 
-	allNum = 9;
+	allNum = 11;
 	numX = 1;
-	numY = 9;
+	numY = 11;
 	sizeX = 1024;
 	sizeY = 112;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT, PATH_IMAGE + "Text.png"
@@ -99,15 +96,14 @@ void ResourceManager::SetResource(void)
 				 , allNum, numX, numY, sizeX, sizeY);
 
 	/* モデル */
-	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER, PATH_MODEL + "Player/Player.mv1");
- 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_MOVE, PATH_MODEL + "Player/PlayerMoveArrow.mv1");
+ 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_MOVE, PATH_MODEL + "Player/PlayerMove.mv1");
  	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_GRAVITY, PATH_MODEL + "Player/PlayerGravity.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_SKYDOME, PATH_MODEL + "SkyDome/SkyDome.mv1");
 
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_BLANK, PATH_MODEL + "Blocks/Block_Blank.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_STONE, PATH_MODEL + "Blocks/Block_Stone.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_GOAL, PATH_MODEL + "Goal/Goal.mv1");
-	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_TRAP, PATH_MODEL + "Goal/Goal.mv1");
+	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_TRAP, PATH_MODEL + "Trap/Trap.mv1");
 
 	/* BGM */
 	_SetResource(LOAD_TYPE::SOUND, SRC::BGM_TITLE, PATH_BGM + "TitleBGM.mp3");
@@ -195,12 +191,12 @@ void ResourceManager::LoadHandleIds(SRC _src, int* _target)
 	// 複数画像の対象にコピー
 	Load(_src).CopyHandle(_target);
 
+#ifdef _DEBUG
 	if (*_target == -1)
 	{
-#ifdef _DEBUG
 		OutputDebugString("\n複数画像が読み込まれませんでした。画像数/画像１枚のサイズ/画像パス名を確認してください。\n");
-#endif
 	}
+#endif
 }
 
 std::string ResourceManager::GetHandlePath(SRC _src)

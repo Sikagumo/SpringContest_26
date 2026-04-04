@@ -24,7 +24,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 {
 	StageObjBase* ret = nullptr;
 
-	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
+	BLOCK_TYPE objType = static_cast<BLOCK_TYPE>(_blockType);
 
 	float scale = 1.0f;
 
@@ -34,14 +34,14 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 					   STAGE_POS.z);
 
 	// ÉvÉåÉCÉÑÅ[ÇPìoò^
-	if (type == BLOCK_TYPE::PLATER_WIDTH
+	if (objType == BLOCK_TYPE::PLAYER_WIDTH
 		&& AsoUtility::EqualsVZero(playersPos_[0]))
 	{
 		playersPos_[0] = pos;
 	}
 
 	// ÉvÉåÉCÉÑÅ[ÇQìoò^
-	else if (type == BLOCK_TYPE::PLATER_HEIGHT
+	else if (objType == BLOCK_TYPE::PLAYER_HEIGHT
 			&& stageType_ == TYPE::MOVE
 			&& AsoUtility::EqualsVZero(playersPos_[1]))
 	{
@@ -49,7 +49,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	}
 
 	// ÉSÅ[Éãìoò^
-	else if (type == BLOCK_TYPE::GOAL)
+	else if (objType == BLOCK_TYPE::GOAL)
 	{
 		ret = new StageObjGoal(_x, _y, _blockType);
 		ret->Init(pos);
@@ -62,17 +62,33 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	}
 
 	// ï«ìoò^
-	else if (type == BLOCK_TYPE::WALL)
+	else if (objType == BLOCK_TYPE::WALL)
 	{
 		ret = new StageObjWall(_x, _y, _blockType);
 		ret->Init(pos);
+
+		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
+
+		MV1SetMaterialDifColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialDifColor(ret->GetTransform().modelId, 0).a));
 	}
 
 	//ÉgÉâÉbÉvìoò^
-	else if (type == BLOCK_TYPE::TRAP)
+	else if (objType == BLOCK_TYPE::TRAP)
 	{
 		ret = new StageObjTrap(_x, _y, _blockType);
 		ret->Init(pos);
+
+		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
+
+		MV1SetMaterialSpcColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialSpcColor(ret->GetTransform().modelId, 0).a));
+
+		MV1SetMaterialDifColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialDifColor(ret->GetTransform().modelId, 0).a));
 
 		//ÉgÉâÉbÉvÇÃç¿ïWÇÉäÉXÉgÇ…ï€ë∂Ç∑ÇÈ
 		trapPositions_.push_back(ret->GetTransform().pos);
@@ -80,29 +96,21 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 
 	return ret;
 }
-StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y)
+StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alpha, bool _isCollision)
 {
 	// âúçsÇ™Ç»Ç¢èÍçáÇÕnullÇ≈ï‘Ç∑
 	if (stageType_ != TYPE::MOVE3D) { return nullptr; }
 
 	StageObjBase* ret = nullptr;
 
-	BLOCK_TYPE type = static_cast<BLOCK_TYPE>(_blockType);
+	BLOCK_TYPE objType = static_cast<BLOCK_TYPE>(_blockType);
 	
 	VECTOR pos = VGet((_x * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
 					  (_y * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),
 					  (STAGE_POS.z + BLOCK_OFFSET.z));
 
-	// ÉvÉåÉCÉÑÅ[ÇPìoò^
-	if (type == BLOCK_TYPE::PLATER_WIDTH
-		&& AsoUtility::EqualsVZero(playersPos_[0]))
-	{
-		pos.z += PLAYER_OFFSET_Z;
-		playersPos_[0] = pos;
-	}
-
 	// ÉvÉåÉCÉÑÅ[ÇQìoò^
-	else if (type == BLOCK_TYPE::PLATER_HEIGHT
+	if (objType == BLOCK_TYPE::PLAYER_HEIGHT
 			 && AsoUtility::EqualsVZero(playersPos_[1]))
 	{
 		pos.z += PLAYER_OFFSET_Z;
@@ -110,7 +118,7 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y)
 	}
 
 	// ÉSÅ[Éãìoò^
-	else if (type == BLOCK_TYPE::GOAL)
+	else if (objType == BLOCK_TYPE::GOAL)
 	{
 		ret = new StageObjGoal(_x, _y, _blockType);
 		ret->Init(pos);
@@ -118,27 +126,26 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y)
 	}
 
 	// ï«ìoò^
-	else if (type == BLOCK_TYPE::WALL)
+	else if (objType == BLOCK_TYPE::WALL)
 	{
-		ret = new StageObjWall(_x, _y, _blockType);
+		ret = new StageObjWall(_x, _y, _blockType, _alpha, _isCollision);
 		ret->Init(pos);
+		
+		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_BACK);
+
+		MV1SetMaterialDifColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialDifColor(ret->GetTransform().modelId, 0).a));
 	}
 
 	//ÉgÉâÉbÉvìoò^
-	else if (type == BLOCK_TYPE::TRAP)
+	else if (objType == BLOCK_TYPE::TRAP)
 	{
 		ret = new StageObjTrap(_x, _y, _blockType);
 		ret->Init(pos);
 
 		//ÉgÉâÉbÉvÇÃç¿ïWÇÉäÉXÉgÇ…ï€ë∂Ç∑ÇÈ
 		trapPositions_.push_back(ret->GetTransform().pos);
-	}
-
-	// ñ¢äÑìñéûÅAìßâﬂÉIÉuÉWÉFÉNÉgÇÃí«â¡
-	if (ret == nullptr)
-	{
-		ret = new StageObjWall(_x, _y, _blockType, BACK_ALPHA, false);
-		ret->Init(pos);
 	}
 
 	return ret;

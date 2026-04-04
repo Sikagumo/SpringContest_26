@@ -29,6 +29,23 @@ public:
 
 protected:
 
+	enum class UI_TEXT
+	{
+		PAUSE_MAIN,
+		PAUSE_SUB,
+		DECISION_SUB,
+		GAME_START,
+		GAME_END,
+		GAME_OVER,
+		GAME_CLEAR,
+		STAGE_SELECT,
+		TIME_LIMIT,
+		TIME_CLEAR,
+		HIGH_SCORE,
+
+		MAX
+	};
+
 	// ÉäÉ\Å[ÉXä«óù
 	ResourceManager& resMng_;
 

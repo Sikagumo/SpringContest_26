@@ -132,8 +132,11 @@ int StageController::GetStageChoice(void)
 	if (choiceList.size() != 0)
 	{
 		// 抽選リストからステージを指定
-		retStageNum = GetRand(static_cast<int>(choiceList.size()));
+		int rand = GetRand(static_cast<int>(choiceList.size()) - 1);
+		retStageNum = choiceList[rand];
 	}
+
+	choiceList.clear();
 
 	return retStageNum;
 }

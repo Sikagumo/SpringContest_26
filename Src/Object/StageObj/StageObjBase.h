@@ -31,15 +31,17 @@ public:
 
 	const ColliderBase* GetOwnCollider(void);
 
-	int GetObjType(void) { return type; };
+	int GetObjType(void) { return objType_; };
 
 	void SetAlpha(float _alpha);
+
+	Vector2 GetObjArrayPos(void) { return Vector2(x, y); };
 
 
 protected:
 
 	// オブジェクトの種類
-	int type;
+	int objType_;
 
 	// 当たり判定座標
 	Vector2F collisionPos_;

@@ -147,12 +147,6 @@
     <ClCompile Include="Src\CSV\CsvManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\CSV\StatusPlayer.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\CSV\StatusEnemy.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Utility\UtilityCommon.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -186,7 +180,7 @@
     <ClCompile Include="Src\Manager\SoundManager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-	<ClCompile Include="Src\Object\Stage\StageGravity.cpp">
+    <ClCompile Include="Src\Object\Stage\StageGravity.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Stage\StageController.cpp">
@@ -285,12 +279,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\CSV\CsvManager.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\CSV\StatusPlayer.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\CSV\StatusEnemy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Utility\UtilityCommon.h">

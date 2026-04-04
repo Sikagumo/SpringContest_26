@@ -246,6 +246,17 @@ unsigned int UtilityCommon::SetColor(float _red, float _green, float _blue)
     return GetColor(r, g, b);
 }
 
+COLOR_F UtilityCommon::GetColorRate(const Color& _color)
+{
+    float r, g, b, a;
+    r = static_cast<float>(_color.r) / 255;
+    g = static_cast<float>(_color.g) / 255;
+    b = static_cast<float>(_color.b) / 255;
+    a = static_cast<float>(_color.a) / 255;
+
+    return COLOR_F(r, g, b, a);
+}
+
 bool UtilityCommon::WrapValue(VECTOR& _vec, const VECTOR& _maxVec, const VECTOR& _minVec)
 {
     // 最小値を超えている場合は最大値に、最大値を超えている場合は最小値で返す

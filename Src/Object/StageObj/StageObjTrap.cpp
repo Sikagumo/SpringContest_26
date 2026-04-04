@@ -18,7 +18,7 @@ void StageObjTrap::InitLoad(void)
 void StageObjTrap::InitTransform(void)
 {
 	transform_.InitTransform(BLOCK_SCALE,
-		Quaternion::Identity(), Quaternion::AngleAxis(-90.0f, AsoUtility::AXIS_X));
+		Quaternion::Identity(), Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_Y));
 }
 
 void StageObjTrap::InitCollider(void)

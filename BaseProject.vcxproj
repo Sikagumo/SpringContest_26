@@ -22,8 +22,6 @@
     <ClCompile Include="Src\Common\FpsController.cpp" />
     <ClCompile Include="Src\Common\Vector2F.cpp" />
     <ClCompile Include="Src\CSV\CsvManager.cpp" />
-    <ClCompile Include="Src\CSV\StatusEnemy.cpp" />
-    <ClCompile Include="Src\CSV\StatusPlayer.cpp" />
     <ClCompile Include="Src\Manager\Input.cpp" />
     <ClCompile Include="Src\Manager\Sound.cpp" />
     <ClCompile Include="Src\Manager\SoundManager.cpp" />
@@ -70,8 +68,6 @@
     <ClInclude Include="Src\Common\FpsController.h" />
     <ClInclude Include="Src\Common\Vector2F.h" />
     <ClInclude Include="Src\CSV\CsvManager.h" />
-    <ClInclude Include="Src\CSV\StatusEnemy.h" />
-    <ClInclude Include="Src\CSV\StatusPlayer.h" />
     <ClInclude Include="Src\Manager\Input.h" />
     <ClInclude Include="Src\Manager\Sound.h" />
     <ClInclude Include="Src\Manager\SoundManager.h" />

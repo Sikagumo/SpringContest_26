@@ -25,7 +25,6 @@ public:
 		IMGS_UI_SELECT,
 
 		// ƒ‚ƒfƒ‹
-		MODEL_PLAYER,
 		MODEL_PLAYER_MOVE,
 		MODEL_PLAYER_GRAVITY,
 

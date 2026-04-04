@@ -44,15 +44,15 @@ void ActorBase::Draw(void)
 	DrawLate();
 
 #ifdef _DEBUG
-	/*
+	
 	if (sceneMng_.GetIsDebugMode())
 	{
 		// 所有しているコライダの描画
-		for (const auto& [type, collider] : ownColliders_)
+		for (const auto& [objType_, collider] : ownColliders_)
 		{
 			collider->Draw();
 		}
-	}*/
+	}
 #endif
 }
 

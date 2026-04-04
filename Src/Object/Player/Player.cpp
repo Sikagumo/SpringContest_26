@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityCommon.h"
 #include "../../Utility/MatrixUtility.h"
 #include "../Common/AnimationController.h"
 #include "../../Manager/InputManager.h"
@@ -36,7 +37,7 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 	stageType_ = stageType;
 
 	// モデル種類変更
-	ResourceManager::SRC src = ResourceManager::SRC::MODEL_PLAYER;
+	ResourceManager::SRC src = ResourceManager::SRC::NONE;
 
 	if (stageType == STAGE_TYPE::MOVE)
 	{
@@ -52,10 +53,21 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 	transform_.SetScale(modelScale);
 	transform_.SetModel(resMng_.LoadModelDuplicate(src));
 
-	// プレイヤー別のマテリアル割り当て
-	COLOR_F matCol = MV1GetMaterialDifColor(transform_.modelId, 0);
-	matCol = ((playerNo_ == PLAYER_NO::P1) ? COLOR_F(1.0f, 0.25f, 0.25f, 1.0f) : COLOR_F(0.25f, 0.25f, 1.0f, 1.0f));
+
+	/* プレイヤー別のマテリアル割り当て */
+	const float DEC_NUM = 0.75;
+	COLOR_F matCol = ((playerNo_ == PLAYER_NO::P1) ? P1_COLOR : P2_COLOR);
 	MV1SetMaterialDifColor(transform_.modelId, 0, matCol);
+
+
+	// 目のマテリアルの色を明示的に黒にする
+	const int EYE_BLACK_MATERIAL_NUM = ((stageType_ == STAGE_TYPE::MOVE) ? 2 : 1);
+
+	MV1SetMaterialDifColor(transform_.modelId, EYE_BLACK_MATERIAL_NUM, GetColorF(0.0f, 0.0f, 0.0f, 1.0f));
+	MV1SetMaterialEmiColor(transform_.modelId, EYE_BLACK_MATERIAL_NUM, GetColorF(0.0f, 0.0f, 0.0f, 0.0f));
+	MV1SetMaterialSpcColor(transform_.modelId, EYE_BLACK_MATERIAL_NUM, GetColorF(0.0f, 0.0f, 0.0f, 0.0f));
+	
+
 
 	/* モデルの部分非表示 */
 	const std::string FRAME_NAME_DAMAGE = "Damage";

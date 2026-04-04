@@ -10,6 +10,7 @@
 #include "../Object/Actor/ActorBase.h"
 #include "../Object/Common/Transform.h"
 #include "../Object/StageObj/StageObjBase.h"
+#include "../Object/StageObj/StageObjTrap.h"
 #include "../Object/Stage/StageController.h"
 #include "../Object/Stage/StageBase.h"
 #include "../Object/Stage/StageMove.h"
@@ -27,7 +28,7 @@ GameScene::GameScene(void)
 	, player1_(PlayerParam()), player2_(PlayerParam())
 	, SceneBase()
 	, gameTimer_(GAME_TIME), performTime_(0.0f), isPerform_(false)
-	, isGameTimeActive_(false)
+	, isGameTimeActive_(false), currentSwapRight_(SWAP_RIGHT::P1)
 {
 	for (int& time : timeText_)  { time = -1; }
 	for (int& ui : uiText_)  { ui = -1; }
@@ -92,6 +93,8 @@ void GameScene::Init(void)
 	gameTimer_ = GAME_TIME;
 
 	isPerform_ = false;
+	currentSwapRight_ = SWAP_RIGHT::P1;
+
 	ChangeState(GAME_STATE::ACTIVE);
 }
 
@@ -150,51 +153,32 @@ void GameScene::Update(void)
 		bool executeSwap = false;
 
 		//今どちらが権限を持っていて、かつ対応するボタンが押されたか
-		if (currentSwapRight_ == SWAP_RIGHT::P1)
+
+		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1)
+			|| input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
+		/*
+		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1)
+			&& currentSwapRight_ == SWAP_RIGHT::P1
+
+			|| input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2)
+			&& currentSwapRight_ == SWAP_RIGHT::P2)*/
 		{
-			// P1が権限保持中：P1のチェンジボタンだけをチェック
-			if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1))
-			{
-				executeSwap = true;
-				isSwapping_ = true;
-				swapTimer_ = 0;
+			executeSwap = true;
+			isSwapping_ = true;
+			swapTimer_ = 0;
 
-				//移動開始時の両者の位置を保持する
-				player1_.startPos = player1_.player->GetTransform().pos;
-				player2_.startPos = player2_.player->GetTransform().pos;
+			//移動開始時の両者の位置を保持する
+			player1_.startPos = player1_.player->GetTransform().pos;
+			player2_.startPos = player2_.player->GetTransform().pos;
 
-				//目的地を保存する
-				player1_.endPos = player2_.startPos;
-				player2_.endPos = player1_.startPos;
+			//目的地を保存する
+			player1_.endPos = player2_.startPos;
+			player2_.endPos = player1_.startPos;
 
-				sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CHANGE), false, true);
+			sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CHANGE), false, true);
 
-				//交代中にゴールするのを阻止する
-				return;
-			}
-		}
-		else if (currentSwapRight_ == SWAP_RIGHT::P2)
-		{
-			// P2が権限保持中：P2のチェンジボタンだけをチェック
-			if (input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
-			{
-				executeSwap = true;
-				isSwapping_ = true;
-				swapTimer_ = 0;
-
-				//移動開始時の両者の位置を保持する
-				player1_.startPos = player1_.player->GetTransform().pos;
-				player2_.startPos = player2_.player->GetTransform().pos;
-
-				//目的地を保存する
-				player1_.endPos = player2_.startPos;
-				player2_.endPos = player1_.startPos;
-
-				sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CHANGE), false, true);
-
-				//交代中にゴールするのを阻止する
-				return;
-			}
+			//交代中にゴールするのを阻止する
+			return;
 		}
 
 	}
@@ -220,6 +204,8 @@ void GameScene::Update(void)
 void GameScene::Draw(void)
 {
 	skyDome_->Draw();
+
+	stage_->DrawPre();
 
 	if (currentSwapRight_ == SWAP_RIGHT::P1)
 	{
@@ -348,7 +334,7 @@ void GameScene::UpdateSwap(void)
 
 		//ここで権限を譲渡する
 		currentSwapRight_ = (currentSwapRight_ == SWAP_RIGHT::P1)
-			? SWAP_RIGHT::P2 : SWAP_RIGHT::P1;
+							  ? SWAP_RIGHT::P2 : SWAP_RIGHT::P1;
 	}
 }
 
@@ -379,6 +365,10 @@ void GameScene::UpdateRespawn(void)
 	if (t >= 1.0f)
 	{
 		isRespawning_ = false;
+
+		// プレイヤーの見た目をもとに戻す
+		player1_.player->SetIsChangeModel(false);
+		player2_.player->SetIsChangeModel(false);
 	}
 }
 
@@ -400,11 +390,14 @@ bool GameScene::TrapProcess(void)
 		//リストの中にあるトラップを一つずつ取り出して判定
 		for (const VECTOR& tPos : trapList)
 		{
-			//判定：プレイヤー判定20.0f,トラップ半径25.0f
-			if (AsoUtility::IsHitCircleXY(pPos, 20.0f, tPos, 60.0f))
+			if (AsoUtility::IsHitSpheres(pPos, Player::COL_CAPSULE_RADIUS, tPos, StageObjTrap::COLLISION_RADIUS))
 			{
 				isRespawning_ = true;
 				respawnTimer_ = 0.0f;
+
+				// プレイヤーの見た目を変更
+				player1_.player->SetIsChangeModel(true);
+				player2_.player->SetIsChangeModel(true);
 
 				player1_.deathPos = player1_.player->GetTransform().pos;
 				player2_.deathPos = player2_.player->GetTransform().pos;
@@ -755,5 +748,6 @@ void GameScene::SetStageType(void)
 		player2_.player->Update();
 	}
 
+	currentSwapRight_ = SWAP_RIGHT::P1;
 	ChangeState(GAME_STATE::ACTIVE);
 }

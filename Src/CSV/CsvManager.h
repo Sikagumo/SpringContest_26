@@ -4,14 +4,11 @@
 #include <array>
 #include <vector>
 
-class StatusPlayer;
-
 class CsvManager
 {
 public:
 
 	// セーブデータのハンドル
-	const char* PATH_PLAYER = "PlayerData.csv";
 	const char* PATH_STAGE_MOVE = "StageMove.csv";
 	const char* PATH_STAGE_GRAVITY = "StageGravity.csv";
 
@@ -36,11 +33,6 @@ public:
 	/// @returns 正常動作できたか否か
 	//void SaveCSV(void);
 
-	/// @brief プレイヤーステータス参照
-	StatusPlayer& GetPlayerStatus(void)const { return *player_; };
-	
-	std::string& GetHandlePathPlayer(void);
-
 
 	int GetStageMoveNum(int _type, int x, int y);
 	int GetStageBackMoveNum(int _type, int x, int y);
@@ -56,9 +48,6 @@ private:
 
 	// インスタンス
 	static CsvManager* instance_;
-
-	// プレイヤーパラメータ
-	std::unique_ptr<StatusPlayer> player_;
 
 	struct StageMap
 	{
@@ -91,9 +80,6 @@ private:
 
 
 	std::string ReadCsvFile(const std::string& _path);
-
-	// 各csvファイル読み込み
-	void LoadPlayerStatus(void);
 
 	void LoadStages(void);
 
