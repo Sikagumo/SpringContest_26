@@ -49,8 +49,11 @@ public:
 	void SetGameStageType(STAGE_TYPE stageType);
 
 
-	void SetIsChangeModel(bool _isChangeModel) { isChangeModel_ = _isChangeModel; };
-	bool GetIsChangeModel(void) { return isChangeModel_; }
+	void SetIsChangeModel(bool _isChangeModel);
+	bool GetIsChangeModel(void) { return isChangeModel_; };
+
+	void SetIsGoal(bool _isGoal) { isGoal_ = _isGoal; };
+	bool GetIsGoal(void) { return isGoal_; };
 
 
 protected:
@@ -138,6 +141,9 @@ private:
 	int frameEyeDefault_;
 
 	int frameEyeDamage_;
+
+	bool isGoal_;
+
 
 
 	// ëÄçÏ

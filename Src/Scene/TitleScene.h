@@ -58,10 +58,11 @@ private:
 	static constexpr float TITLE_UI_SCALE = (1.0f - 0.0f);
 	static constexpr float TITLE_NOT_UI_SCALE = (1.0f - 0.25f);
 
-	static constexpr float SELECT_UI_SCALE = (1.0f - 0.0f);
-	static constexpr float SELECT_NOT_UI_SCALE = (1.0f - 0.5f);
+	static constexpr float SELECT_UI_SCALE = (1.0f - 0.15f);
+	static constexpr float SELECT_NOT_UI_SCALE = (1.0f - 0.6f);
 
 	static constexpr int TITLE_UI_OFFSET = 250;
+	static constexpr int TITLE_UI_OFFSET_Y = 75;
 	static constexpr int SELECT_UI_OFFSET = 500;
 
 	static constexpr int TITLE_NOT_SUB = (255 - 200);

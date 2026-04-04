@@ -18,22 +18,21 @@
 #include "../Object/SkyDome/SkyDome.h"
 #include "../Object/Player/Player.h"
 #include "../Object/Collider/ColliderBase.h"
+#include "../Common/Perform.h"
 #include "../Manager/Camera.h"
 #include "../Utility/AsoUtility.h"
 
 GameScene::GameScene(void)
-	: state_(GAME_STATE::NONE)
+	: SceneBase()
+	, state_(GAME_STATE::NONE)
 	, skyDome_(nullptr)
 	, stage_(nullptr)
 	, player1_(PlayerParam()), player2_(PlayerParam())
-	, SceneBase()
 	, gameTimer_(GAME_TIME), performTime_(0.0f), isPerform_(false)
 	, isGameTimeActive_(false), currentSwapRight_(SWAP_RIGHT::P1)
 {
-	for (int& time : timeText_)  { time = -1; }
-	for (int& ui : uiText_)  { ui = -1; }
+	for (int& time : timeText_) { time = -1; }
 
-	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT, uiText_);
 	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT_TIME, timeText_);
 }
 
@@ -121,8 +120,8 @@ void GameScene::Update(void)
 	}
 
 	// プレイヤー更新処理
-	player1_.player->Update();
-	player2_.player->Update();
+	if (!player1_.player->GetIsGoal()) { player1_.player->Update(); }
+	if (!player2_.player->GetIsGoal()) { player2_.player->Update(); }
 
 	if (!isSwapping_ && !isRespawning_)
 	{
@@ -174,6 +173,9 @@ void GameScene::Update(void)
 			//目的地を保存する
 			player1_.endPos = player2_.startPos;
 			player2_.endPos = player1_.startPos;
+
+			player1_.player->SetIsGoal(false);
+			player2_.player->SetIsGoal(false);
 
 			sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CHANGE), false, true);
 
@@ -304,6 +306,7 @@ void GameScene::Release(void)
 
 void GameScene::UpdateSwap(void)
 {
+	/* 交代処理 */
 	// タイマー更新
 	swapTimer_ += 1.0f;
 	float t = swapTimer_ / SWAP_LIMIT_FRAME; // 0.0 ～ 1.0 に正規化
@@ -340,6 +343,7 @@ void GameScene::UpdateSwap(void)
 
 void GameScene::UpdateRespawn(void)
 {
+	/* リスタート処理 */
 	//タイマー更新
 	respawnTimer_ += 1.0f;
 	float t = respawnTimer_ / RESPAWN_LIMIT_FRAME;
@@ -399,8 +403,14 @@ bool GameScene::TrapProcess(void)
 				player1_.player->SetIsChangeModel(true);
 				player2_.player->SetIsChangeModel(true);
 
+				player1_.player->SetIsGoal(false);
+				player2_.player->SetIsGoal(false);
+
 				player1_.deathPos = player1_.player->GetTransform().pos;
 				player2_.deathPos = player2_.player->GetTransform().pos;
+
+				const float HIT_STOP_TRAP = 1.0f;
+				sceneMng_.GetPerform().SetHitStop(HIT_STOP_TRAP);
 
 				//他の処理を中断（ゴール判定など)
 				return true;
@@ -417,26 +427,27 @@ bool GameScene::GoalProcess(void)
 	// 判定の大きさ
 	const float GOAL_HIT_RANGE = 80.0f;
 	VECTOR goalPos = AsoUtility::VECTOR_ZERO;
-	bool isP1Clear, isP2Clear;
-
-	isP1Clear = isP2Clear = false;
-
+	
 	for (int i = 0; i < 2; i++)
 	{
 		// 各プレイヤーとゴールの XY 距離判定
-		isP1Clear = AsoUtility::IsHitCircleXY(player1_.player->GetTransform().pos, 20.0f,
-											  stage_->GetGoalPos(i), GOAL_HIT_RANGE);
+		if (!player1_.player->GetIsGoal()
+			&& AsoUtility::IsHitSpheres(player1_.player->GetTransform().pos, 0.0f
+										, stage_->GetGoalPos(i), GOAL_HIT_RANGE))
+		{
+			player1_.player->SetIsGoal(true);
+		}
 
-		isP2Clear = AsoUtility::IsHitCircleXY(player2_.player->GetTransform().pos, 20.0f,
-											  stage_->GetGoalPos((i + 1) % 2), GOAL_HIT_RANGE);
-
-		// ゴール到達時、ループ終了
-		if (isP1Clear && isP2Clear) { break; }
+		if (!player2_.player->GetIsGoal()
+			&& AsoUtility::IsHitSpheres(player2_.player->GetTransform().pos, 0.0f
+										, stage_->GetGoalPos((i + 1) % 2), GOAL_HIT_RANGE))
+		{
+			player2_.player->SetIsGoal(true);
+		}
 	}
 
-
-	//二人が星に触れた状態になったらタイトルに
-	if (isP1Clear && isP2Clear)
+	// 二人が星に触れた状態になったらゴール状態に遷移
+	if (player1_.player->GetIsGoal() && player2_.player->GetIsGoal())
 	{
 		ret = true;
 
@@ -536,13 +547,17 @@ void GameScene::ChangeState(GAME_STATE _state)
 	{
 		updateGameStateProc_ = std::bind(&GameScene::Update_Pause, this);
 	}
+
 	else if (_state == GAME_STATE::GOAL)
 	{
-		sound_.Stop(static_cast<int>(ResourceManager::SRC::BGM_GAME));
 		sound_.Play(static_cast<int>(ResourceManager::SRC::SE_FANFALE), false);
 		updateGameStateProc_ = std::bind(&GameScene::Update_Goal, this);
 		performTime_ = TIME_CLEAR;
+
+		const float HIT_STOP_GOAL = 1.5f;
+		sceneMng_.GetPerform().SetHitStop(HIT_STOP_GOAL);
 	}
+
 	else if (_state == GAME_STATE::GAME_CLEAR)
 	{
 		updateGameStateProc_ = std::bind(&GameScene::Update_Clear, this);
@@ -582,7 +597,6 @@ void GameScene::Update_Active(void)
 	{
 		// BGM停止/SE再生
 		sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CLICK), false, true);
-		sound_.Stop(static_cast<int>(ResourceManager::SRC::BGM_GAME));
 
 		ChangeState(GAME_STATE::PAUSE);
 	}

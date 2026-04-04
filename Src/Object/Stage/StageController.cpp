@@ -96,7 +96,8 @@ void StageController::SetStageType(StageController::STAGE_TYPE _type)
 		stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
 	}
 
-	stage_->Init(GetStageChoice());
+	//stage_->Init(GetStageChoice());
+	stage_->Init(3);
 }
 
 int StageController::GetStageChoice(void)

@@ -90,16 +90,7 @@ void TitleScene::Draw(void)
             , BACK_SCALE, 0.0f, titleBackImage_, true);
         break;
     }
-    /*
-    DrawRotaGraph(static_cast<int>(backImagesPos_.x - BACK_OFFSET), static_cast<int>(backImagePos_.y)
-                  ,BACK_SCALE, 0.0f, titleBackImage_, true);
 
-    DrawRotaGraph(static_cast<int>(backImagePos_.x), static_cast<int>(backImagePos_.y)
-                  ,BACK_SCALE, 0.0f, titleBackImage_, true);
-
-    DrawRotaGraph(static_cast<int>(backImagePos_.x + BACK_OFFSET), static_cast<int>(backImagePos_.y)
-                  ,BACK_SCALE, 0.0f, titleBackImage_, true);
-    */
     // タイトル画像
     const int TITLE_POS_X = (Application::SCREEN_HALF_X - 408);
     const int TITLE_POS_Y = 100;
@@ -118,6 +109,10 @@ void TitleScene::Draw(void)
         DrawBox(0, 0, Application::SCREEN_SIZE_X, Application::SCREEN_SIZE_Y,
                 SELECT_BACK_COLOR, true);
         SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
+
+
+        DrawRotaGraph(Application::SCREEN_HALF_X, 100, 1.0, 0.0
+            , uiText_[static_cast<int>(UI_TEXT::STAGE_SELECT)], true);
 
         // 選択画像描画
         drawFuncSelect_();
@@ -216,8 +211,7 @@ void TitleScene::Update_SelectMove(void)
     }
 
     // タイトル状態遷移入力
-    ChangeStateProc(TITLE_STATE::SELECT_CANCEL, TITLE_STATE::SELECT_CANCEL);
-    //ChangeStateProc(TITLE_STATE::SELECT_CANCEL, TITLE_STATE::SELECT_GRAVITY);
+    ChangeStateProc(TITLE_STATE::SELECT_CANCEL, TITLE_STATE::SELECT_GRAVITY);
 
 }
 void TitleScene::Update_SelectGravity(void)
@@ -253,8 +247,7 @@ void TitleScene::Update_SelectCancel(void)
     }
 
     // タイトル状態遷移入力
-    ChangeStateProc(TITLE_STATE::SELECT_MOVE, TITLE_STATE::SELECT_MOVE);
-    //ChangeStateProc(TITLE_STATE::SELECT_GRAVITY, TITLE_STATE::SELECT_MOVE);
+    ChangeStateProc(TITLE_STATE::SELECT_GRAVITY, TITLE_STATE::SELECT_MOVE);
 
 }
 
@@ -307,7 +300,7 @@ void TitleScene::Draw_SelectMove(void)
     int x = 0;
 
     x = Application::SCREEN_HALF_X;
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::MOVE_SELECT)], true);
 
@@ -315,16 +308,13 @@ void TitleScene::Draw_SelectMove(void)
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, SELECT_ALPHA);
 
     x = (Application::SCREEN_HALF_X - SELECT_UI_OFFSET);
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_NOT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::BACK)], true);
 
 
-    SetDrawBlendMode(DX_BLENDMODE_ALPHA, SELECT_ALPHA + 60);
-    SetDrawBlendMode(DX_BLENDMODE_SUB, 125);
-
     x = (Application::SCREEN_HALF_X + SELECT_UI_OFFSET);
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_NOT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::GRAVITY_NOT_SELECT)], true);
 
@@ -335,7 +325,7 @@ void TitleScene::Draw_SelectGravity(void)
     int x = 0;
 
     x = (Application::SCREEN_HALF_X + SELECT_UI_OFFSET);
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::GRAVITY_SELECT)], true);
 
@@ -343,12 +333,12 @@ void TitleScene::Draw_SelectGravity(void)
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, SELECT_ALPHA);
 
     x = (Application::SCREEN_HALF_X - SELECT_UI_OFFSET);
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
         , SELECT_NOT_UI_SCALE, 0.0
         , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::BACK)], true);
 
     x = Application::SCREEN_HALF_X;
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_NOT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::MOVE_NOT_SELECT)], true);
 
@@ -358,7 +348,7 @@ void TitleScene::Draw_SelectCancel(void)
 {
     int x = 0;
     x = (Application::SCREEN_HALF_X - SELECT_UI_OFFSET);
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::BACK)], true);
 
@@ -366,16 +356,13 @@ void TitleScene::Draw_SelectCancel(void)
     SetDrawBlendMode(DX_BLENDMODE_ALPHA, SELECT_ALPHA);
 
     x = Application::SCREEN_HALF_X;
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_NOT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::MOVE_NOT_SELECT)], true);
 
 
-    SetDrawBlendMode(DX_BLENDMODE_ALPHA, SELECT_ALPHA + 60);
-    SetDrawBlendMode(DX_BLENDMODE_SUB, 125);
-
     x = (Application::SCREEN_HALF_X + SELECT_UI_OFFSET);
-    DrawRotaGraph(x, Application::SCREEN_HALF_Y
+    DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_NOT_UI_SCALE, 0.0
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::GRAVITY_NOT_SELECT)], true);
 

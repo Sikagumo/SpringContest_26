@@ -13,12 +13,13 @@
 
 
 Player::Player(PLAYER_NO _playerNo, const VECTOR& _pos)
-	:CharaBase::CharaBase(),
-	input_(InputManager::GetInstance()),
-	playerNo_(_playerNo),
-	stageType_(STAGE_TYPE::MAX),
-	frameEyeDamage_(-1), frameEyeDefault_(-1),
-	isChangeModel_(false)
+	: CharaBase::CharaBase()
+	, input_(InputManager::GetInstance())
+	, playerNo_(_playerNo)
+	, stageType_(STAGE_TYPE::MAX)
+	, frameEyeDamage_(-1), frameEyeDefault_(-1)
+	, isChangeModel_(false)
+	, isGoal_(false)
 {
 	transform_.pos = _pos;
 }
@@ -118,6 +119,12 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 	}
 }
 
+void Player::SetIsChangeModel(bool _isChangeModel)
+{
+	isChangeModel_ = _isChangeModel;
+	Update();
+}
+
 void Player::InitLoadPost(void)
 {
 
@@ -126,6 +133,8 @@ void Player::InitLoadPost(void)
 void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 {
 	CharaBase::Init();
+
+	isGoal_ = false;
 
 	isChangeModel_ = false;
 

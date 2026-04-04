@@ -76,7 +76,7 @@ protected:
 	static constexpr float BLOCK_SCALE = 1.0f;
 	static constexpr float PLAYER_OFFSET_Z = -10.0f;
 
-	static constexpr float FRONT_ALPHA = 0.65f;
+	static constexpr float FRONT_ALPHA = 0.85f;
 	static constexpr float BACK_ALPHA = 0.65f;
 
 	SceneManager& sceneMng_;

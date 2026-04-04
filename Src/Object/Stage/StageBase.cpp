@@ -267,7 +267,7 @@ void StageBase::SetBlockBackTypeList(int _mapType, int _xMax, int _yMax)
 
 			else
 			{
-				param = SetParamBack(static_cast<int>(BLOCK_TYPE::WALL), x, y, FRONT_ALPHA, false);
+				param = SetParamBack(static_cast<int>(BLOCK_TYPE::WALL), x, y, BACK_ALPHA, false);
 				placeBackBlankList_.emplace_back(param);
 			}
 		}

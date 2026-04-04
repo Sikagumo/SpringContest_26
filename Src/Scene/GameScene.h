@@ -118,8 +118,6 @@ private:
 
 	int timeText_[11];
 
-	int uiText_[static_cast<int>(UI_TEXT::MAX)];
-
 	//“ü‚ê‘Ö‚¦’†‚©‚Ç‚¤‚©‚Ìƒtƒ‰ƒO
 	bool isSwapping_ = false;
 

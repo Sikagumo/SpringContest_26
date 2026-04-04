@@ -4,6 +4,7 @@
 class SceneBase;
 class Fader;
 class Camera;
+class Perform;
 
 class SceneManager
 {
@@ -59,6 +60,8 @@ public:
 	// カメラの取得
 	Camera* GetCamera(void) const;
 
+	Perform& GetPerform(void) { return *perform_; }
+
 	// デバッグ状態取得
 	bool GetIsDebugMode(void) { return isDebugMode_; };
 
@@ -77,6 +80,8 @@ private:
 
 	// フェード
 	Fader* fader_;
+
+	Perform* perform_;
 
 	// 各種シーン
 	SceneBase* scene_;

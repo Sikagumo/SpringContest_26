@@ -2,6 +2,7 @@
 #include <chrono>
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
+#include "../Common/Perform.h"
 #include "../Common/Fader.h"
 #include "../Scene/TitleScene.h"
 #include "../Scene/GameScene.h"
@@ -55,6 +56,9 @@ void SceneManager::Init(void)
 	// フェード機能の初期化
 	fader_ = new Fader();
 	fader_->Init();
+
+	perform_ = new Perform();
+	perform_->Init();
 
 	// カメラ
 	camera_ = new Camera();
@@ -147,6 +151,10 @@ void SceneManager::Update(void)
 	}
 	else
 	{
+		perform_->Update();
+
+		if (perform_->GetPerformStop()) { return; }
+
 		// 各シーンの更新処理
 		scene_->Update();
 	}
@@ -178,6 +186,7 @@ void SceneManager::Draw(void)
 	// シャドウマップへの描画の準備
 	ShadowMap_DrawSetup(shadowMapHandle_);
 	
+	perform_->BeforeDraw();
 
 	// 各シーンの描画処理
 	scene_->Draw();
@@ -197,6 +206,8 @@ void SceneManager::Draw(void)
 
 	// 各シーンの描画処理
 	scene_->Draw();
+
+	perform_->Draw();
 	
 	// 描画に使用するシャドウマップの設定を解除
 	SetUseShadowMap(0, -1);
@@ -224,12 +235,13 @@ void SceneManager::Draw(void)
 
 void SceneManager::Destroy(void)
 {
-
 	// シーンの解放
 	if (scene_ != nullptr)
 	{
 		delete scene_;
 	}
+
+	delete perform_;
 
 	// フェード機能の解放
 	delete fader_;

@@ -24,7 +24,7 @@ public:
 	static constexpr float VOLUME_TITLE = 1.0f;
 
 	// ÉQÅ[ÉÄÉVÅ[ÉìBGMâπó 
-	static constexpr float VOLUME_GAME = 0.6f;
+	static constexpr float VOLUME_GAME = 0.5f;
 
 
 	/* BGMâπó  */

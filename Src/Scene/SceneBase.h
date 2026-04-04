@@ -45,6 +45,7 @@ protected:
 
 		MAX
 	};
+	int uiText_[static_cast<int>(UI_TEXT::MAX)];
 
 	// ƒŠƒ\[ƒXŠÇ—
 	ResourceManager& resMng_;
