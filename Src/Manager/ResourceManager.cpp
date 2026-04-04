@@ -61,6 +61,7 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_TITLE, PATH_IMAGE + "Title.png");
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_TITLE_BACK, PATH_IMAGE + "TitleBack.jpg");
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_SHADOW, PATH_IMAGE + "Shadow.png");
+	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_PLAYER_ARROW, PATH_IMAGE + "Arrow.png");
 
 	/* ï°êîâÊëú */
 	allNum = 3;

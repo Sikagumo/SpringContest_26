@@ -55,7 +55,10 @@ public:
 	void SetIsGoal(bool _isGoal) { isGoal_ = _isGoal; };
 	bool GetIsGoal(void) { return isGoal_; };
 
-
+	//åë„å†å¿Çê›íËÇ∑ÇÈ
+	void SetAuthority(bool hasAuth) { hasAuthority_ = hasAuth; }
+	
+	
 protected:
 
 
@@ -144,6 +147,11 @@ private:
 
 	bool isGoal_;
 
+	PLAYER_NO playerNo_;
+
+	bool hasAuthority_;
+	
+	int arrowHandle_;
 
 
 	// ëÄçÏ
@@ -153,6 +161,4 @@ private:
 	void ProcessJump(void);
 
 	void PlayAnim(ANIM_TYPE objType_, bool _isLoop = true);
-
-	PLAYER_NO playerNo_;
 };

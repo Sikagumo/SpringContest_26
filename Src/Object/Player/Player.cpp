@@ -18,8 +18,8 @@ Player::Player(PLAYER_NO _playerNo, const VECTOR& _pos)
 	, playerNo_(_playerNo)
 	, stageType_(STAGE_TYPE::MAX)
 	, frameEyeDamage_(-1), frameEyeDefault_(-1)
-	, isChangeModel_(false)
-	, isGoal_(false)
+	, isChangeModel_(false), hasAuthority_(false)
+	, isGoal_(false), arrowHandle_(-1)
 {
 	transform_.pos = _pos;
 }
@@ -135,6 +135,8 @@ void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 	CharaBase::Init();
 
 	isGoal_ = false;
+	
+	arrowHandle_ = resMng_.LoadHandleId(ResourceManager::SRC::IMG_PLAYER_ARROW);
 
 	isChangeModel_ = false;
 
@@ -154,7 +156,27 @@ void Player::Draw(void)
 
 	ActorBase::Draw();
 
-	// ライティングを無効化
+
+	//矢印の描画処理
+	if (hasAuthority_ && arrowHandle_ != -1)
+	{
+		// Zバッファ設定（壁を透かす）
+		SetUseZBuffer3D(FALSE);
+		SetWriteZBuffer3D(FALSE);
+
+
+		// 矢印を描画
+		const VECTOR ARROW_OFFSET = VGet(0, 130.0f, 0);
+		const float ARROW_SIZE = 175.0f;
+		DrawBillboard3D(VAdd(transform_.pos, ARROW_OFFSET)
+						, 0.5f, 0.5f, ARROW_SIZE, 0.0f, arrowHandle_, TRUE);
+
+		// 設定を元に戻す
+		SetUseZBuffer3D(TRUE);
+		SetWriteZBuffer3D(TRUE);
+	}
+
+	// ライティングを有効化
 	SetUseLighting(TRUE);
 
 	const float LIGHT_POS_Z = 0.0f;

@@ -38,6 +38,7 @@ GameScene::GameScene(void)
 
 void GameScene::Init(void)
 {
+	currentSwapRight_ = SWAP_RIGHT::P1;
 	sound_.Play(static_cast<int>(ResourceManager::SRC::BGM_GAME), true);
 	sound_.Play(static_cast<int>(ResourceManager::SRC::SE_COUNT), false);
 
@@ -66,10 +67,12 @@ void GameScene::Init(void)
 	player1_.player = new Player(Player::PLAYER_NO::P1, stagePos);
 	player1_.player->Init(stagePos, pStageType);
 	player1_.initialPos = stagePos;
+	player1_.player->SetAuthority(true);
 	
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
 	player2_.player = new Player(Player::PLAYER_NO::P2, stagePos);
 	player2_.player->Init(stagePos, pStageType);
+	player2_.player->SetAuthority(false);
 	player2_.initialPos = stagePos;
 	
 
@@ -87,12 +90,10 @@ void GameScene::Init(void)
 
 	state_ = GAME_STATE::ACTIVE;
 
-	state_ = GAME_STATE::NONE;
 	isGameTimeActive_ = false;
 	gameTimer_ = GAME_TIME;
 
 	isPerform_ = false;
-	currentSwapRight_ = SWAP_RIGHT::P1;
 
 	ChangeState(GAME_STATE::ACTIVE);
 }
@@ -118,6 +119,7 @@ void GameScene::Update(void)
 
 		if (gameTimer_ < 0.0f) { isGameTimeActive_ = false; }
 	}
+
 
 	// プレイヤー更新処理
 	if (!player1_.player->GetIsGoal()) { player1_.player->Update(); }
@@ -152,15 +154,10 @@ void GameScene::Update(void)
 		bool executeSwap = false;
 
 		//今どちらが権限を持っていて、かつ対応するボタンが押されたか
-
-		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1)
-			|| input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2))
-		/*
 		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1)
 			&& currentSwapRight_ == SWAP_RIGHT::P1
-
 			|| input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2)
-			&& currentSwapRight_ == SWAP_RIGHT::P2)*/
+			&& currentSwapRight_ == SWAP_RIGHT::P2)
 		{
 			executeSwap = true;
 			isSwapping_ = true;
@@ -338,6 +335,9 @@ void GameScene::UpdateSwap(void)
 		//ここで権限を譲渡する
 		currentSwapRight_ = (currentSwapRight_ == SWAP_RIGHT::P1)
 							  ? SWAP_RIGHT::P2 : SWAP_RIGHT::P1;
+
+		player1_.player->SetAuthority(currentSwapRight_ == SWAP_RIGHT::P1);
+		player2_.player->SetAuthority(currentSwapRight_ == SWAP_RIGHT::P2);
 	}
 }
 
@@ -357,12 +357,14 @@ void GameScene::UpdateRespawn(void)
 	Transform& t1 = player1_.player->GetTransform();
 	t1.pos.x = player1_.deathPos.x + (player1_.initialPos.x - player1_.deathPos.x) * easedT;
 	t1.pos.y = player1_.deathPos.y + (player1_.initialPos.y - player1_.deathPos.y) * easedT;
+	t1.pos.z = player1_.deathPos.z + (player1_.initialPos.z - player1_.deathPos.z) * easedT;
 	t1.prePos = t1.pos;
 
 	// プレイヤー2の座標を補間（死んだ場所 -> 初期位置）
 	Transform& t2 = player2_.player->GetTransform();
 	t2.pos.x = player2_.deathPos.x + (player2_.initialPos.x - player2_.deathPos.x) * easedT;
 	t2.pos.y = player2_.deathPos.y + (player2_.initialPos.y - player2_.deathPos.y) * easedT;
+	t2.pos.z = player2_.deathPos.z + (player2_.initialPos.z - player2_.deathPos.z) * easedT;
 	t2.prePos = t2.pos;
 
 	// 完了判定
@@ -373,6 +375,10 @@ void GameScene::UpdateRespawn(void)
 		// プレイヤーの見た目をもとに戻す
 		player1_.player->SetIsChangeModel(false);
 		player2_.player->SetIsChangeModel(false);
+
+		currentSwapRight_ = SWAP_RIGHT::P1;
+		player1_.player->SetAuthority(true);
+		player2_.player->SetAuthority(false);
 	}
 }
 
@@ -396,6 +402,7 @@ bool GameScene::TrapProcess(void)
 		{
 			if (AsoUtility::IsHitSpheres(pPos, Player::COL_CAPSULE_RADIUS, tPos, StageObjTrap::COLLISION_RADIUS))
 			{
+				if(fabsf(pPos.z - tPos.z) < 40.0f)
 				isRespawning_ = true;
 				respawnTimer_ = 0.0f;
 
@@ -754,12 +761,14 @@ void GameScene::SetStageType(void)
 		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
 		player1_.player->Init(stagePos, pStageType);
 		player1_.player->Update();
+		player1_.initialPos = stagePos;
 	}
 	if (player2_.player != nullptr)
 	{
 		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
 		player2_.player->Init(stagePos, pStageType);
 		player2_.player->Update();
+		player2_.initialPos = stagePos;
 	}
 
 	currentSwapRight_ = SWAP_RIGHT::P1;

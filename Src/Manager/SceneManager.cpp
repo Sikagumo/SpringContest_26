@@ -91,7 +91,7 @@ void SceneManager::Init3D(void)
 	SetUseZBuffer3D(TRUE);
 
 	// Zバッファへの書き込みを有効にする
-	SetWriteZBuffer3D(true);
+	SetWriteZBuffer3D(TRUE);
 
 	// バックカリングを有効にする
 	SetUseBackCulling(true);
