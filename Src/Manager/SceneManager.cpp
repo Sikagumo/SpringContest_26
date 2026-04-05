@@ -41,7 +41,7 @@ SceneManager::SceneManager(void)
 	bool isDebug = false;
 
 #ifdef _DEBUG
-	isDebug = true;
+	//isDebug = true;
 #endif
 
 	isDebugMode_ = isDebug;
@@ -165,7 +165,7 @@ void SceneManager::Update(void)
 #ifdef _DEBUG
 	if (InputManager::GetInstance().IsTrgDown(InputManager::TYPE::DEBUG_MODE))
 	{
-		isDebugMode_ = !isDebugMode_;
+		//isDebugMode_ = !isDebugMode_;
 	}
 #endif
 }

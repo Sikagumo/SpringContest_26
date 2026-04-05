@@ -416,7 +416,18 @@ bool GameScene::TrapProcess(void)
 				player1_.deathPos = player1_.player->GetTransform().pos;
 				player2_.deathPos = player2_.player->GetTransform().pos;
 
-				const float HIT_STOP_TRAP = 1.0f;
+				for (int i = 0; i < GetJoypadNum(); i++)
+				{
+					unsigned int padNum = ((i == 0) ? DX_INPUT_PAD1 : 0);
+					padNum = ((i == 1) ? DX_INPUT_PAD2 : padNum);
+					padNum = ((i == 2) ? DX_INPUT_PAD3 : padNum);
+					padNum = ((i == 3) ? DX_INPUT_PAD4 : padNum);
+
+					const float VIBRATION_TIME = 0.2f;
+					StartJoypadVibration(padNum, 1000, static_cast<int>(VIBRATION_TIME * 1000.0f));
+				}
+
+				const float HIT_STOP_TRAP = 1.5f;
 				sceneMng_.GetPerform().SetHitStop(HIT_STOP_TRAP);
 
 				//‘¼‚Ìˆ—‚ğ’†’fiƒS[ƒ‹”»’è‚È‚Ç)
