@@ -21,6 +21,8 @@ public:
 
 		GOAL, // ゴール
 		TRAP, // 罠
+		TRAP_VEERTICAL_MOVE, //縦移動罠
+		TRAP_HORIZONTAL_MOVE, //横移動罠
 
 		MAX,
 	};
@@ -57,6 +59,8 @@ public:
 
 	//外部空罠のリストを取得する関数
 	const std::vector<VECTOR>& GetTrapPos(void) const { return trapPositions_; }
+
+	const std::vector<std::vector<StageObjBase*>>& GetPlaceType(void) const { return placeType_; }
 
 	/// @brief ステージの当たり判定を全登録
 	/// @param _actor 割り当てる対象1

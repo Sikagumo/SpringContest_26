@@ -18,7 +18,7 @@ public:
 
     void DrawDebug(void) override;
 
-
+    void Update(void) override; 
 protected:
 
 
