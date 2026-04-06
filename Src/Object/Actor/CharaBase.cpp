@@ -8,6 +8,7 @@
 #include "../Collider/ColliderModel.h"
 #include "../Collider/ColliderCapsule.h"
 #include "../../Application.h"
+#include "../Player/Player.h"
 
 
 CharaBase::CharaBase(void) :
@@ -106,6 +107,9 @@ void CharaBase::CalcGravityPow(void)
 
 void CharaBase::Collision(void)
 {
+	// 移動前の座標を保持
+	VECTOR posBefore = transform_.pos;
+
 	// 移動処理
 	transform_.pos = VAdd(transform_.pos, movePow_);
 
@@ -114,8 +118,26 @@ void CharaBase::Collision(void)
 	// ジャンプ量を加算
 	transform_.pos = VAdd(transform_.pos, jumpPow_);
 
-	// 衝突(重力)
-	CollisionGravity();
+	// --- ここを追加：GRAVITYステージ用の速度リセット ---
+	if (stageType_ == static_cast<int>(Player::STAGE_TYPE::GRAVITY))
+	{
+		// もし押し戻されて移動できていない、あるいは速度方向と逆方向に補正された場合
+		// 簡易的に「移動前後の差」が「出そうとした速度」より小さければ、壁に当たっていると判断
+		VECTOR moveActual = VSub(transform_.pos, posBefore); // 実際の移動量
+
+		// 壁にぶつかっている（実際の移動が movePow より著しく短い）なら速度を殺す
+		if (VSize(moveActual) < VSize(movePow_) * 0.5f)
+		{
+			movePow_ = AsoUtility::VECTOR_ZERO;
+		}
+	}
+
+	//MOVEステージ用の既存処理
+	if (stageType_ == static_cast<int>(Player::STAGE_TYPE::MOVE))
+	{
+		transform_.pos = VAdd(transform_.pos, jumpPow_);
+		CollisionGravity();
+	}
 
 }
 

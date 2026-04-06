@@ -30,7 +30,7 @@ public:
 	};
 
 	// 衝突判定用カプセル球体半径
-	static constexpr float COL_CAPSULE_RADIUS = 20.0f;
+	static constexpr float COL_CAPSULE_RADIUS = 10.0f;
 
 
 	Player(PLAYER_NO _playerNo, const VECTOR& _pos);
@@ -58,7 +58,8 @@ public:
 	//交代権限を設定する
 	void SetAuthority(bool hasAuth) { hasAuthority_ = hasAuth; }
 	
-	
+	// 重力方向に応じた回転を更新する
+	void UpdateGravityRotation(void);
 protected:
 
 
@@ -86,35 +87,42 @@ protected:
 
 
 private:
+	enum class GRAVITY_DIR { UP, DOWN, LEFT, RIGHT, NONE };
+	GRAVITY_DIR curGravityDir_ = GRAVITY_DIR::NONE;
+	
+	// 落下加速度
+	const float GRAVITY_ACCEL = 0.5f;   
+	// 最高速度
+	const float TERMINAL_VELOCITY = 10.0f; 
 
 	static constexpr COLOR_F P1_COLOR = COLOR_F(1.0f, 0.25f, 0.25f, 1.0f);
 	static constexpr COLOR_F P2_COLOR = COLOR_F(0.25f, 0.25f, 1.0f, 1.0f);
 
 
 	// 衝突判定用線分開始
-	static constexpr VECTOR COL_LINE_START_LOCAL_POS = { 0.0f, 80.0f, 0.0f };
+	static constexpr VECTOR COL_LINE_START_LOCAL_POS = { 0.0f, 20.0f, 0.0f };
 
 	// 衝突判定用線分終了
 	static constexpr VECTOR COL_LINE_END_LOCAL_POS = { 0.0f, -10.0f, 0.0f };
 
 	// 衝突判定用線分開始(ジャンプ時)
-	static constexpr VECTOR COL_LINE_JUMP_START_LOCAL_POS = { 0.0f, 130.0f, 0.0f };
+	static constexpr VECTOR COL_LINE_JUMP_START_LOCAL_POS = { 0.0f, 30.0f, 0.0f };
 
 	// 衝突判定用線分終了(ジャンプ時)
-	static constexpr VECTOR COL_LINE_JUMP_END_LOCAL_POS = { 0.0f, 50.0f, 0.0f };
+	static constexpr VECTOR COL_LINE_JUMP_END_LOCAL_POS = { 0.0f, 10.0f, 0.0f };
 
 
 	// 衝突判定用カプセル上部球体
-	static constexpr VECTOR COL_CAPSULE_TOP_POS_P1 = { 0.0f, 0.0f, 90.0f };
+	static constexpr VECTOR COL_CAPSULE_TOP_POS_P1 = { 0.0f, 0.0f, 30.0f };
 
 	// 衝突判定用カプセル下部球体
-	static constexpr VECTOR COL_CAPSULE_DOWN_POS_P1 = { 0.0f, 0.0f, -90.0f };
+	static constexpr VECTOR COL_CAPSULE_DOWN_POS_P1 = { 0.0f, 0.0f, -30.0f };
 
 	// 衝突判定用カプセル上部球体
-	static constexpr VECTOR COL_CAPSULE_TOP_POS_P2 = { 0.0f, 90.0f, 0.0f };
+	static constexpr VECTOR COL_CAPSULE_TOP_POS_P2 = { 0.0f, 40.0f, 0.0f };
 
 	// 衝突判定用カプセル下部球体
-	static constexpr VECTOR COL_CAPSULE_DOWN_POS_P2 = { 0.0f, -90.0f, 0.0f };
+	static constexpr VECTOR COL_CAPSULE_DOWN_POS_P2 = { 0.0f, -40.0f, 0.0f };
 
 	
 
@@ -134,7 +142,7 @@ private:
 	InputManager& input_;
 
 	// 現在のステージ状態
-	STAGE_TYPE stageType_;
+	//STAGE_TYPE stageType_;
 
 	int lightHandle_;
 

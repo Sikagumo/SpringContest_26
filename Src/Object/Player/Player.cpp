@@ -16,11 +16,13 @@ Player::Player(PLAYER_NO _playerNo, const VECTOR& _pos)
 	: CharaBase::CharaBase()
 	, input_(InputManager::GetInstance())
 	, playerNo_(_playerNo)
-	, stageType_(STAGE_TYPE::MAX)
 	, frameEyeDamage_(-1), frameEyeDefault_(-1)
 	, isChangeModel_(false), hasAuthority_(false)
 	, isGoal_(false), arrowHandle_(-1)
+	, lightHandle_(-1)
 {
+	stageType_ = static_cast<int>(STAGE_TYPE::MAX);
+
 	transform_.pos = _pos;
 }
 
@@ -31,11 +33,11 @@ void Player::SetPlayerNo(PLAYER_NO no)
 
 void Player::SetGameStageType(STAGE_TYPE stageType)
 {
-	if (stageType_ == stageType) { return; }
+	if (stageType_ == static_cast<int>(stageType)) { return; }
 
 	float modelScale = 1.0f;
 
-	stageType_ = stageType;
+	stageType_ = static_cast<int>(stageType);
 
 	// モデル種類変更
 	ResourceManager::SRC src = ResourceManager::SRC::NONE;
@@ -62,7 +64,7 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 
 
 	// 目のマテリアルの色を明示的に黒にする
-	const int EYE_BLACK_MATERIAL_NUM = ((stageType_ == STAGE_TYPE::MOVE) ? 2 : 1);
+	const int EYE_BLACK_MATERIAL_NUM = ((stageType_ == static_cast<int>(STAGE_TYPE::MOVE)) ? 2 : 1);
 
 	MV1SetMaterialDifColor(transform_.modelId, EYE_BLACK_MATERIAL_NUM, GetColorF(0.0f, 0.0f, 0.0f, 1.0f));
 	MV1SetMaterialEmiColor(transform_.modelId, EYE_BLACK_MATERIAL_NUM, GetColorF(0.0f, 0.0f, 0.0f, 0.0f));
@@ -86,7 +88,7 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 		{
 			isVisible = false;
 
-			if (stageType_ == STAGE_TYPE::MOVE)
+			if (stageType_ == static_cast<int>(STAGE_TYPE::MOVE)) 
 			{
 				if (playerNo_ == PLAYER_NO::P1
 					&& frameName.find("Width") != std::string::npos
@@ -100,7 +102,7 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 		}
 		else if (frameName.find(FRAME_NAME_EYE) != std::string::npos)
 		{
-			if (stageType_ == STAGE_TYPE::MOVE)
+			if (stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY)) 
 			{
 				isVisible = false;
 
@@ -125,6 +127,46 @@ void Player::SetIsChangeModel(bool _isChangeModel)
 	Update();
 }
 
+
+void Player::UpdateGravityRotation(void)
+{
+	if (curGravityDir_ == GRAVITY_DIR::NONE) { return; }
+
+	float rotZ = 0.0f;
+
+	if (playerNo_ == PLAYER_NO::P1)
+	{
+		// --- Player 1 専用：現在の「ズレ」を強制修正する数値 ---
+		switch (curGravityDir_)
+		{
+		case GRAVITY_DIR::UP:    rotZ = -90.0f;  break; // 「上」で左を向くなら、-90度して上に合わせる
+		case GRAVITY_DIR::DOWN:  rotZ = 90.0f;   break; // 「下」で右を向くなら、90度して下に合わせる
+		case GRAVITY_DIR::LEFT:  rotZ = 180.0f;  break; // 左右逆転を直す
+		case GRAVITY_DIR::RIGHT: rotZ = 0.0f;    break; // 左右逆転を直す
+		default: return;
+		}
+
+		// 合成：P1は横(90度)を向いた状態で、画面のZ軸を中心に回転
+		Quaternion qBase = Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_Y);
+		Quaternion qGrav = Quaternion::AngleAxis(rotZ, AsoUtility::AXIS_Z);
+		transform_.quaRot = qGrav.Mult(qBase);
+	}
+	else
+	{
+		// --- Player 2 専用：標準的な回転 (P2がおかしければここを調整) ---
+		switch (curGravityDir_)
+		{
+		case GRAVITY_DIR::UP:    rotZ = 180.0f;  break;
+		case GRAVITY_DIR::DOWN:  rotZ = 0.0f;    break;
+		case GRAVITY_DIR::LEFT:  rotZ = -90.0f;  break; 
+		case GRAVITY_DIR::RIGHT: rotZ = 90.0f;   break;
+		default: return;
+		}
+		Quaternion qGrav = Quaternion::AngleAxis(rotZ, AsoUtility::AXIS_Z);
+		transform_.quaRot = qGrav; // P2は正面向きなのでqBaseなしでOK
+	}
+}
+
 void Player::InitLoadPost(void)
 {
 
@@ -147,6 +189,9 @@ void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 	lightHandle_ = CreatePointLightHandle(transform_.pos, LIGHT_RANGE, 0.0f, 0.001f, 0.0f);
 
 	SetLightTypeHandle(lightHandle_, DX_LIGHTTYPE_POINT);
+
+	curGravityDir_ = GRAVITY_DIR::NONE;
+	movePow_ = AsoUtility::VECTOR_ZERO;
 }
 
 void Player::Draw(void)
@@ -169,7 +214,7 @@ void Player::Draw(void)
 		const VECTOR ARROW_OFFSET = VGet(0, 130.0f, 0);
 		const float ARROW_SIZE = 175.0f;
 		DrawBillboard3D(VAdd(transform_.pos, ARROW_OFFSET)
-						, 0.5f, 0.5f, ARROW_SIZE, 0.0f, arrowHandle_, TRUE);
+						, 0.5f, 0.5f, static_cast<int>(ARROW_SIZE), 0.0f, arrowHandle_, TRUE);
 
 		// 設定を元に戻す
 		SetUseZBuffer3D(TRUE);
@@ -215,7 +260,7 @@ void Player::InitTransform(void)
 										   Quaternion::AngleAxis(localRotY, AsoUtility::AXIS_Y));
 
 	// P2かつ重力モードならZ軸で180度回転（逆さま）
-	if (playerNo_ == PLAYER_NO::P2 && stageType_ == STAGE_TYPE::GRAVITY)
+	if (playerNo_ == PLAYER_NO::P2 && stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY)) 
 	{
 		localRotZ = 180.0f;
 	}
@@ -232,7 +277,7 @@ void Player::InitCollider(void)
 	VECTOR lineStart = COL_LINE_START_LOCAL_POS;
 	VECTOR lineEnd = COL_LINE_END_LOCAL_POS;
 
-	if (playerNo_ == PLAYER_NO::P2 && stageType_ == STAGE_TYPE::GRAVITY)
+	if (playerNo_ == PLAYER_NO::P2 && stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY)) 
 	{
 		lineStart = VGet(0, 0, 0);
 		lineEnd = VGet(0, 80.0f, 0); // 上向きに判定を出す
@@ -281,6 +326,12 @@ void Player::UpdateProcess(void)
 
 	// 移動操作
 	ProcessMove();
+
+	// 重力ステージならモデルの向きを更新
+	if (stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY))
+	{
+		UpdateGravityRotation();
+	}
 }
 
 void Player::UpdateProcessPost(void)
@@ -355,95 +406,202 @@ void Player::CollisionReserve(void)
 	}*/
 }
 
+//void Player::ProcessMove(void)
+//{
+//	VECTOR dir = AsoUtility::VECTOR_ZERO;
+//
+//	if (playerNo_ == PLAYER_NO::P1)
+//	{
+//		//if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
+//		//if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
+//		if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT, Input::JOYPAD_NO::PAD1))
+//		{
+//			dir.x -= 1.0f;
+//		}
+//		if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT, Input::JOYPAD_NO::PAD1))
+//		{
+//			dir.x += 1.0f;
+//		}
+//	}
+//	else if (playerNo_ == PLAYER_NO::P2)
+//	{
+//		if (stageType_ == STAGE_TYPE::GRAVITY)
+//		{
+//			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT, Input::JOYPAD_NO::PAD2))
+//			{
+//				dir.x -= 1.0f;
+//			}
+//			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT, Input::JOYPAD_NO::PAD2))
+//			{
+//				dir.x += 1.0f;
+//			}
+//		}
+//		else
+//		{
+//			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2))
+//			{
+//				dir.y += 1.0f;
+//			}
+//			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
+//			{
+//				dir.y -= 1.0f;
+//			}
+//		}
+//	}
+//
+//	if (!AsoUtility::EqualsVZero(dir))
+//	{
+//		// ダッシュ入力時にダッシュ加速度にする
+//		moveSpeed_ = SPEED_MOVE;
+//
+//		if (!isJump_)
+//		{
+//			PlayAnim(ANIM_TYPE::RUN);
+//		}
+//
+//
+//		// カメラの方向で進行
+//		Quaternion cameraRot = sceneMng_.GetCamera()->GetQuaRotY();
+//
+//		// 移動方向を取得
+//		moveDir_ = Quaternion::PosAxis(cameraRot, dir);
+//
+//		// 加速度に割り当て
+//		movePow_ = VScale(moveDir_, moveSpeed_);
+//	}
+//	else
+//	{
+//		movePow_ = AsoUtility::VECTOR_ZERO;
+//
+//		if (!isJump_)
+//		{
+//			PlayAnim(ANIM_TYPE::IDLE);
+//		}
+//	}
+//
+//	// 重力の適用
+//	if (stageType_ == STAGE_TYPE::GRAVITY) {
+//
+//		// 1. プレイヤーごとの入力分離
+//		if (playerNo_ == PLAYER_NO::P1) {
+//			// Player1 は W/S (PAD1 系統) のみを受け付ける
+//			if (input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_UP, Input::JOYPAD_NO::PAD1)) {
+//				curGravityDir_ = GRAVITY_DIR::UP;
+//			}
+//			if (input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_DOWN, Input::JOYPAD_NO::PAD1)) {
+//				curGravityDir_ = GRAVITY_DIR::DOWN;
+//			}
+//		}
+//		else if (playerNo_ == PLAYER_NO::P2) {
+//			// Player2 は 左右矢印 (PAD2 系統) のみを受け付ける
+//			if (input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_LEFT, Input::JOYPAD_NO::PAD2)) {
+//				curGravityDir_ = GRAVITY_DIR::LEFT;
+//			}
+//			if (input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_RIGHT, Input::JOYPAD_NO::PAD2)) {
+//				curGravityDir_ = GRAVITY_DIR::RIGHT;
+//			}
+//		}
+//
+//		// 2. 共通の物理計算（自分の curGravityDir_ に基づいて加速）
+//		VECTOR accel = AsoUtility::VECTOR_ZERO;
+//		switch (curGravityDir_) {
+//		case GRAVITY_DIR::UP:    accel.y = GRAVITY_ACCEL; break;
+//		case GRAVITY_DIR::DOWN:  accel.y = -GRAVITY_ACCEL; break;
+//		case GRAVITY_DIR::LEFT:  accel.x = -GRAVITY_ACCEL; break;
+//		case GRAVITY_DIR::RIGHT: accel.x = GRAVITY_ACCEL; break;
+//		default: break;
+//		}
+//
+//		// 速度の更新
+//		movePow_ = VAdd(movePow_, accel);
+//
+//		// 速度上限
+//		if (VSize(movePow_) > TERMINAL_VELOCITY) {
+//			movePow_ = VScale(VNorm(movePow_), TERMINAL_VELOCITY);
+//		}
+//
+//		// 移動中アニメーション
+//		if (curGravityDir_ != GRAVITY_DIR::NONE) {
+//			PlayAnim(ANIM_TYPE::RUN);
+//		}
+//	}
+//}
 void Player::ProcessMove(void)
 {
-	VECTOR dir = AsoUtility::VECTOR_ZERO;
-
-	if (playerNo_ == PLAYER_NO::P1)
+	//MOVEステージ（既存の挙動を完全に保護）
+	if (stageType_ == static_cast<int>(STAGE_TYPE::MOVE)) 
 	{
-		//if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_BACK))  { dir.y += 1.0f; }
-		//if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_FRONT)) { dir.y -= 1.0f; }
-		if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT, Input::JOYPAD_NO::PAD1))
-		{
-			dir.x -= 1.0f;
-		}
-		if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT, Input::JOYPAD_NO::PAD1))
-		{
-			dir.x += 1.0f;
-		}
-	}
-	else if (playerNo_ == PLAYER_NO::P2)
-	{
-		if (stageType_ == STAGE_TYPE::GRAVITY)
-		{
-			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_LEFT, Input::JOYPAD_NO::PAD2))
-			{
-				dir.x -= 1.0f;
-			}
-			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_RIGHT, Input::JOYPAD_NO::PAD2))
-			{
-				dir.x += 1.0f;
-			}
-		}
-		else
-		{
-			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2))
-			{
-				dir.y += 1.0f;
-			}
-			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
-			{
-				dir.y -= 1.0f;
-			}
-		}
-	}
+		VECTOR dir = AsoUtility::VECTOR_ZERO;
 
-	if (!AsoUtility::EqualsVZero(dir))
-	{
-		// ダッシュ入力時にダッシュ加速度にする
-		moveSpeed_ = SPEED_MOVE;
-
-		if (!isJump_)
-		{
-			PlayAnim(ANIM_TYPE::RUN);
-		}
-
-
-		// カメラの方向で進行
-		Quaternion cameraRot = sceneMng_.GetCamera()->GetQuaRotY();
-
-		// 移動方向を取得
-		moveDir_ = Quaternion::PosAxis(cameraRot, dir);
-
-		// 加速度に割り当て
-		movePow_ = VScale(moveDir_, moveSpeed_);
-	}
-	else
-	{
-		movePow_ = AsoUtility::VECTOR_ZERO;
-
-		if (!isJump_)
-		{
-			PlayAnim(ANIM_TYPE::IDLE);
-		}
-	}
-
-	// 重力の適用
-	if (stageType_ == STAGE_TYPE::GRAVITY)
-	{
-		const float GRAVITY_POW = 9.8f;
 		if (playerNo_ == PLAYER_NO::P1)
 		{
-			//下重力 
-			movePow_.y -= GRAVITY_POW;
+			if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_LEFT, Input::JOYPAD_NO::PAD1)) { dir.x -= 1.0f; }
+			if (input_.IsNew(InputManager::TYPE::PLAYER1_MOVE_RIGHT, Input::JOYPAD_NO::PAD1)) { dir.x += 1.0f; }
 		}
 		else if (playerNo_ == PLAYER_NO::P2)
 		{
-			//上重力
-			movePow_.y += GRAVITY_POW;
+			// P2のMOVEステージ時の移動（上下操作）
+			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_UP, Input::JOYPAD_NO::PAD2)) { dir.y += 1.0f; }
+			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2)) { dir.y -= 1.0f; }
 		}
+
+		if (!AsoUtility::EqualsVZero(dir))
+		{
+			moveSpeed_ = SPEED_MOVE;
+			if (!isJump_) { PlayAnim(ANIM_TYPE::RUN); }
+
+			Quaternion cameraRot = sceneMng_.GetCamera()->GetQuaRotY();
+			moveDir_ = Quaternion::PosAxis(cameraRot, dir);
+			movePow_ = VScale(moveDir_, moveSpeed_);
+		}
+		else
+		{
+			movePow_ = AsoUtility::VECTOR_ZERO;
+			if (!isJump_) { PlayAnim(ANIM_TYPE::IDLE); }
+		}
+
+		return;
 	}
 
+	//GRAVITYステージ（新しい重力操作）
+	if (stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY)) 
+	{
+		// 入力による重力方向の切り替え（他方のプレイヤーには影響しない）
+		if (playerNo_ == PLAYER_NO::P1) {
+			if (input_.IsTrgDown(InputManager::TYPE::GRAVITY_MOVE_UP, Input::JOYPAD_NO::PAD1)) { curGravityDir_ = GRAVITY_DIR::UP; }
+			if (input_.IsTrgDown(InputManager::TYPE::GRAVITY_MOVE_DOWN, Input::JOYPAD_NO::PAD1)) { curGravityDir_ = GRAVITY_DIR::DOWN; }
+		}
+		else if (playerNo_ == PLAYER_NO::P2) {
+			if (input_.IsTrgDown(InputManager::TYPE::GRAVITY_MOVE_LEFT, Input::JOYPAD_NO::PAD2)) { curGravityDir_ = GRAVITY_DIR::LEFT; }
+			if (input_.IsTrgDown(InputManager::TYPE::GRAVITY_MOVE_RIGHT, Input::JOYPAD_NO::PAD2)) { curGravityDir_ = GRAVITY_DIR::RIGHT; }
+		}
+
+		// 物理計算：現在の方向に基づいて加速
+		VECTOR accel = AsoUtility::VECTOR_ZERO;
+		switch (curGravityDir_) {
+		case GRAVITY_DIR::UP:    accel.y = GRAVITY_ACCEL; break;
+		case GRAVITY_DIR::DOWN:  accel.y = -GRAVITY_ACCEL; break;
+		case GRAVITY_DIR::LEFT:  accel.x = -GRAVITY_ACCEL; break;
+		case GRAVITY_DIR::RIGHT: accel.x = GRAVITY_ACCEL; break;
+		default: break;
+		}
+
+		// movePow_ に加速度を足し続ける（速度が蓄積される）
+		movePow_ = VAdd(movePow_, accel);
+
+		// 最高速度制限
+		if (VSize(movePow_) > TERMINAL_VELOCITY) {
+			movePow_ = VScale(VNorm(movePow_), TERMINAL_VELOCITY);
+		}
+
+		// アニメーション制御
+		if (curGravityDir_ != GRAVITY_DIR::NONE) {
+			PlayAnim(ANIM_TYPE::RUN);
+		}
+		else {
+			PlayAnim(ANIM_TYPE::IDLE);
+		}
+	}
 }
 
 void Player::ProcessJump(void)

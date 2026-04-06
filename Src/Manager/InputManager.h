@@ -35,6 +35,12 @@ public:
 		PLAYER2_ACTION,
 		PLAYER2_CHANGE, // 位置変更
 
+		// GRAVITY専用
+		GRAVITY_MOVE_UP,    // P1用: W
+		GRAVITY_MOVE_DOWN,  // P1用: S
+		GRAVITY_MOVE_LEFT,  // P2用: ←
+		GRAVITY_MOVE_RIGHT, // P2用: →
+
 		CAMERA_MOVE_LEFT,  // カメラ左移動
 		CAMERA_MOVE_RIGHT, // カメラ右移動
 		CAMERA_MOVE_UP,	   // カメラ上移動

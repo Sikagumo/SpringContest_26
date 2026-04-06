@@ -36,9 +36,6 @@ protected:
 	// Õ“Ë‚Ì‰Ÿ‚µ–ß‚µ—Ê
 	static constexpr float COLLISION_BACK_DIS = 1.0f;
 
-
-	AnimationController* animation_;
-
 	int shadowHandle_;
 
 	float moveSpeed_;
@@ -58,7 +55,10 @@ protected:
 	// ƒWƒƒƒ“ƒv”»’è
 	bool isJump_;
 
-	
+	int stageType_;
+
+	AnimationController* animation_;
+
 	virtual void InitLoad(void)override final;
 	virtual void InitLoadPost(void) = 0;
 	virtual void InitAnimation(void)override final;

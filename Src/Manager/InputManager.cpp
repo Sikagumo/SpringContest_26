@@ -40,6 +40,7 @@ void InputManager::Init(void)
 	RegisterTrigger(TYPE::PLAYER_MOVE_RIGHT, { KEY_INPUT_D, KEY_INPUT_RIGHT }, { }, { STICK::L_STICK_RIGHT });
 	RegisterTrigger(TYPE::PLAYER_CHANGE, { KEY_INPUT_LSHIFT, KEY_INPUT_RSHIFT }, { BTN::RB_RIGHT, BTN::RB_BOTTOM }, { });
 
+
 	RegisterTrigger(TYPE::PLAYER1_MOVE_BACK, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
 	RegisterTrigger(TYPE::PLAYER1_MOVE_FRONT, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
 	RegisterTrigger(TYPE::PLAYER1_MOVE_LEFT, { KEY_INPUT_A }, { }, { STICK::L_STICK_LEFT });
@@ -53,6 +54,14 @@ void InputManager::Init(void)
 	RegisterTrigger(TYPE::PLAYER2_MOVE_RIGHT, { KEY_INPUT_RIGHT }, { }, { STICK::L_STICK_RIGHT });
 	RegisterTrigger(TYPE::PLAYER2_ACTION, { KEY_INPUT_RETURN }, { BTN::RB_LEFT, BTN::RB_TOP }, { });
 	RegisterTrigger(TYPE::PLAYER2_CHANGE, { KEY_INPUT_RSHIFT }, { BTN::RB_RIGHT, BTN::RB_BOTTOM  }, { });
+
+	// P1: W / S と スティック上下
+	RegisterTrigger(TYPE::GRAVITY_MOVE_UP, { KEY_INPUT_W }, { }, { STICK::L_STICK_UP });
+	RegisterTrigger(TYPE::GRAVITY_MOVE_DOWN, { KEY_INPUT_S }, { }, { STICK::L_STICK_DOWN });
+
+	// P2: 左 / 右矢印 と スティック左右
+	RegisterTrigger(TYPE::GRAVITY_MOVE_LEFT, { KEY_INPUT_LEFT }, { }, { STICK::L_STICK_LEFT });
+	RegisterTrigger(TYPE::GRAVITY_MOVE_RIGHT, { KEY_INPUT_RIGHT }, { }, { STICK::L_STICK_RIGHT });
 
 	// カメラ操作
 	RegisterTrigger(TYPE::CAMERA_MOVE_LEFT,  { KEY_INPUT_J }, { }, { });
