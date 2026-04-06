@@ -208,6 +208,14 @@ void Sound::SetVolume(float per)
 	ChangeVolumeSoundMem(volume, sound_.handle);
 
 }
+float Sound::GetVolume(void)const
+{
+	// ‰¹—Ê‚ğ(0.0`1.0)‚ÌŠ„‡‚Å•Ô‚·
+	float volume = static_cast<float>(sound_.maxVolume);
+	volume /= static_cast<float>(SoundManager::VOLUME_MASTER_MAX);
+
+	return volume;
+}
 
 void Sound::SetMaxVolume(float per)
 {
