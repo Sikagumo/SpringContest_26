@@ -6,6 +6,13 @@ class CharaBase : public ActorBase
 {
 public:
 
+	enum class STAGE_TYPE
+	{
+		MOVE,
+		GRAVITY,
+		MAX,
+	};
+	
 	// Õ“Ë”»’èí•Ê
 	enum class COLLIDER_TYPE
 	{
@@ -25,6 +32,7 @@ public:
 
 	void Release(void)override;
 
+
 protected:
 
 	// Å‘å—‰º‘¬“x
@@ -36,8 +44,6 @@ protected:
 	// Õ“Ë‚Ì‰Ÿ‚µ–ß‚µ—Ê
 	static constexpr float COLLISION_BACK_DIS = 1.0f;
 
-
-	AnimationController* animation_;
 
 	int shadowHandle_;
 
@@ -58,7 +64,11 @@ protected:
 	// ƒWƒƒƒ“ƒv”»’è
 	bool isJump_;
 
-	
+	int stageType_;
+
+	AnimationController* animation_;
+
+
 	virtual void InitLoad(void)override final;
 	virtual void InitLoadPost(void) = 0;
 	virtual void InitAnimation(void)override final;

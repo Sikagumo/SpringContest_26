@@ -77,8 +77,11 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
         ret = new StageObjTrap(_x, _y, _blockType);
         ret->Init(pos);
         
+		// 色登録
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
-
+		MV1SetMaterialSpcColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialSpcColor(ret->GetTransform().modelId, 0).a));
 		MV1SetMaterialDifColor(ret->GetTransform().modelId, 0,
 			COLOR_F(color.r, color.g, color.b,
 				MV1GetMaterialDifColor(ret->GetTransform().modelId, 0).a));
@@ -95,6 +98,15 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 		vTrap->Init(pos);
 		ret = vTrap;
 
+		// 色登録
+		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
+		MV1SetMaterialSpcColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialSpcColor(ret->GetTransform().modelId, 0).a));
+		MV1SetMaterialDifColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialDifColor(ret->GetTransform().modelId, 0).a));
+
 		// ※動くトラップの場合、ここで push_back した pos は固定値になってしまいます。
 		// 対策は下の「重要なポイント」を参照してください。
 		trapPositions_.push_back(ret->GetTransform().pos);
@@ -106,6 +118,16 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 		hTrap->SetStage(this);
 		hTrap->Init(pos);
 		ret = hTrap;
+
+		// 色登録
+		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
+		MV1SetMaterialSpcColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialSpcColor(ret->GetTransform().modelId, 0).a));
+		MV1SetMaterialDifColor(ret->GetTransform().modelId, 0,
+			COLOR_F(color.r, color.g, color.b,
+				MV1GetMaterialDifColor(ret->GetTransform().modelId, 0).a));
+
 		trapPositions_.push_back(ret->GetTransform().pos);
 	}
     return ret;
@@ -202,16 +224,10 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _
 
 void StageGravity::Update(void)
 {
-	//親クラスの更新（もし親で何か共通処理があれば実行）
-	StageBase::Update();
-
-	//当たり判定用のトラップ座標リストを一旦空にする
-	trapPositions_.clear();
-
 	//表側の全オブジェクトをチェック
 	for (auto& row : placeType_) // 行(vector)を取り出す
 	{
-		for (auto* obj : row) // 各行の中のオブジェクトを取り出す
+		for (auto& obj : row) // 各行の中のオブジェクトを取り出す
 		{
 			if (obj == nullptr) continue;
 
@@ -229,10 +245,12 @@ void StageGravity::Update(void)
 		}
 	}
 
+	if (placeBackType_.empty()) { return; }
+
 	//裏側の全オブジェクトもチェック（3Dモード等の場合）
 	for (auto& row : placeBackType_)
 	{
-		for (auto* obj : row)
+		for (auto& obj : row)
 		{
 			if (obj == nullptr) continue;
 

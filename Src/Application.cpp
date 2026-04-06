@@ -99,7 +99,6 @@ void Application::Run(void)
 	// ƒQ[ƒ€ƒ‹[ƒv
 	while (ProcessMessage() == 0 && isGame_)
 	{
-
 		InputManager::GetInstance().Update();
 
 		sceneManager.Update();
