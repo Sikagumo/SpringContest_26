@@ -61,6 +61,9 @@ void SoundManager::SetSounds(void)
 	src = static_cast<int>(ResourceManager::SRC::SE_COUNT_SHORT);
 	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_COUNT_DOWN);
 
+	src = static_cast<int>(ResourceManager::SRC::SE_DAMAGE);
+	SetSound(src, Sound::TYPE::SOUND_2D, VOLUME_DAMAGE);
+
 
 	/* BGM */
 

@@ -400,7 +400,8 @@ bool GameScene::TrapProcess(void)
 		//リストの中にあるトラップを一つずつ取り出して判定
 		for (const VECTOR& tPos : trapList)
 		{
-			if (AsoUtility::IsHitSpheres(pPos, Player::COL_CAPSULE_RADIUS, tPos, StageObjTrap::COLLISION_RADIUS))
+			if (AsoUtility::IsHitSpheres(pPos, Player::COL_CAPSULE_RADIUS,
+										 tPos, StageObjTrap::COLLISION_RADIUS))
 			{
 				if(fabsf(pPos.z - tPos.z) < 40.0f)
 				isRespawning_ = true;
@@ -429,6 +430,9 @@ bool GameScene::TrapProcess(void)
 
 				const float HIT_STOP_TRAP = 1.5f;
 				sceneMng_.GetPerform().SetHitStop(HIT_STOP_TRAP);
+
+				// ダメージSE再生
+				sound_.Play(static_cast<int>(ResourceManager::SRC::SE_DAMAGE), false, true);
 
 				//他の処理を中断（ゴール判定など)
 				return true;

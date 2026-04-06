@@ -43,6 +43,8 @@ public:
 
 	static constexpr float VOLUME_COUNT_DOWN = 0.9f;
 
+	static constexpr float VOLUME_DAMAGE = 1.0f;
+
 
 
 	/// @brief インスタンス生成

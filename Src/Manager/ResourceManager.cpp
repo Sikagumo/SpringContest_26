@@ -117,6 +117,7 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_FANFALE, PATH_SE + "Fanfare.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_COUNT, PATH_SE + "CountDown.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_COUNT_SHORT, PATH_SE + "CountDownShort.mp3");
+	_SetResource(LOAD_TYPE::SOUND, SRC::SE_DAMAGE, PATH_SE + "Damage.mp3");
 }
 
 void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path

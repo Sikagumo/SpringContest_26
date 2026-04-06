@@ -67,9 +67,10 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 
 
 	/* プレイヤー別のマテリアル割り当て */
-	const float DEC_NUM = 0.75;
 	COLOR_F matCol = ((playerNo_ == PLAYER_NO::P1) ? P1_COLOR : P2_COLOR);
 	MV1SetMaterialDifColor(transform_.modelId, 0, matCol);
+	MV1SetMaterialEmiColor(transform_.modelId, 0, GetColorF(0.0f, 0.0f, 0.0f, 0.0f));
+	MV1SetMaterialSpcColor(transform_.modelId, 0, GetColorF(0.0f, 0.0f, 0.0f, 0.0f));
 
 
 	// 目のマテリアルの色を明示的に黒にする
@@ -205,6 +206,7 @@ void Player::Init(const VECTOR& _pos, STAGE_TYPE _stageType)
 	isChangeModel_ = false;
 
 	transform_.pos = _pos;
+
 	SetGameStageType(_stageType);
 
 	const float LIGHT_RANGE = 100.0f;
@@ -248,7 +250,7 @@ void Player::Draw(void)
 
 	const float LIGHT_POS_Z = 0.0f;
 	VECTOR lightPos = VAdd(transform_.pos, VGet(0.0f, 0.0f, LIGHT_POS_Z));
-	SetLightPositionHandle(lightHandle_, lightPos);
+	//SetLightPositionHandle(lightHandle_, lightPos);
 }
 
 void Player::Release(void)

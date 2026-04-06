@@ -52,6 +52,7 @@ public:
 		SE_FANFALE,
 		SE_COUNT,
 		SE_COUNT_SHORT,
+		SE_DAMAGE,
 	};
 
 
