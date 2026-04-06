@@ -121,6 +121,10 @@ public:
 	/// @param per ‰¹—Ê
 	void SetVolume(float _volume = 1.0f);
 
+	/// @brief Œ»İ‚Ì‰¹—Ê‚ğæ“¾
+	/// @return ‰¹—Ê‚ÌŠ„‡(0.0`1.0)
+	float GetVolume(void)const;
+
 	/// @brief Å‘å‰¹—Ê‚ğŠ„‚è“–‚Ä
 	/// @param _volume Å‘å‰¹—Ê
 	void SetMaxVolume(float _volume = 1.0f);

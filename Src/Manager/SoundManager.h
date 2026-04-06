@@ -21,10 +21,10 @@ public:
 	/* BGM音量 */
 
 	// タイトルBGM音量
-	static constexpr float VOLUME_TITLE = 1.0f;
+	static constexpr float VOLUME_TITLE = 0.9f;
 
 	// ゲームシーンBGM音量
-	static constexpr float VOLUME_GAME = 0.5f;
+	static constexpr float VOLUME_GAME = 0.85f;
 
 
 	/* BGM音量 */
@@ -36,7 +36,7 @@ public:
 	static constexpr float VOLUME_SELECT = 0.9f;
 
 	// 選択SEの音量
-	static constexpr float VOLUME_CHANGE = 1.0f;
+	static constexpr float VOLUME_CHANGE = 0.75f;
 
 	// ファンファーレSEの音量
 	static constexpr float VOLUME_FANFARE = 1.0f;
@@ -101,6 +101,11 @@ public:
 	/// @param _src 割り当てるサウンド
 	/// @param _per 音量の倍率(0.0～1.0)
 	void SetVolume(int _src, float _per = 1.0f);
+
+	/// @brief 指定の音声の音量を取得
+	/// @param _src 指定するサウンドの種類
+	/// @return 音量の割合(0.0～1.0)
+	float GetVolume(int _src);
 
 	/// @brief 主音量割り当て
 	void SetVolumeMaster(float master = 255.0f);

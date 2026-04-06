@@ -182,7 +182,6 @@ void SoundManager::StopAll(void)
 		sound.second->Stop();
 	}
 }
-
 void SoundManager::StopAllChoice(bool _isBGM)
 {
 	/* 指定した種類の音声を停止 */
@@ -201,22 +200,6 @@ void SoundManager::StopAllChoice(bool _isBGM)
 		// リスト内のサウンドを全て停止
 		sound.second->Stop();
 	}
-}
-
-void SoundManager::SetVolume(int _src, float _per)
-{
-	const auto& lPair = sounds_.find(_src);
-
-	if (lPair != sounds_.end())
-	{
-		// 音声があるとき、音量を割り当て
-		return lPair->second->SetVolume(_per);
-	}
-
-#ifdef _DEBUG
-	OutputDebugString("\nサウンドが割り当てられていません\n(；_；)\n");
-	assert(false); // 例外スロー
-#endif
 }
 
 bool SoundManager::IsSoundStart(int _src)
@@ -268,6 +251,8 @@ bool SoundManager::IsSoundEnd(int _src)
 	return soundlist->second->IsEnd();
 }
 
+
+
 void SoundManager::SetVolumeMaster(float volume)
 {
 	float vol = volume;
@@ -282,4 +267,34 @@ void SoundManager::SetVolumeMaster(float volume)
 
 	// 音量割り当て
 	volumeMaster_ = vol;
+}
+void SoundManager::SetVolume(int _src, float _per)
+{
+	const auto& sound = sounds_.find(_src);
+
+	if (sound != sounds_.end())
+	{
+		// 音声があるとき、音量を割り当て
+		return sound->second->SetVolume(_per);
+	}
+
+#ifdef _DEBUG
+	OutputDebugString("\nサウンドが割り当てられていません\n(；_；)\n");
+	assert(false); // 例外スロー
+#endif
+}
+float SoundManager::GetVolume(int _src)
+{
+	const auto& sound = sounds_.find(_src);
+
+	if (sound != sounds_.end())
+	{
+		// 音声があるとき、音量を割り当て
+		return sound->second->GetVolume();
+	}
+
+#ifdef _DEBUG
+	OutputDebugString("\nサウンドが割り当てられていません\n(；_；)\n");
+	assert(false); // 例外スロー
+#endif
 }

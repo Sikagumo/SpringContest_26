@@ -548,10 +548,16 @@ void GameScene::DrawTimer(void)
 
 void GameScene::ChangeState(GAME_STATE _state)
 {
+	// BGMå∏è≠ó 
+	const float BGM_SOUND_DEC = 0.3f;
+
 	if (_state == GAME_STATE::ACTIVE)
 	{
 		updateGameStateProc_ = std::bind(&GameScene::Update_Active, this);
 		performTime_ = ((state_ == GAME_STATE::PAUSE) ? TIME_PAUSE : TIME_START);
+
+		// BGMÇÃâπó Çí≤êÆ
+		sound_.SetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME), sound_.VOLUME_GAME);
 
 		/* èââÒÇÃÇ›é©ìÆéûä‘à⁄ìÆ */
 		isGameTimeActive_ = (state_ == GAME_STATE::NONE);
@@ -564,6 +570,10 @@ void GameScene::ChangeState(GAME_STATE _state)
 	else if (_state == GAME_STATE::PAUSE)
 	{
 		updateGameStateProc_ = std::bind(&GameScene::Update_Pause, this);
+
+		// BGMÇÃâπó Çí≤êÆ
+		float volume = sound_.GetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME)) - BGM_SOUND_DEC;
+		sound_.SetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME), volume);
 	}
 
 	else if (_state == GAME_STATE::GOAL)
@@ -580,6 +590,10 @@ void GameScene::ChangeState(GAME_STATE _state)
 	{
 		updateGameStateProc_ = std::bind(&GameScene::Update_Clear, this);
 		performTime_ = TIME_GAME_END;
+
+		// BGMÇÃâπó Çí≤êÆ
+		float volume = sound_.GetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME)) - BGM_SOUND_DEC;
+		sound_.SetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME), volume);
 	}
 	else if (_state == GAME_STATE::GAME_OVER)
 	{
