@@ -31,9 +31,6 @@ void Player::SetPlayerNo(PLAYER_NO no)
 
 void Player::SetGameStageType(STAGE_TYPE stageType)
 {
-	// 現在ステージと同一時は処理を終了
-	if (stageType_ == static_cast<int>(stageType)) { return; }
-
 	float modelScale = 1.0f;
 
 	stageType_ = static_cast<int>(stageType);
@@ -51,14 +48,28 @@ void Player::SetGameStageType(STAGE_TYPE stageType)
 		modelScale = 0.75f;
 	}
 
-	if (stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY)
-		&& playerNo_ == PLAYER_NO::P1)
+	if (stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY))
 	{
-		const Quaternion START_ROT = Quaternion::Mult(
-												Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_Z)
-												,Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_X)
-												);
-		transform_.quaRot = START_ROT;
+		if (playerNo_ == PLAYER_NO::P1)
+		{
+			curGravityDir_ = GRAVITY_DIR::RIGHT;
+
+			const Quaternion START_ROT = Quaternion::Mult(
+				Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_Z)
+				, Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_X)
+			);
+			transform_.quaRot = START_ROT;
+		}
+		else if (playerNo_ == PLAYER_NO::P2)
+		{
+			curGravityDir_ = GRAVITY_DIR::DOWN;
+			//transform_.quaRot = Quaternion::Identity();
+
+			const Quaternion START_ROT = Quaternion::Mult(
+				Quaternion::AngleAxis(0.0f, AsoUtility::AXIS_Z)
+				, Quaternion::AngleAxis(0.0f, AsoUtility::AXIS_Z));
+			transform_.quaRot = START_ROT;
+		}
 	}
 
 	// モデル割り当て
@@ -171,7 +182,6 @@ void Player::UpdateGravityRotation(void)
 		// 合成：P1は横(90度)を向いた状態で、画面のZ軸を中心に回転
 		const Quaternion qBase = Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_X);
 		Quaternion qGrav = Quaternion::AngleAxis(rotZ, AsoUtility::AXIS_Z);
-		//transform_.quaRot = qBase;
 		transform_.quaRot = qGrav.Mult(qBase);
 	}
 	else
@@ -179,8 +189,8 @@ void Player::UpdateGravityRotation(void)
 		// --- Player 2 専用：標準的な回転 (P2がおかしければここを調整) ---
 		switch (curGravityDir_)
 		{
-		case GRAVITY_DIR::UP:    rotZ = 180.0f;  break;
-		case GRAVITY_DIR::DOWN:  rotZ = 0.0f;    break;
+		case GRAVITY_DIR::UP:    rotZ = 0.0f;  break;
+		case GRAVITY_DIR::DOWN:  rotZ = 180.0f;    break;
 		case GRAVITY_DIR::LEFT:  rotZ = -90.0f;  break; 
 		case GRAVITY_DIR::RIGHT: rotZ = 90.0f;   break;
 		default: return;
@@ -558,6 +568,7 @@ void Player::ProcessMove(void)
 		{
 			if (input_.IsTrgDown(InputManager::TYPE::GRAVITY_MOVE_UP, Input::JOYPAD_NO::PAD2))
 				{ curGravityDir_ = GRAVITY_DIR::UP; }
+
 			if (input_.IsTrgDown(InputManager::TYPE::GRAVITY_MOVE_DOWN, Input::JOYPAD_NO::PAD2))
 				{ curGravityDir_ = GRAVITY_DIR::DOWN; }
 		}

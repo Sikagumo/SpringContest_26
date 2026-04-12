@@ -206,24 +206,15 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _
 		ret = hTrap;
 		trapPositions_.push_back(ret->GetTransform().pos);
 	}
-	// 未割当時、透過オブジェクトの追加
-	if (ret == nullptr)
-	{
-		ret = new StageObjWall(_x, _y, _blockType, BACK_ALPHA, false);
-		ret->Init(pos);
-
-		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_BACK);
-
-		MV1SetMaterialDifColor(ret->GetTransform().modelId, 0,
-							   COLOR_F(color.r, color.g, color.b, 
-									   MV1GetMaterialDifColor(ret->GetTransform().modelId, 0).a));
-	}
 
 	return ret;
 }
 
 void StageGravity::Update(void)
 {
+	//当たり判定用のトラップ座標リストを一旦空にする
+	trapPositions_.clear();
+
 	//表側の全オブジェクトをチェック
 	for (auto& row : placeType_) // 行(vector)を取り出す
 	{
@@ -245,8 +236,7 @@ void StageGravity::Update(void)
 		}
 	}
 
-	if (placeBackType_.empty()) { return; }
-
+	
 	//裏側の全オブジェクトもチェック（3Dモード等の場合）
 	for (auto& row : placeBackType_)
 	{

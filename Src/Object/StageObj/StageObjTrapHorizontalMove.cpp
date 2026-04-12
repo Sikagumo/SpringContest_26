@@ -39,8 +39,7 @@ void StageObjTrapHorizontalMove::Update(void)
     //ステージの壁との衝突チェック
     if (stage_ != nullptr)
     {
-        const auto& layout = stage_->GetPlaceType();
-        for (const auto& row : layout)
+        for (const auto& row : stage_->GetPlaceType())
         {
             for (auto* obj : row)
             {
@@ -55,6 +54,26 @@ void StageObjTrapHorizontalMove::Update(void)
                 }
             }
             if (isHitWall) break;
+        }
+
+        if (!isHitWall)
+        {
+            for (const auto& row : stage_->GetPlaceBackType())
+            {
+                for (auto* obj : row)
+                {
+                    if (obj == nullptr || obj == this) continue;
+                    if (obj->GetObjType() != static_cast<int>(StageBase::BLOCK_TYPE::WALL)) continue;
+
+                    // X軸の移動先に壁があるか判定 (判定距離は 80.0f 前後で調整)
+                    if (AsoUtility::IsHitSpheres(nextPos, COLLISION_RADIUS, obj->GetTransform().pos, 80.0f))
+                    {
+                        isHitWall = true;
+                        break;
+                    }
+                }
+                if (isHitWall) break;
+            }
         }
     }
 

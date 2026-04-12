@@ -59,6 +59,26 @@ void StageObjTrapVerticalMove::Update(void)
             }
             if (isHitWall) break;
         }
+
+        if (!isHitWall)
+        {
+            for (const auto& row : stage_->GetPlaceBackType())
+            {
+                for (auto* obj : row)
+                {
+                    if (obj == nullptr || obj == this) continue;
+                    if (obj->GetObjType() != static_cast<int>(StageBase::BLOCK_TYPE::WALL)) continue;
+
+                    // X²‚ÌˆÚ“®æ‚É•Ç‚ª‚ ‚é‚©”»’è (”»’è‹——£‚Í 80.0f ‘OŒã‚Å’²®)
+                    if (AsoUtility::IsHitSpheres(nextPos, COLLISION_RADIUS, obj->GetTransform().pos, 80.0f))
+                    {
+                        isHitWall = true;
+                        break;
+                    }
+                }
+                if (isHitWall) break;
+            }
+        }
     }
 
     // 3. ”»’èŒ‹‰Ê‚ÉŠî‚Ã‚¢‚Äˆ—

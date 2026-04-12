@@ -18,6 +18,7 @@ public:
 		IMG_TITLE_BACK,
 		IMG_SHADOW,
 		IMG_PLAYER_ARROW,
+		IMGS_INFO,
 
 		/* •¡”‰æ‘œ */
 		IMGS_TEXT,

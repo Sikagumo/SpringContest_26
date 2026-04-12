@@ -19,7 +19,8 @@ public:
 	{
 		NONE = -1,
 		P1,
-		P2
+		P2,
+		MAX
 	};
 
 	// 衝突判定用カプセル球体半径
@@ -144,10 +145,11 @@ private:
 	// モデルの見た目を変更するか否か
 	bool isChangeModel_;
 
+	// モデルの目のフレーム番号
 	int frameEyeDefault_;
-
 	int frameEyeDamage_;
 
+	// ゴールしているか否か
 	bool isGoal_;
 
 	PLAYER_NO playerNo_;

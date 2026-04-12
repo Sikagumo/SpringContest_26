@@ -82,4 +82,12 @@ public:
 	/// @param _maxNum 最大値
 	/// @param _minNum 最小値
 	static bool WrapValue(float& _num, float _maxNum, float _minNum = 0.0f);
+
+
+	/// @brief 線形補間
+	/// @param _curNum 現在値
+	/// @param _maxNum 最大値
+	/// @param _delta 累乗の値
+	/// @return 補間後の値
+	static float EasingNum(float _curNum, float _maxNum, float _powNum);
 };

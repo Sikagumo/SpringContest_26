@@ -34,6 +34,7 @@ public:
 		GRAVITY,
 		GRAVITY3D,
 	};
+
 	StageBase(TYPE stageType, int mapNum, int mapBackNum = 0);
 
 	virtual ~StageBase(void) = default;
@@ -41,7 +42,7 @@ public:
 
 	void Init(int _stageNum);
 
-	virtual void Update(void);
+	virtual void Update(void) = 0;
 
 	virtual void Draw(void);
 
@@ -60,7 +61,9 @@ public:
 	//外部空罠のリストを取得する関数
 	const std::vector<VECTOR>& GetTrapPos(void) const { return trapPositions_; }
 
+
 	const std::vector<std::vector<StageObjBase*>>& GetPlaceType(void) const { return placeType_; }
+	const std::vector<std::vector<StageObjBase*>>& GetPlaceBackType(void) const { return placeBackType_; }
 
 	/// @brief ステージの当たり判定を全登録
 	/// @param _actor 割り当てる対象1
@@ -110,6 +113,7 @@ protected:
 
 	
 	//罠の座標を格納するリストを追加
+	
 	std::vector<VECTOR>trapPositions_;
 	
 	/// @brief ステージ指定処理

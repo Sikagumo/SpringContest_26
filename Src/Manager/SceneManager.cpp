@@ -300,9 +300,6 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 	// Œ»İ‚ÌƒV[ƒ“‚ğ‰ğ•ú
 	if (scene_ != nullptr)
 	{
-		// BGM’â~
-		SoundManager::GetInstance().StopAllChoice(true);
-
 		delete scene_;
 	}
 
@@ -310,6 +307,8 @@ void SceneManager::DoChangeScene(SCENE_ID sceneId)
 	{
 		case SCENE_ID::TITLE:
 		{
+			// BGM’â~
+			SoundManager::GetInstance().StopAllChoice(true);
 			scene_ = new TitleScene();
 		}
 		break;

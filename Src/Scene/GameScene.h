@@ -17,6 +17,8 @@ public:
 	enum class GAME_STATE
 	{
 		NONE = -1,
+		INFO,
+		INFO3D,
 		ACTIVE,
 		GOAL,
 		PAUSE,
@@ -60,6 +62,17 @@ private:
 	static constexpr float GOAL_HIT_RANGE = 80.0f;
 	
 	static constexpr float GAME_TIME = 300.0f;
+
+	static constexpr int INFO_MAX = 3;
+	static constexpr int INFO3D_MAX = 2;
+
+	static constexpr float HIT_STOP_TRAP = 1.5f;
+
+	// 1秒（60フレーム）かけて戻る
+	static constexpr float RESPAWN_LIMIT_FRAME = 60.0f;
+
+
+	int preStageType_;
 
 	float gameTimer_;
 
@@ -124,6 +137,11 @@ private:
 	//現在の経過フレーム数
 	float swapTimer_ = 0.0f;
 
+	// 現在の遊び方の番号
+	int curInfoNum_;
+
+	int infoImages_[((INFO_MAX + INFO3D_MAX) * 2)];
+
 
 	/* 復活演出 */
 	
@@ -133,8 +151,6 @@ private:
 	// 復活演出の経過フレーム
 	float respawnTimer_ = 0.0f;
 	
-	// 1秒（60フレーム）かけて戻る
-	const float RESPAWN_LIMIT_FRAME = 60.0f;
 
 
 	void SetStageType(void);
@@ -148,10 +164,12 @@ private:
 	bool GoalProcess(void);
 
 	void DrawTimer(void);
+	void DrawInfo(void);
 
 	void ChangeState(GAME_STATE _state);
 
 	void Update_Active(void);
+	void Update_Info(void);
 	void Update_Goal(void);
 	void Update_Pause(void);
 	void Update_Clear(void);

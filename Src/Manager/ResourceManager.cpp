@@ -96,6 +96,14 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT_TIME, PATH_IMAGE + "TextTime.png"
 				 , allNum, numX, numY, sizeX, sizeY);
 
+	allNum = 10;
+	numX = 2;
+	numY = 5;
+	sizeX = (3020 / numX);
+	sizeY = (5085 / numY);
+	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_INFO, PATH_IMAGE + "Info.png"
+				 , allNum, numX, numY, sizeX, sizeY);
+
 	/* ƒ‚ƒfƒ‹ */
  	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_MOVE, PATH_MODEL + "Player/PlayerMove.mv1");
  	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_GRAVITY, PATH_MODEL + "Player/PlayerGravity.mv1");

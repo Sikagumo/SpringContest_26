@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include <cassert>
 #include <algorithm>
+#include <math.h>
 #include "./AsoUtility.h"
 
 
@@ -306,4 +307,14 @@ bool UtilityCommon::WrapValue(float& _num, float _maxNum, float _minNum)
     }
 
     return isWrap;
+}
+
+float UtilityCommon::EasingNum(float _curNum, float _maxNum, float _powNum)
+{
+    float num = (_curNum / _maxNum);
+
+    // •â³’l‚ðÅ‘å‚É•â³
+    if (num > 1.0f) { num = 1.0f; }
+
+    return (1.0f - powf((1.0f - num), _powNum));
 }

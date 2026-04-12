@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include <cmath>
 #include <functional>
+#include <array>
 #include "../Application.h"
 #include "../Manager/SceneManager.h"
 #include "../Manager/ResourceManager.h"
@@ -12,9 +13,6 @@
 #include "../Object/StageObj/StageObjBase.h"
 #include "../Object/StageObj/StageObjTrap.h"
 #include "../Object/Stage/StageController.h"
-#include "../Object/Stage/StageBase.h"
-#include "../Object/Stage/StageMove.h"
-#include "../Object/Stage/StageGravity.h"
 #include "../Object/SkyDome/SkyDome.h"
 #include "../Object/Player/Player.h"
 #include "../Object/Collider/ColliderBase.h"
@@ -30,17 +28,22 @@ GameScene::GameScene(void)
 	, player1_(PlayerParam()), player2_(PlayerParam())
 	, gameTimer_(GAME_TIME), performTime_(0.0f), isPerform_(false)
 	, isGameTimeActive_(false), currentSwapRight_(SWAP_RIGHT::P1)
+	, curInfoNum_(-1), preStageType_(-1)
 {
 	for (int& time : timeText_) { time = -1; }
 
 	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT_TIME, timeText_);
+	
+	for (int& image : infoImages_)
+	{
+		image = -1;
+	}
+	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_INFO, infoImages_);
 }
 
 void GameScene::Init(void)
 {
 	currentSwapRight_ = SWAP_RIGHT::P1;
-	sound_.Play(static_cast<int>(ResourceManager::SRC::BGM_GAME), true);
-	sound_.Play(static_cast<int>(ResourceManager::SRC::SE_COUNT), false);
 
 	// ステージ初期化
 	stage_ = new StageController(sceneMng_.GetIsStageMove());
@@ -88,14 +91,12 @@ void GameScene::Init(void)
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
 
-	state_ = GAME_STATE::ACTIVE;
-
 	isGameTimeActive_ = false;
 	gameTimer_ = GAME_TIME;
 
 	isPerform_ = false;
 
-	ChangeState(GAME_STATE::ACTIVE);
+	ChangeState(GAME_STATE::INFO);
 }
 
 void GameScene::Update(void)
@@ -106,7 +107,9 @@ void GameScene::Update(void)
 	// 一時停止時、以下の処理を終了
 	if (state_ == GAME_STATE::PAUSE
 		|| state_ == GAME_STATE::ACTIVE && performTime_ >= 0.0f
-		|| state_ == GAME_STATE::GOAL)
+		|| state_ == GAME_STATE::GOAL
+		|| state_ == GAME_STATE::INFO
+		|| state_ == GAME_STATE::INFO3D)
 	{ return; }
 
 
@@ -137,18 +140,6 @@ void GameScene::Update(void)
 
 		// ゴール処理(ゴール中は以下の処理を終了)
 		if (GoalProcess()) { return; }
-
-		/*
-#ifdef _DEBUG
-		VECTOR pos1 = player1_.player->GetTransform().pos;
-		VECTOR pos2 = player2_.player->GetTransform().pos;
-
-		if (AsoUtility::IsHitCircleXY(pos1, 40.0f, pos2, 40.0f))
-		{
-
-			printfDx("XY衝突中！\n");
-		}
-#endif*/
 
 		//入れ替え入力の判定と実行
 		bool executeSwap = false;
@@ -230,6 +221,7 @@ void GameScene::Draw(void)
 
 	DrawTimer();
 
+	DrawInfo();
 
 	if (state_ == GAME_STATE::PAUSE)
 	{
@@ -306,29 +298,26 @@ void GameScene::UpdateSwap(void)
 	/* 交代処理 */
 	// タイマー更新
 	swapTimer_ += 1.0f;
-	float t = swapTimer_ / SWAP_LIMIT_FRAME; // 0.0 ～ 1.0 に正規化
-
-	if (t > 1.0f) t = 1.0f;
 
 	// イージング関数の適用
-	float easedT = 1.0f - powf(1.0f - t, 3.0f);
+	float easingNum = UtilityCommon::EasingLine(swapTimer_, SWAP_LIMIT_FRAME, 3.0f);
 
 	// プレイヤー1の座標を更新
 	Transform& t1 = player1_.player->GetTransform();
-	t1.pos.x = (player1_.startPos.x + (player1_.endPos.x - player1_.startPos.x) * easedT);
-	t1.pos.y = (player1_.startPos.y + (player1_.endPos.y - player1_.startPos.y) * easedT);
-	t1.pos.z = (player1_.startPos.z + (player1_.endPos.z - player1_.startPos.z) * easedT);
+	t1.pos.x = (player1_.startPos.x + (player1_.endPos.x - player1_.startPos.x) * easingNum);
+	t1.pos.y = (player1_.startPos.y + (player1_.endPos.y - player1_.startPos.y) * easingNum);
+	t1.pos.z = (player1_.startPos.z + (player1_.endPos.z - player1_.startPos.z) * easingNum);
 	t1.prePos = t1.pos;
 
 	// プレイヤー2の座標を更新
 	Transform& t2 = player2_.player->GetTransform();
-	t2.pos.x = player2_.startPos.x + (player2_.endPos.x - player2_.startPos.x) * easedT;
-	t2.pos.y = player2_.startPos.y + (player2_.endPos.y - player2_.startPos.y) * easedT;
-	t2.pos.z = player2_.startPos.z + (player2_.endPos.z - player2_.startPos.z) * easedT;
+	t2.pos.x = player2_.startPos.x + (player2_.endPos.x - player2_.startPos.x) * easingNum;
+	t2.pos.y = player2_.startPos.y + (player2_.endPos.y - player2_.startPos.y) * easingNum;
+	t2.pos.z = player2_.startPos.z + (player2_.endPos.z - player2_.startPos.z) * easingNum;
 	t2.prePos = t2.pos;
 
 	// 移動完了判定
-	if (t >= 1.0f)
+	if (swapTimer_ >= SWAP_LIMIT_FRAME)
 	{
 		isSwapping_ = false;
 
@@ -346,31 +335,29 @@ void GameScene::UpdateRespawn(void)
 	/* リスタート処理 */
 	//タイマー更新
 	respawnTimer_ += 1.0f;
-	float t = respawnTimer_ / RESPAWN_LIMIT_FRAME;
-
-	if (t > 1.0f) t = 1.0f;
 
 	//イージング関数の適用
-	float easedT = 1.0f - powf(1.0f - t, 3.0f);
+	float easingNum = UtilityCommon::EasingLine(respawnTimer_, RESPAWN_LIMIT_FRAME, 3.0f);
 
 	//プレイヤー１の座標を補間
 	Transform& t1 = player1_.player->GetTransform();
-	t1.pos.x = player1_.deathPos.x + (player1_.initialPos.x - player1_.deathPos.x) * easedT;
-	t1.pos.y = player1_.deathPos.y + (player1_.initialPos.y - player1_.deathPos.y) * easedT;
-	t1.pos.z = player1_.deathPos.z + (player1_.initialPos.z - player1_.deathPos.z) * easedT;
+	t1.pos.x = player1_.deathPos.x + (player1_.initialPos.x - player1_.deathPos.x) * easingNum;
+	t1.pos.y = player1_.deathPos.y + (player1_.initialPos.y - player1_.deathPos.y) * easingNum;
+	t1.pos.z = player1_.deathPos.z + (player1_.initialPos.z - player1_.deathPos.z) * easingNum;
 	t1.prePos = t1.pos;
 
 	// プレイヤー2の座標を補間（死んだ場所 -> 初期位置）
 	Transform& t2 = player2_.player->GetTransform();
-	t2.pos.x = player2_.deathPos.x + (player2_.initialPos.x - player2_.deathPos.x) * easedT;
-	t2.pos.y = player2_.deathPos.y + (player2_.initialPos.y - player2_.deathPos.y) * easedT;
-	t2.pos.z = player2_.deathPos.z + (player2_.initialPos.z - player2_.deathPos.z) * easedT;
+	t2.pos.x = player2_.deathPos.x + (player2_.initialPos.x - player2_.deathPos.x) * easingNum;
+	t2.pos.y = player2_.deathPos.y + (player2_.initialPos.y - player2_.deathPos.y) * easingNum;
+	t2.pos.z = player2_.deathPos.z + (player2_.initialPos.z - player2_.deathPos.z) * easingNum;
 	t2.prePos = t2.pos;
 
 	// 完了判定
-	if (t >= 1.0f)
+	if (respawnTimer_ >= RESPAWN_LIMIT_FRAME)
 	{
 		isRespawning_ = false;
+		respawnTimer_ = 0.0f;
 
 		// プレイヤーの見た目をもとに戻す
 		player1_.player->SetIsChangeModel(false);
@@ -398,7 +385,7 @@ bool GameScene::TrapProcess(void)
 		VECTOR pPos = p->GetTransform().pos;
 
 		//リストの中にあるトラップを一つずつ取り出して判定
-		for (const VECTOR& tPos : trapList)
+		for (auto& tPos : trapList)
 		{
 			if (AsoUtility::IsHitSpheres(pPos, Player::COL_CAPSULE_RADIUS,
 										 tPos, StageObjTrap::COLLISION_RADIUS))
@@ -428,7 +415,7 @@ bool GameScene::TrapProcess(void)
 					StartJoypadVibration(padNum, 1000, static_cast<int>(VIBRATION_TIME * 1000.0f));
 				}
 
-				const float HIT_STOP_TRAP = 1.5f;
+				
 				sceneMng_.GetPerform().SetHitStop(HIT_STOP_TRAP);
 
 				// ダメージSE再生
@@ -444,13 +431,10 @@ bool GameScene::TrapProcess(void)
 
 bool GameScene::GoalProcess(void)
 {
-	bool ret = false;
-
-	// 判定の大きさ
-	const float GOAL_HIT_RANGE = 80.0f;
-	VECTOR goalPos = AsoUtility::VECTOR_ZERO;
+	// 更新処理の処理をスキップするか否か
+	bool isProcessStop = false;
 	
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < static_cast<int>(Player::PLAYER_NO::MAX); i++)
 	{
 		// 各プレイヤーとゴールの XY 距離判定
 		if (!player1_.player->GetIsGoal()
@@ -471,83 +455,32 @@ bool GameScene::GoalProcess(void)
 	// 二人が星に触れた状態になったらゴール状態に遷移
 	if (player1_.player->GetIsGoal() && player2_.player->GetIsGoal())
 	{
-		ret = true;
+		isProcessStop = true;
 
 		ChangeState(GAME_STATE::GOAL);
 	}
 
-	return ret;
+	return isProcessStop;
 }
 
-void GameScene::DrawTimer(void)
+void GameScene::DrawInfo(void)
 {
-	const float TEXT_SCALE = 0.5f;
-	const int TEXT_SIZE = static_cast<int>((80 * TEXT_SCALE));
+	if (state_ != GAME_STATE::INFO && state_ != GAME_STATE::INFO3D) { return; }
 
-	int x = Application::SCREEN_HALF_X - 100;
-	int arrayNum = 0;
-
-	// 小数点以下の数値
-	float frac = (gameTimer_ - std::floor(gameTimer_));
-
-	
-	DrawRotaGraph(x, TEXT_SIZE,
-				  TEXT_SCALE, 0.0, uiText_[static_cast<int>(UI_TEXT::TIME_LIMIT)], true);
-
-	// 100の位
-	x += 150;
-	arrayNum = static_cast<int>(gameTimer_ / 100.0f);
-	if (arrayNum > 0)
+	int imgNum = curInfoNum_ * 2;
+	if (stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY
+		|| stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY3D)
 	{
-		x += TEXT_SIZE;
-		DrawRotaGraph(x, TEXT_SIZE,
-			TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+		imgNum++;
+	}
+	if (state_ == GAME_STATE::INFO3D)
+	{
+		imgNum += (INFO_MAX * 2);
 	}
 
-	// 10の位
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(gameTimer_ / 10.0f) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-	// 1の位
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(gameTimer_) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-	// 小数点
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(gameTimer_) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[10], true);
-
-	// 第1小数点
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(frac * 10.0f) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-	// 第2小数点
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(frac * 100.0f) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-
-	// ゲーム開始カウンタ
-	if (state_ == GAME_STATE::ACTIVE && performTime_ > -1.0f)
-	{
-		arrayNum = static_cast<int>(performTime_) + 1;
-		int image = ((performTime_ > 0.0f)
-						? timeText_[arrayNum]
-						: uiText_[static_cast<int>(UI_TEXT::GAME_START)]);
-
-		double scale = ((performTime_ > 0.0f) ? 2.0 : 1.0);
-
-		DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y - 100
-					  , scale, 0.0, image, true);
-	}
+	const float SCALE = 0.8f;
+	DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y, SCALE, 0.0,
+				  infoImages_[imgNum], true);
 }
 
 void GameScene::ChangeState(GAME_STATE _state)
@@ -565,10 +498,45 @@ void GameScene::ChangeState(GAME_STATE _state)
 
 		/* 初回のみ自動時間移動 */
 		isGameTimeActive_ = (state_ == GAME_STATE::NONE);
-		if (state_ != GAME_STATE::NONE)
+
+		if (state_ == GAME_STATE::INFO)
+		{
+			// BGMを停止
+			sound_.StopAllChoice(true);
+
+			// 初回スタート時、音声を再生
+			sound_.Play(static_cast<int>(ResourceManager::SRC::BGM_GAME), true);
+			sound_.Play(static_cast<int>(ResourceManager::SRC::SE_COUNT), false);
+		}
+		else
 		{
 			sound_.Play(static_cast<int>(ResourceManager::SRC::SE_COUNT_SHORT), false);
 		}
+
+
+		if ((preStageType_ % 2) == 0
+			&& static_cast<int>(stage_->GetStageType()) % 2 == 1)
+		{
+			// ステージが3Dステージに移行した場合、3D説明状態に遷移
+			ChangeState(GAME_STATE::INFO3D);
+			return;
+		}
+	}
+
+	else if (_state == GAME_STATE::INFO
+		|| _state == GAME_STATE::INFO3D)
+	{
+		updateGameStateProc_ = std::bind(&GameScene::Update_Info, this);
+		curInfoNum_ = 0;
+
+		if (_state == GAME_STATE::INFO3D)
+		{
+			preStageType_++;
+		}
+
+		// BGMの音量を調整
+		float volume = sound_.GetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME)) - BGM_SOUND_DEC;
+		sound_.SetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME), volume);
 	}
 
 	else if (_state == GAME_STATE::PAUSE)
@@ -647,6 +615,34 @@ void GameScene::Update_Active(void)
 	if (performTime_ >= -1.0f && isPerform_)
 	{
 		performTime_ -= sceneMng_.GetDeltaTime();
+	}
+}
+void GameScene::Update_Info(void)
+{
+	if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
+		|| input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
+	{
+		if (--curInfoNum_ < 0
+			&& state_ == GAME_STATE::INFO)
+		{
+			sceneMng_.ChangeScene(SceneManager::SCENE_ID::TITLE);
+		}
+	}
+	if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
+		|| input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2))
+	{
+		const int MAX = ((state_ == GAME_STATE::INFO)
+			? INFO_MAX
+			: INFO3D_MAX);
+
+			if (++curInfoNum_ >= MAX)
+			{
+				ChangeState(GAME_STATE::ACTIVE);
+			}
+			else
+			{
+				sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CLICK), false);
+			}
 	}
 }
 void GameScene::Update_Goal(void)
@@ -749,6 +745,8 @@ void GameScene::Update_GameOver(void)
 
 void GameScene::SetStageType(void)
 {
+	preStageType_ = static_cast<int>(stage_->GetStageType());
+
 	// 時間を停止
 	isGameTimeActive_ = false;
 
@@ -802,4 +800,75 @@ void GameScene::SetStageType(void)
 
 	currentSwapRight_ = SWAP_RIGHT::P1;
 	ChangeState(GAME_STATE::ACTIVE);
+}
+
+void GameScene::DrawTimer(void)
+{
+	const float TEXT_SCALE = 0.5f;
+	const int TEXT_SIZE = static_cast<int>((80 * TEXT_SCALE));
+
+	int x = Application::SCREEN_HALF_X - 100;
+	int arrayNum = 0;
+
+	// 小数点以下の数値
+	float frac = (gameTimer_ - std::floor(gameTimer_));
+
+
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, uiText_[static_cast<int>(UI_TEXT::TIME_LIMIT)], true);
+
+	// 100の位
+	x += 150;
+	arrayNum = static_cast<int>(gameTimer_ / 100.0f);
+	if (arrayNum > 0)
+	{
+		x += TEXT_SIZE;
+		DrawRotaGraph(x, TEXT_SIZE,
+			TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+	}
+
+	// 10の位
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(gameTimer_ / 10.0f) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+	// 1の位
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(gameTimer_) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+	// 小数点
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(gameTimer_) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[10], true);
+
+	// 第1小数点
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(frac * 10.0f) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+	// 第2小数点
+	x += TEXT_SIZE;
+	arrayNum = static_cast<int>(frac * 100.0f) % 10;
+	DrawRotaGraph(x, TEXT_SIZE,
+		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
+
+
+	// ゲーム開始カウンタ
+	if (state_ == GAME_STATE::ACTIVE && performTime_ > -1.0f)
+	{
+		arrayNum = static_cast<int>(performTime_) + 1;
+		int image = ((performTime_ > 0.0f)
+			? timeText_[arrayNum]
+			: uiText_[static_cast<int>(UI_TEXT::GAME_START)]);
+
+		double scale = ((performTime_ > 0.0f) ? 2.0 : 1.0);
+
+		DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y - 100
+			, scale, 0.0, image, true);
+	}
 }

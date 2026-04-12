@@ -65,27 +65,6 @@ void StageBase::StageChoice(int _stageNum)
 	SetBackGroundList(CsvManager::STAGE_X, CsvManager::STAGE_Y);
 }
 
-void StageBase::Update(void)
-{
-	for (auto& placeList : placeType_)
-	{
-		for (auto& place : placeList)
-		{
-			place->Update();
-		}
-	}
-
-	if (placeBackType_.empty()) { return; }
-
-	for (auto& backList : placeBackType_)
-	{
-		for (auto& back : backList)
-		{
-			back->Update();
-		}
-	}
-}
-
 void StageBase::Draw(void)
 {
 	// 設置オブジェクト描画
@@ -93,7 +72,22 @@ void StageBase::Draw(void)
 	{
 		for (auto& back : placeBackList)
 		{
-			back->Draw();
+			bool isTrap = false;
+
+			for (auto& trapPos : trapPositions_)
+			{
+				if (AsoUtility::Equals(back->GetTransform().pos,
+									   trapPos))
+				{
+					isTrap = true;
+					break;
+				}
+			}
+
+			if (!isTrap)
+			{
+				back->Draw();
+			}
 		}
 	}
 
@@ -119,6 +113,30 @@ void StageBase::DrawPre(void)
 	for (auto& backGround : backGroundList_)
 	{
 		backGround->Draw();
+	}
+
+	// 設置オブジェクト描画
+	for (auto& placeBackList : placeBackType_)
+	{
+		for (auto& back : placeBackList)
+		{
+			bool isTrap = false;
+
+			for (auto& trapPos : trapPositions_)
+			{
+				if (AsoUtility::Equals(back->GetTransform().pos,
+					trapPos))
+				{
+					isTrap = true;
+					break;
+				}
+			}
+
+			if (isTrap)
+			{
+				back->Draw();
+			}
+		}
 	}
 }
 void StageBase::Release(void)
