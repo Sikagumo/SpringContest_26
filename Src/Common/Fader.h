@@ -16,29 +16,32 @@ public:
 		FADE_IN		// 徐々に明転
 	};
 
-	// コンストラクタ
+
+	/// @brief デフォルトコンストラクタ
 	Fader(void);
 
-	// デストラクタ
-	~Fader(void);
+	/// @brief デフォルトデストラクタ
+	~Fader(void) = default;
 
-	// 状態の取得
-	STATE GetState(void) const;
+	/// @brief フェード状態の取得
+	STATE GetState(void) const { return state_; };
 
-	// フェード処理が終了しているか
-	bool IsEnd(void) const;
+	/// @brief フェード処理が終了しているか否か
+	bool IsEnd(void) const { return isEnd_; };
 
-	// 指定フェードを開始する
-	void SetFade(STATE state);
+	/// @brief 指定フェードを開始する
+	/// @param _state 指定する状態
+	void SetFade(STATE _state);
 
-	// 初期化
+	/// @brief 初期化
 	void Init(void);
 
-	// 更新
+	/// @brief 更新
 	void Update(void);
 
-	// 描画
+	/// @brief 描画
 	void Draw(void);
+
 
 private:
 

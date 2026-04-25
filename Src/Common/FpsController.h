@@ -3,45 +3,48 @@
 #include <chrono>
 #include <string>
 #include <DxLib.h>
+#include "../Utility/UtilityCommon.h"
 
 class FpsController
 {
 
 public:
 
-	// コンストラクタ
-	// ( DxLib_Init前に呼ぶこと )
-    FpsController(int fixedFps);
+    /// @brief コンストラクタ(DxLib_Init前に呼ぶこと)
+	/// @param _fixedFps 固定フレームレート(0以下の値は無制限)
+    FpsController(int _fixedFps);
 
-    // デストラクタ
-    ~FpsController(void);
+    /// @brief デストラクタ
+    ~FpsController(void) = default;
 
-    // 1フレームごとのFPS制御
-    // ( ScreenFlip後に呼ぶこと ）
+
+    /// @brief 1フレームごとのFPS制御(ScreenFlip後に呼ぶこと）
     void Wait(void);
 
-    // 画面にFPSを表示
+    /// @brief 画面にFPSを表示
     void Draw(void);
 
-    // 現在のFPSを取得
+    /// @brief 現在のFPSを取得
     float GetFPS(void) const { return fps_; }
+
 
 private:
 
     // 最大FPS
-    const int MAX_FPS = 1200;
+    static constexpr int MAX_FPS = 1200;
 
 	// 平均FPS計算に使用するフレーム数
-	const int AVG_FPS_COUNT = 60;
+	static constexpr int AVG_FPS_COUNT = 60;
 
 	// 平均FPSの描画色
-	const unsigned int COLOR = GetColor(255, 255, 255);
+	static constexpr UtilityCommon::Color COLOR = UtilityCommon::Color(255, 255, 255);
 
     // 平均FPSの右上描画位置調整
-    const int MARGIN = 20;
+    static constexpr int MARGIN = 20;
 
     // 描画フォーマット
     const std::string TEXT_FORMAT = "FPS : %.2f";
+
 
     // 指定された固定フレームレート
     const int fixedFps_;

@@ -17,8 +17,6 @@ public:
 
 	~StageMove(void)override = default;
 
-	void DrawDebug(void)override;
-
 	void Update(void) override;
 
 protected:

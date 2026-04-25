@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <memory>
 class FpsController;
 
 class Application
@@ -16,19 +17,18 @@ public:
 	static constexpr int SCREEN_HALF_X = (SCREEN_SIZE_X / 2);
 	static constexpr int SCREEN_HALF_Y = (SCREEN_SIZE_Y / 2);
 
-	// 固定FPS
+	// 固定FPS数
 	static constexpr int FRAME_RATE = 60;
 
 	// 重力(メートルの値をセンチメートルに変える)
-	static constexpr float GRAVITY = 9.81f * 100.0f;
+	static constexpr float GRAVITY = (9.81f * 100.0f);
 	static constexpr float GRAVITY_SCALE = 0.7f;
 
 
 	/// @brief 明示的にインスタンス生成処理
 	static void CreateInstance(void);
 
-	/// @brief 静的インスタンス取得処理
-	/// @return アプリケーションマネージャ
+	/// @brief アプリケーションマネージャ取得処理
 	static Application& GetInstance(void) { return *instance_;};
 
 	/// @brief 初期化 
@@ -40,14 +40,15 @@ public:
 	/// @brief インスタンス削除処理
 	void Destroy(void);
 
-	// 初期化成功／失敗の判定
-	bool IsInitFail(void) const;
 
-	// 解放成功／失敗の判定
-	bool IsReleaseFail(void) const;
+	/// @brief 初期化成功しているか否か
+	bool IsInitFail(void) const { return isInitFail_; };
+
+	/// @brief メモリ解放成功しているか否か
+	bool IsReleaseFail(void) const { return isReleaseFail_; };
 
 	/// @brief 重力の取得
-	float GetGravityPow(void) const { return GRAVITY * GRAVITY_SCALE; }
+	float GetGravityPow(void) const { return (GRAVITY * GRAVITY_SCALE); }
 
 	/// @brief ゲーム終了処理
 	void SetGameEnd(void) { isGame_ = false; };
@@ -55,19 +56,26 @@ public:
 
 private:
 
+	// ゲームをウィンドウで起動するか否か
+	static constexpr bool IS_WINDOW = true;
+
+	// エフェクト表示最大数
+	static constexpr int EFFECT_VIRW_MAX = 8000;
+	
+
 	// 静的インスタンス
 	static Application* instance_;
 
 	// FPS制御
-	FpsController* fpsController_;
+	std::unique_ptr<FpsController> fpsController_;
 
 	// ゲームを継続するか否か
 	bool isGame_;
 
-	// 初期化失敗
+	// 初期化失敗してるか否か
 	bool isInitFail_;
 
-	// 解放失敗
+	// 解放失敗しているか否か
 	bool isReleaseFail_;
 
 
@@ -77,13 +85,12 @@ private:
 	/// @brief デフォルトデストラクタ
 	~Application(void) = default;
 	
-	// コピーコンストラクタ対策
-	Application(const Application&) = delete;
+	/* コピーコンストラクタ対策 */
+	Application(const Application&)			   = delete;
 	Application& operator=(const Application&) = delete;
-	Application(Application&&) = delete;
+	Application(Application&&)			  = delete;
 	Application& operator=(Application&&) = delete;
 
 	/// @brief エフェクシアの初期化処理
 	void InitEffekseer(void);
-
 };

@@ -18,17 +18,15 @@ void Application::CreateInstance(void)
 	/* インスタンス生成処理 */
 
 	// インスタンス未生成時 生成
-	if (instance_ == nullptr) instance_ = new Application();
+	if (instance_ == nullptr) { instance_ = new Application(); };
 
 	instance_->Init(); // 初期化処理
 }
 
 Application::Application(void)
-	:
-	isGame_(true),
-	isInitFail_(false),
-	isReleaseFail_(false),
-	fpsController_(nullptr)
+	: isGame_(true)
+	, isInitFail_(false)
+	, isReleaseFail_(false)
 {
 }
 
@@ -39,15 +37,11 @@ void Application::Init(void)
 	// ゲーム名
 	SetWindowText(GAME_NAME);
 
-
 	// ウィンドウサイズ
-	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, 32);
+	const int COLOR_BIT = 32;
+	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, COLOR_BIT);
 
-	constexpr bool IS_FULLSCREEN = false;
-	ChangeWindowMode(IS_FULLSCREEN);
-
-	// FPS制御初期化
-	fpsController_ = new FpsController(FRAME_RATE);
+	ChangeWindowMode(IS_WINDOW);
 
 	// DxLibの初期化
 	SetUseDirect3DVersion(DX_DIRECT3D_11);
@@ -74,38 +68,35 @@ void Application::Init(void)
 
 	// 入力制御初期化
 	SetUseDirectInputFlag(true);
+
+
+	// FPS制御初期化
+	fpsController_ = std::make_unique<FpsController>(FRAME_RATE);
+
+
+	/* 各マネージャインスタンスの明示的生成 */
 	InputManager::CreateInstance();
-
 	CsvManager::CreateInstance();
-
-	// リソース管理初期化
 	ResourceManager::CreateInstance();
-
-	// リソース管理初期化
 	SoundManager::CreateInstance();
-
-	// シーン管理初期化
 	SceneManager::CreateInstance();
-
 }
 
 void Application::Run(void)
 {
 	/*　実行処理　*/
 
-	// シーン管理マネージャ
-	SceneManager& sceneManager = SceneManager::GetInstance();
-
 	// ゲームループ
 	while (ProcessMessage() == 0 && isGame_)
 	{
+		// 更新処理
 		InputManager::GetInstance().Update();
+		SceneManager::GetInstance().Update();
 
-		sceneManager.Update();
+		// 描画処理
+		SceneManager::GetInstance().Draw();
 
-		sceneManager.Draw();
-
-		if (sceneManager.GetIsDebugMode())
+		if (SceneManager::GetInstance().GetIsDebugMode())
 		{
 			// 平均FPS描画
 			fpsController_->Draw();
@@ -115,32 +106,20 @@ void Application::Run(void)
 
 		// 理想FPS経過待ち
 		fpsController_->Wait();
-
 	}
-
 }
 
 void Application::Destroy(void)
 {
 	/*　インスタンス削除処理　*/
 
-	// FPS制御メモリ解放
-	delete fpsController_;
-
-	// 入力解放マネージャ
+	/* 各マネージャインスタンスのメモリ解放処理 */
+	SceneManager::GetInstance().Destroy();
+	SoundManager::GetInstance().Destroy();
+	ResourceManager::GetInstance().Destroy();
+	CsvManager::GetInstance().Destroy();
 	InputManager::GetInstance().Destroy();
 
-	// 音声管理解放
-	SoundManager::GetInstance().Destroy();
-
-	// リソース管理解放
-	ResourceManager::GetInstance().Destroy();
-	
-	// シーン管理解放
-	SceneManager::GetInstance().Destroy();
-
-	// CSV管理解放
-	CsvManager::GetInstance().Destroy();
 
 	// Effekseerを終了する。
 	Effkseer_End();
@@ -153,29 +132,16 @@ void Application::Destroy(void)
 
 	// インスタンスのメモリ解放
 	delete instance_;
-
 }
-
-bool Application::IsInitFail(void) const
-{
-	return isInitFail_;
-}
-
-bool Application::IsReleaseFail(void) const
-{
-	return isReleaseFail_;
-}
-
-
 
 void Application::InitEffekseer(void)
 {
-	if (Effekseer_Init(8000) == -1)
+	/* Effekseerの初期化 */
+	if (Effekseer_Init(EFFECT_VIRW_MAX) == -1)
 	{
 		DxLib_End();
 	}
 
 	SetChangeScreenModeGraphicsSystemResetFlag(FALSE);
-
 	Effekseer_SetGraphicsDeviceLostCallbackFunctions();
 }

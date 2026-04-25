@@ -1,11 +1,13 @@
 #pragma once
 #include <DxLib.h>
 #include <algorithm>
+
 class Quaternion
 {
 
 public:
 	
+	// クォータニオンの正規化に使用する最小値
 	static constexpr float kEpsilonNormalSqrt = 1e-15F;
 
 	double w;
@@ -13,68 +15,81 @@ public:
 	double y;
 	double z;
 
-	// コンストラクタ
+	/* コンストラクタ */
 	Quaternion(void);
 	explicit Quaternion(const VECTOR& rad);
 	Quaternion(double w, double x, double y, double z);
 
-	// デストラクタ
-	~Quaternion(void);
+	/// @brief デフォルトデストラクタ 
+	~Quaternion(void) = default;
 
-	// オイラー角からクォータニオンへ変換
+	/* オイラー角からクォータニオンへ変換 */
 	static Quaternion Euler(const VECTOR& rad);
 	static Quaternion Euler(double radX, double radY, double radZ);
 	static Quaternion Euler(float radX, float radY, float radZ);
 
-	// クォータニオンの合成
+	/* クォータニオンの合成 */
 	static Quaternion Mult(const Quaternion& q1, const Quaternion& q2);
 	Quaternion Mult(const Quaternion& q) const;
 
-	// 指定軸を指定角分、回転させる
+	/* 指定軸を指定角分、回転させる */
 	static Quaternion AngleAxis(double rad, VECTOR axis);
 	static Quaternion AngleAxis(float deg, VECTOR axis);
 
-	// 座標を回転させる
+	/* 座標を回転させる */
 	static VECTOR PosAxis(const Quaternion& q, VECTOR pos);
 	VECTOR PosAxis(VECTOR pos) const;
 
-	// クォータニオンからオイラー角へ変換
+	/* クォータニオンからオイラー角へ変換 */
 	static VECTOR ToEuler(const Quaternion& q);
 	VECTOR ToEuler(void) const;
 
-	// クォータニオンから行列へ変換
+	/* クォータニオンから行列へ変換 */
 	static MATRIX ToMatrix(const Quaternion& q);
 	MATRIX ToMatrix(void) const;
 
-	// ベクトルからクォータニオンに変換
+	/* ベクトルからクォータニオンに変換 */
 	static Quaternion LookRotation(const VECTOR& dir);
 	static Quaternion LookRotation(const VECTOR& dir, const VECTOR& up);
 
-	// 行列からクォータニオンに変換
+	/// @brief 行列からクォータニオンに変換
 	static Quaternion GetRotation(const MATRIX& mat);
 
-	// 基本ベクトルを取得
+	/// @brief 正面の座標を取得
 	VECTOR GetForward(void) const;
+
+	/// @brief 後ろの座標を取得
 	VECTOR GetBack(void) const;
+
+	/// @brief 右の座標を取得
 	VECTOR GetRight(void) const;
+
+	/// @brief 左の座標を取得
 	VECTOR GetLeft(void) const;
+
+	/// @brief 上の座標を取得
 	VECTOR GetUp(void) const;
+
+	/// @brief 下の座標を取得
 	VECTOR GetDown(void) const;
 
-	// 内積
+	/* クォータニオンの内積 */
 	static double Dot(const Quaternion& q1, const Quaternion& q2);
 	double Dot(const Quaternion& b) const;
 
-	// 正規化
+	/* 正規化 */
 	static Quaternion Normalize(const Quaternion& q);
 	Quaternion Normalized(void) const;
 	void Normalize(void);
 
-	// 逆クォータニオン
+	/// @brief 逆クォータニオン
 	Quaternion Inverse(void) const;
 
-	// 球面補間
-	static Quaternion Slerp(const Quaternion& from, const Quaternion& to, double t);
+	/// @brief 球面補間
+	/// @param _from 始点クォータニオン
+	/// @param _to 終点クォータニオン
+	/// @param _term 0.0f～1.0fの補間値
+	static Quaternion Slerp(const Quaternion& _from, const Quaternion& _to, float _term);
 
 	// ２つのベクトル間の回転量を取得する
 	static Quaternion FromToRotation(const VECTOR& fromDir, const VECTOR& toDir);
@@ -88,7 +103,9 @@ public:
 	double LengthSquared(void) const;
 	VECTOR xyz(void) const;
 
-	// 対象方向の回転
+	/// @brief 対象方向の回転
+	/// @param angle 
+	/// @param axis 
 	void ToAngleAxis(float* angle, VECTOR* axis);
 
 private:
@@ -96,6 +113,8 @@ private:
 	// 基本ベクトルを取得
 	VECTOR GetDir(VECTOR dir) const;
 
+
+	/* 加算処理 */
 	Quaternion operator*(float rhs);
 	Quaternion operator+(const Quaternion& rhs);
 	

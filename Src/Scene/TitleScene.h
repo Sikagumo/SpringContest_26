@@ -5,9 +5,7 @@
 #include "../Application.h"
 #include "../Object/Common/Transform.h"
 #include "../Utility/UtilityCommon.h"
-#include "../Common/Vector2F.h"
 class AnimationController;
-class SkyDome;
 
 class TitleScene : public SceneBase
 {
@@ -43,8 +41,6 @@ public:
 
 	/// @brief ‰ğ•ú
 	void Release(void) override;
-
-	void ChangeTitleState(TITLE_STATE _state);
 
 
 private:
@@ -103,22 +99,31 @@ private:
 	// ƒ^ƒCƒgƒ‹ó‘ÔXVˆ—
 	std::function<void(void)> updateStateFunc_;
 
-	// ó‘Ô•Ê•`‰æˆ—
+	/* ó‘Ô•Ê‚Ì•`‰æˆ— */
 	std::function<void(void)> drawFuncTitle_;
 	std::function<void(void)> drawFuncSelect_;
 
 
+	/* ó‘Ô•Ê‚ÌXVˆ— */
 	void Update_SelectStart(void);
 	void Update_GameEnd(void);
 	void Update_SelectMove(void);
 	void Update_SelectGravity(void);
 	void Update_SelectCancel(void);
 
+	/* ó‘Ô•Ê‚Ì•`‰æˆ— */
 	void Draw_SelectStart(void);
 	void Draw_GameEnd(void);
 	void Draw_SelectMove(void);
 	void Draw_SelectGravity(void);
 	void Draw_SelectCancel(void);
 
+	/// @brief ó‘Ô‘JˆÚˆ—
+	/// @param _selectUp ã“ü—ÍŒã‚Ìó‘Ô
+	/// @param _selectDown ‰º“ü—ÍŒã‚Ìó‘Ô
 	void ChangeStateProc(TITLE_STATE _selectUp, TITLE_STATE _selectDown);
+
+	/// @brief ó‘Ô‘JˆÚˆ—‚Ì—v‘f
+	/// @param _state ó‘Ô‘JˆÚŒã‚Ì‘ÎÛ
+	void _ChangeStateProc(TITLE_STATE _state);
 };

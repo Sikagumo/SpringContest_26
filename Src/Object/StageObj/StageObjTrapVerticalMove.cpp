@@ -37,11 +37,10 @@ void StageObjTrapVerticalMove::Update(void)
 
     bool isHitWall = false;
 
-    // 2. ステージの壁と衝突するかチェック
+    // ステージの壁と衝突するか判定
     if (stage_ != nullptr)
     {
-        const auto& layout = stage_->GetPlaceType();
-        for (const auto& row : layout)
+        for (const auto& row : stage_->GetPlaceType())
         {
             for (auto* obj : row)
             {

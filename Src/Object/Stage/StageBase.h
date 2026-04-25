@@ -1,5 +1,7 @@
 #pragma once
 #include <vector>
+#include <array>
+#include <DxLib.h>
 #include "../../Utility/UtilityCommon.h"
 #include "../../Common/Vector2.h"
 #include "../Common/Transform.h"
@@ -48,12 +50,10 @@ public:
 
 	void DrawPre(void);
 
-	virtual void DrawDebug(void) {};
-
 	virtual void Release(void);
 
 
-	const VECTOR& GetPlayerPos(int _num) { return playersPos_[_num]; };
+	const VECTOR& GetPlayerPos(int _num) { return initialPlayersPos_[_num]; };
 
 	const VECTOR& GetGoalPos(void) { return goalPos_; };
 	const VECTOR& GetGoalBackPos(void) { return goalPosBack_; };
@@ -62,8 +62,8 @@ public:
 	const std::vector<VECTOR>& GetTrapPos(void) const { return trapPositions_; }
 
 
-	const std::vector<std::vector<StageObjBase*>>& GetPlaceType(void) const { return placeType_; }
-	const std::vector<std::vector<StageObjBase*>>& GetPlaceBackType(void) const { return placeBackType_; }
+	const std::vector<std::vector<StageObjBase*>>& GetPlaceType(void) const { return placeFrontList_; }
+	const std::vector<std::vector<StageObjBase*>>& GetPlaceBackType(void) const { return placeBackList_; }
 
 	/// @brief ステージの当たり判定を全登録
 	/// @param _actor 割り当てる対象1
@@ -83,8 +83,8 @@ protected:
 	static constexpr float BLOCK_SCALE = 1.0f;
 	static constexpr float PLAYER_OFFSET_Z = -10.0f;
 
-	static constexpr float FRONT_ALPHA = 0.85f;
-	static constexpr float BACK_ALPHA = 0.65f;
+	static constexpr float FRONT_ALPHA = 0.75f;
+	static constexpr float BACK_ALPHA = 0.45f;
 
 	SceneManager& sceneMng_;
 	ResourceManager& resMng_;
@@ -92,50 +92,75 @@ protected:
 	
 	int curStageNum_;
 
-	TYPE stageType_;
+	TYPE curStageType_;
 
 	// マップ最大数
 	int mapNumMax_;
 	int mapBackNumMax_;
 
-	// 配置リスト
-	std::vector<std::vector<StageObjBase*>> placeType_;
-	std::vector<std::vector<StageObjBase*>> placeBackType_;
+	// 前配置リスト
+	std::vector<std::vector<StageObjBase*>> placeFrontList_;
+
+	// 後ろ配置リスト
+	std::vector<std::vector<StageObjBase*>> placeBackList_;
+
+	// 後ろ配置の空白リスト
 	std::vector<StageObjBase*> placeBackBlankList_;
+
+	// 背景配置リスト
 	std::vector<StageObjBase*> backGroundList_;
 
 	// プレイヤー初期位置
-	VECTOR playersPos_[2];
+	std::array<VECTOR, 2> initialPlayersPos_;
 
-	//罠の配置
+	// ゴールの前配置
 	VECTOR goalPos_;
+
+	// ゴールの後ろ配置
 	VECTOR goalPosBack_;
 
 	
-	//罠の座標を格納するリストを追加
-	
+	// 罠の座標を格納するリストを追加
 	std::vector<VECTOR>trapPositions_;
 	
+
 	/// @brief ステージ指定処理
 	/// @param _stageNum 指定番号
 	void StageChoice(int _stageNum);
 
 	/// @brief ブロック配置処理
-	/// @param _type マップの種類
-	/// @param _xMax 列数
-	/// @param _yMax 行数
-	/// @return ブロックの行リスト
+	/// @param _mapType マップの種類
+	/// @param _xMax 列最大数
+	/// @param _yMax 行最大数
 	void SetBlockTypeList(int _mapType, int _xMax, int _yMax);
+
+	/// @brief ブロック配置処理
+	/// @param _mapType マップの種類
+	/// @param _xMax 列最大数
+	/// @param _yMax 行最大数
 	void SetBlockBackTypeList(int _mapType, int _xMax, int _yMax);
+
+	/// @brief ブロック背景配置処理
+	/// @param _xMax 列最大数
+	/// @param _yMax 行最大数
 	void SetBackGroundList(int _xMax, int _yMax);
+
 
 	/// @brief ブロック状態割り当て
 	/// @param _blockType CSVのステージ配置の値
-	/// @param _posX 現在列数
-	/// @param _posY 現在行数
+	/// @param _x 現在列数
+	/// @param _y 現在行数
 	virtual StageObjBase* SetParam(int _blockType, int _x, int _y) = 0;
+
+	/// @brief ブロック状態割り当て
+	/// @param _blockType CSVのステージ配置の値
+	/// @param _x 現在列数
+	/// @param _y 現在行数
+	/// @param _alpha ブロックの透明度(0.0～1.0)
+	/// @param _isCollision ブロックの当たり判定があるか否か
 	virtual StageObjBase* SetParamBack(int _blockType, int _x, int _y, float _alpha = 1.0f, bool _isCollision = true) = 0;
 
+	/// @brief 前が壁かつ後ろが壁以外の場合、前の壁を透過させる
 	void ChangeFrontObjects(void);
 
 	/// @brief  後ろステージに同座標の壁が存在するか否か

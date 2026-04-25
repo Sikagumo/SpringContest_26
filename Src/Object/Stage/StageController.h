@@ -8,36 +8,48 @@ class StageController
 {
 public:
 
+	// ステージの種類
 	enum class STAGE_TYPE
 	{
 		NONE = -1,
-		MOVE,
-		MOVE3D,
-		GRAVITY,
-		GRAVITY3D,
-		GAME_CLEAR
+		MOVE,		// 2D移動ステージ
+		MOVE3D,		// 3D移動ステージ
+		GRAVITY,	// 2D重力ステージ
+		GRAVITY3D,	// 3D重力ステージ
+		GAME_CLEAR,	// ゲームクリア
 	};
 
+	/// @brief コンストラクタ
+	/// @param _isMoveStage 移動ステージか否か
 	StageController(bool _isMoveStage);
+
+	/// @brief デフォルトデストラクタ
 	~StageController(void) = default;
 
+	/// @brief 初期化処理
 	void Init(void);
 
+	/// @brief 更新処理
 	void Update(void);
 
+	/// @brief 描画処理
 	void Draw(void);
 
+	/// @brief 描画前処理
 	void DrawPre(void);
 
+	/// @brief デバッグ描画処理
 	void DrawDebug(void);
 
+	/// @brief メモリ開放処理
 	void Release(void);
+
 
 	/// @brief 指定した状態と現在の状態が一致しているか否か
 	/// @param _type ステージ状態
-	bool GetIsTypeEquals(STAGE_TYPE _type) { return (stageType_ == _type);  };
+	bool GetIsTypeEquals(STAGE_TYPE _type) { return (curStageType_ == _type);  };
 
-	STAGE_TYPE GetStageType(void) { return stageType_; };
+	STAGE_TYPE GetStageType(void) { return curStageType_; };
 
 	const VECTOR& GetPlayerPos(int _num) { return stage_->GetPlayerPos(_num); };
 
@@ -58,9 +70,11 @@ public:
 
 private:
 
+	// 移動ステージの進行順
 	const std::vector<STAGE_TYPE> STAGE_MOVE_TYPE
 				= { STAGE_TYPE::MOVE, STAGE_TYPE::MOVE, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D, STAGE_TYPE::MOVE3D };
 
+	// 重力ステージの進行順
 	const std::vector<STAGE_TYPE> STAGE_GRAVITY_TYPE
 				= { STAGE_TYPE::GRAVITY, STAGE_TYPE::GRAVITY, STAGE_TYPE::GRAVITY3D,  STAGE_TYPE::GRAVITY3D, STAGE_TYPE::GRAVITY3D };
 
@@ -70,9 +84,10 @@ private:
 	// 移動ステージか否か
 	bool isMoveStage_;
 
+	// 現在のステージ進行数
 	int curStageNum_;
 
-	STAGE_TYPE stageType_;
+	STAGE_TYPE curStageType_;
 
 	StageBase* stage_;
 

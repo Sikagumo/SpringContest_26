@@ -8,6 +8,7 @@ class SkyDome;
 class StageBase;
 class StageController;
 class Player;
+class GameTimer;
 
 class GameScene : public SceneBase
 {
@@ -57,7 +58,11 @@ public:
 private:
 
 	//入れ替えにかける合計フレーム数
-	static constexpr float SWAP_LIMIT_FRAME = 30.0f;
+	static constexpr float SWAP_LIMIT_FRAME = 0.5f;
+
+	// 1秒（60フレーム）かけて戻る
+	static constexpr float RESPAWN_LIMIT_FRAME = 1.0f;
+
 	
 	static constexpr float GOAL_HIT_RANGE = 80.0f;
 	
@@ -68,21 +73,15 @@ private:
 
 	static constexpr float HIT_STOP_TRAP = 1.5f;
 
-	// 1秒（60フレーム）かけて戻る
-	static constexpr float RESPAWN_LIMIT_FRAME = 60.0f;
-
-
-	int preStageType_;
-
-	float gameTimer_;
-
-	// 時間を減少するか否か
-	bool isGameTimeActive_;
-
 	static constexpr float TIME_START = 2.0f;
 	static constexpr float TIME_PAUSE = 0.0f;
 	static constexpr float TIME_GAME_END = 2.0f;
 	static constexpr float TIME_CLEAR = 0.5f;
+	
+	static constexpr float UI_TEXT_SCALE = 0.5f;
+	static constexpr int UI_TEXT_SIZE = static_cast<int>((80 * UI_TEXT_SCALE));
+
+	int preStageType_;
 
 	float performTime_;
 	bool isPerform_;
@@ -93,43 +92,17 @@ private:
 
 	StageController* stage_;
 
-	struct PlayerParam
-	{
-		PlayerParam(void):
-			player(nullptr),
-			startPos(AsoUtility::VECTOR_ZERO),endPos(AsoUtility::VECTOR_ZERO),
-			initialPos(AsoUtility::VECTOR_ZERO), deathPos(AsoUtility::VECTOR_ZERO)
-		{}
+	GameTimer* timer_;
 
-		Player* player;
-
-		//移動の開始座標と終了座標を保持
-		VECTOR startPos;
-		VECTOR endPos;
-
-		// 復活地点
-		VECTOR initialPos;
-
-		// 死亡した瞬間の座標（イージングの開始地点）
-		VECTOR deathPos;
-	};
-
-	PlayerParam player1_;
-	PlayerParam player2_;
+	Player* player1_;
+	Player* player2_;
 
 
-	// 入れ替え権限の定義
-	enum class SWAP_RIGHT
-	{
-		P1,
-		P2
-	};
-	SWAP_RIGHT currentSwapRight_ = SWAP_RIGHT::P1;
+	// プレイヤー１が交代するか否か
+	bool isSwapPlayer1_;
 
 	// ゲーム状態別の処理
 	std::function<void(void)> updateGameStateProc_;
-
-	int timeText_[11];
 
 	//入れ替え中かどうかのフラグ
 	bool isSwapping_ = false;

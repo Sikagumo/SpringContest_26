@@ -7,14 +7,15 @@ class UtilityCommon
 {
 public:
 
+	// 色の割合の最大値
+	static constexpr int COLOR_RATE_MAX = 255;
+
 	// 色の割合(0～255)
 	struct Color
 	{
-		unsigned int r = 0, g = 0, b = 0, a = 255;
+		unsigned int r = 0, g = 0, b = 0, a = COLOR_RATE_MAX;
 	};
 
-	
-	static constexpr int COLOR_RATE_MAX = 255;
 
 	/// @brief 色を16進数で生成
 	static unsigned int SetColor(Color _color);
@@ -89,5 +90,5 @@ public:
 	/// @param _maxNum 最大値
 	/// @param _delta 累乗の値
 	/// @return 補間後の値
-	static float EasingNum(float _curNum, float _maxNum, float _powNum);
+	static float EasingLine(float _curNum, float _maxNum, float _powNum);
 };

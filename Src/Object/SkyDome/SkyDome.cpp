@@ -5,10 +5,10 @@
 #include "../../Manager/SceneManager.h"
 #include "../../Utility/AsoUtility.h"
 
-SkyDome::SkyDome(const Transform& _transform):
-	followTransform_(_transform),
-	state_(STATE::NONE),
-	ActorBase()
+SkyDome::SkyDome(const Transform& _transform)
+	: ActorBase()
+	, followTransform_(_transform)
+	, state_(STATE::STOP)
 {
 }
 
@@ -22,12 +22,7 @@ void SkyDome::InitTransform(void)
 							 Quaternion::Identity(), Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y),
 							 AsoUtility::VECTOR_ZERO);
 }
-void SkyDome::InitCollider(void)
-{
-}
-void SkyDome::InitAnimation(void)
-{
-}
+
 void SkyDome::InitPost(void)
 {
 	// Zバッファの使用&書き込み無効(突き抜け対策)
@@ -37,43 +32,38 @@ void SkyDome::InitPost(void)
 
 void SkyDome::Update(void)
 {
-	switch (state_)
+	if (state_ == STATE::FOLLOW)
 	{
-		case STATE::NONE:
-			UpdateNone();
-		break;
-
-		case STATE::STAY:
-			UpdateStay();
-		break;
-
-		case STATE::FOLLOW:
-			UpdateFollow();
-		break;
+		UpdateFollow();
 	}
-}
-void SkyDome::UpdateNone(void)
-{
-	transform_.Rotate(AsoUtility::AXIS_Y, ROT_SPEED);
+
+	// 
+	else if (state_ == STATE::STAY)
+	{
+		UpdateStay();
+	}
 }
 void SkyDome::UpdateStay(void)
 {
+	// 回転処理
 	transform_.Rotate(AsoUtility::AXIS_Y, ROT_SPEED);
 }
 void SkyDome::UpdateFollow(void)
 {
-	// 回転
+	// 回転処理
 	transform_.Rotate(AsoUtility::AXIS_Y, ROT_SPEED);
 
+	// 追従処理
 	transform_.pos = followTransform_.pos;
 
+	// 更新
 	transform_.Update();
 }
 
 
 void SkyDome::Draw(void)
 {
-	// ライト効果を無効化して描画
+	/* ライト効果を無効化して描画 */
 	SetUseLighting(FALSE);
 	ActorBase::Draw();
 	SetUseLighting(TRUE);
@@ -82,31 +72,10 @@ void SkyDome::Draw(void)
 void SkyDome::ChangeState(STATE _state)
 {
 	state_ = _state;
-	switch(state_)
+
+	if (state_ != STATE::STOP)
 	{
-		case STATE::NONE:
-			ChangeStateNone();
-		break;
-
-		case STATE::STAY:
-			ChangeStateStay();
-		break;
-
-		case STATE::FOLLOW:
-			ChangeStateFollow();
-		break;
+		// 回転停止状態以外時、追従対象の座標に移動
+		transform_.pos = followTransform_.pos;
 	}
-}
-void SkyDome::ChangeStateNone(void)
-{
-}
-void SkyDome::ChangeStateStay(void)
-{
-	state_ = STATE::STAY;
-	transform_.pos = followTransform_.pos;
-}
-void SkyDome::ChangeStateFollow(void)
-{
-	state_ = STATE::FOLLOW;
-	transform_.pos = followTransform_.pos;
 }

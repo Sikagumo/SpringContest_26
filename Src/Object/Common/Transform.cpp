@@ -4,20 +4,15 @@
 #include "Transform.h"
 
 Transform::Transform(void)
-	:
-	modelId(-1),
-	scl(AsoUtility::VECTOR_ONE),
-	rot(AsoUtility::VECTOR_ZERO),
-	pos(AsoUtility::VECTOR_ZERO),
-	localPos(AsoUtility::VECTOR_ZERO),
-	prePos(AsoUtility::VECTOR_ZERO),
-	matScl(MGetIdent()),
-	matRot(MGetIdent()),
-	matPos(MGetIdent()),
-	quaRot(Quaternion().Identity()),
-	quaRotLocal(Quaternion().Identity()),
-	alpha(1.0f),
-	parent_(nullptr)
+	: modelId(-1)
+	, scl(AsoUtility::VECTOR_ONE)
+	, rot(AsoUtility::VECTOR_ZERO)
+	, pos(AsoUtility::VECTOR_ZERO), localPos(AsoUtility::VECTOR_ZERO)
+	, prePos(AsoUtility::VECTOR_ZERO)
+	, matScl(MGetIdent()), matRot(MGetIdent()), matPos(MGetIdent())
+	, quaRot(Quaternion().Identity()), quaRotLocal(Quaternion().Identity())
+	, alpha(1.0f)
+	, parent_(nullptr)
 {
 }
 
@@ -65,7 +60,7 @@ void Transform::Update(void)
 
 }
 
-void Transform::DrawModelDir(void)
+void Transform::DrawDebug_ModelDir(void)
 {
 #ifdef _DEBUG
 
@@ -103,10 +98,6 @@ void Transform::DrawModelDir(void)
 #endif
 }
 
-void Transform::Release(void)
-{
-}
-
 void Transform::SetModel(int model)
 {
 	modelId = model;
@@ -115,12 +106,14 @@ void Transform::SetModel(int model)
 
 void Transform::SetScale(float _scl)
 {
+	/* ÉXÉPÅ[ÉãäÑÇËìñÇƒ */
 	scl = VGet(_scl, _scl, _scl);
 	Update();
 }
 
 void Transform::InitTransform(const VECTOR& _scl, const Quaternion& _rot, const Quaternion& _rotLocal, const VECTOR& _pos)
 {
+	/* èâä˙âªèàóù */
 	scl = _scl;
 	quaRot = _rot;
 	quaRotLocal = _rotLocal;
@@ -130,10 +123,12 @@ void Transform::InitTransform(const VECTOR& _scl, const Quaternion& _rot, const 
 }
 void Transform::InitTransform(float _scl, const Quaternion& _rot, const Quaternion& _rotLocal, const VECTOR& _pos)
 {
+	/* èâä˙âªèàóù */
 	InitTransform({ _scl,_scl,_scl }, _rot, _rotLocal, _pos);
 }
 void Transform::InitTransform(float _scl, const Quaternion& _rot, const Quaternion& _rotLocal)
 {
+	/* èâä˙âªèàóù */
 	scl = VGet(_scl, _scl, _scl);
 	quaRot = _rot;
 	quaRotLocal = _rotLocal;
@@ -142,6 +137,7 @@ void Transform::InitTransform(float _scl, const Quaternion& _rot, const Quaterni
 }
 void Transform::InitTransform(void)
 {
+	/* èâä˙âªèàóù */
 	InitTransform(AsoUtility::VECTOR_ONE,
 				  Quaternion::Identity(), Quaternion::Identity(),
 				  AsoUtility::VECTOR_ZERO);
@@ -150,6 +146,7 @@ void Transform::InitTransform(void)
 
 void Transform::Translate(const VECTOR& _movePow)
 {
+	/* à⁄ìÆèàóù */
 	pos = VAdd(pos, _movePow);
 	Update();
 }
@@ -164,11 +161,13 @@ void Transform::Translate(const VECTOR& _dir, float _movePow)
 
 void Transform::Rotate(const Quaternion& rot)
 {
+	/* âÒì]èàóù */
 	quaRot.Mult(rot);
 	Update();
 }
 void Transform::Rotate(const VECTOR& _axis, float _degPow)
 {
+	/* âÒì]èàóù */
 	Quaternion qua = Quaternion::AngleAxis(_degPow, _axis);
 	Rotate(qua);
 }

@@ -4,6 +4,7 @@
 #include <Dxlib.h>
 #include "../Common/Vector2.h"
 
+/* 入力判定用クラス */
 class Input
 {
 public:
@@ -17,7 +18,8 @@ public:
 		PAD2,				// パッド２入力
 		PAD3,				// パッド３入力
 		PAD4,				// パッド４入力
-		INPUT_KEY = 4096	// キー入力
+		INPUT_KEY = 4096,	// キー入力
+		PAD_ALL,			// パッド１～４の入力
 	};
 
 	// ゲームコントローラータイプ
@@ -43,35 +45,40 @@ public:
 		RB_TOP,			// Y
 		RB_BOTTOM,		// A
 
-		R_TRIGGER,		// R_TRIGGER
-		L_TRIGGER,		// L_TRIGGER
-		R_BUTTON,		// R_BUTTON
-		L_BUTTON,		// L_BUTTON
-		START,			// START_BUTTON
-		SELECT,			// SELECT_BUTTON
+		R_TRIGGER,
+		L_TRIGGER,
+		R_BUTTON,
+		L_BUTTON,
+		START,
+		SELECT,
 
-		CROSS_TOP,		// 十字上
-		CROSS_DOWN,		// 十字下
-		CROSS_LEFT,		// 十字左
-		CROSS_RIGHT,	// 十字右
+		/* 十字スティック */
+		CROSS_TOP,
+		CROSS_DOWN,
+		CROSS_LEFT,
+		CROSS_RIGHT,
 
-		L_STICK, // 左スティック
-		R_STICK, // 右スティック
+		/* スティック押し込み */
+		L_STICK,
+		R_STICK,
 
 		MAX
 	};
 
 	enum class JOYPAD_STICK
 	{
-		L_STICK_UP,		//左スティック上
-		L_STICK_DOWN,	//左スティック下
-		L_STICK_LEFT,	//左スティック左
-		L_STICK_RIGHT,	//左スティック右
+		/* 左スティック */
+		L_STICK_UP,
+		L_STICK_DOWN,
+		L_STICK_LEFT,
+		L_STICK_RIGHT,
 
-		R_STICK_UP,		//右スティック上
-		R_STICK_DOWN,	//右スティック下
-		R_STICK_LEFT,	//右スティック左
-		R_STICK_RIGHT,	//右スティック右
+		/* 右スティック */
+		R_STICK_UP,
+		R_STICK_DOWN,
+		R_STICK_LEFT,
+		R_STICK_RIGHT,
+
 		MAX
 	};
 
@@ -79,18 +86,24 @@ public:
 	{
 		NONE = -1,
 
-		CLICK_RIGHT,  // 右クリック
-		CLICK_LEFT,	  // 左クリック
-		CLICK_MIDDLE, // 中央クリック
-		MOVE_LEFT,	  // 左移動
-		MOVE_RIGHT,	  // 右移動
-		MOVE_UP,	  // 上移動
-		MOVE_DOWN,	  // 下移動
+		/* クリック */
+		CLICK_RIGHT,
+		CLICK_LEFT,
+		CLICK_MIDDLE,
+
+		/* 移動 */
+		MOVE_LEFT,
+		MOVE_RIGHT,
+		MOVE_UP,
+		MOVE_DOWN,
+
 		WHEEL_FRONT,  // ホイール前(奥)回転
 		WHEEL_BACK,	  // ホイール後ろ(手前)回転
+
 		MAX
 	};
 
+	/// @brief マウスカーソル状態
 	enum class CURSOR_MODE
 	{
 		NONE,     // 変更なし
@@ -114,72 +127,75 @@ public:
 		int AKeyRY;
 	};
 
-	// コンストラクタ
+
+	/// @brief デフォルトコンストラクタ
 	Input(void);
 
-	// デストラクタ
+	/// @brief デフォルトデストラクタ
 	~Input(void) = default;
 
-
+	/// @brief 初期化処理
 	void Init(void);
+
+	/// @brief 更新処理 
 	void Update(void);
 
-	// リソースの破棄
+	/// @brief メモリ開放処理
 	void Release(void);
 
-	// 判定を行うキーを追加
+	/// @brief 指定するキーの追加
 	void Add(int key);
 
-	// 判定を行うキーをクリア
-	void Clear(void);
 
-	// キーの押下判定
+	/// @brief キーの押下しているか否か
 	bool IsNew(int key) const;
 
-	// キーの押下判定(押しっぱなしはNG)
+	/// @brief キーの押下したか否か(押しっぱなしはNG)
 	bool IsTrgDown(int key) const;
 
-	// キーを離した時の判定
+	/// @brief キーを離したか否か
 	bool IsTrgUp(int key) const;
 
-	// マウス位置設定
+
+	/// @brief マウス位置設定
 	void SetMousePos(const Vector2& pos);
 
-	// マウス座標の取得
-	Vector2 GetMousePos(void) const { return mousePos_;  };
+	/// @brief マウス座標の取得
+	Vector2 GetMousePos(void) const { return mousePos_; };
 
-	// マウスの移動距離を取得
+	/// @brief マウスの移動距離を取得
 	Vector2 GetMousePosDistance(void)const;
 
-	// マウスのクリック状態を取得(MOUSE_INPUT_LEFT、RIGHT)
-	int GetMouse(void) const { return mouseInput_;  };
+	/// @brief マウスのクリック状態を取得(MOUSE_INPUT_LEFT、RIGHT)
+	int GetMouse(void) const { return mouseInput_; };
 
-	// マウスが左クリックされたか
+	/// @brief マウスが左クリックしたたか否か
 	bool IsClickMouseLeft(void)const { return (mouseInput_ == MOUSE_INPUT_LEFT); };
 
-	// マウスが右クリックされたか
+	// マウスが右クリックしたか否か
 	bool IsClickMouseRight(void) const { return (mouseInput_ == MOUSE_INPUT_RIGHT); };
 
-	// カーソル状態変更
-	void SetCursorMode(CURSOR_MODE _mode) { cursorMode_ = _mode;  };
+	/// @brief カーソル状態変更
+	void SetCursorMode(CURSOR_MODE _mode) { cursorMode_ = _mode; };
 
-	// コントローラの入力情報を取得する
+	/// @brief コントローラの入力情報を取得
 	JOYPAD_IN_STATE GetJPadInputState(JOYPAD_NO no);
 
-	// ボタンが押された
+	/* ボタン入力したかの判定 */
 	bool IsPadBtnNew(JOYPAD_NO no, JOYPAD_BTN btn) const;
 	bool IsPadBtnTrgDown(JOYPAD_NO no, JOYPAD_BTN btn) const;
 	bool IsPadBtnTrgUp(JOYPAD_NO no, JOYPAD_BTN btn) const;
 
-	// スティックが倒されたか
+	/* スティックが倒されたかの判定 */
 	bool IsStickNew(JOYPAD_NO no, JOYPAD_STICK stick) const;
 	bool IsStickDown(JOYPAD_NO no, JOYPAD_STICK stick) const;
-	bool IsStickUp(JOYPAD_NO no, JOYPAD_STICK stick) const;	
-	
-	// マウスが押されたか
+	bool IsStickUp(JOYPAD_NO no, JOYPAD_STICK stick) const;
+
+	/* マウスが入力されたかの判定 */
 	bool IsMouseNew(MOUSE mouse) const;
 	bool IsMouseTrgUp(MOUSE mouse) const;
 	bool IsMouseTrgDown(MOUSE mouse) const;
+
 
 private:
 
@@ -187,33 +203,34 @@ private:
 	static constexpr int STICK_THRESHOLD = 300;
 
 	// キー情報
-	struct Info
+	struct KeyInfo
 	{
-		int key;			// キーID
-		bool keyOld;		// 1フレーム前の押下状態
-		bool keyNew;		// 現フレームの押下状態
-		bool keyTrgDown;	// 現フレームでボタンが押されたか
-		bool keyTrgUp;		// 現フレームでボタンが離されたか
+		int key;		 // キーID
+		bool keyOld;	 // 1フレーム前の押下状態
+		bool keyNew;	 // 現フレームの押下状態
+		bool keyTrgDown; // 現フレームでボタンが押されたか
+		bool keyTrgUp;	 // 現フレームでボタンが離されたか
 	};
 
 	// スティック情報
 	struct StickInfo
 	{
-		JOYPAD_STICK key;
-		bool keyOld = false;
-		bool keyNew = false;
-		bool keyTrgDown = false;
-		bool keyTrgUp   = false;
+		JOYPAD_STICK key; // スティックの種類
+		bool keyOld = false; // 1フレーム前の傾き状態
+		bool keyNew = false; // 現フレームの傾き状態
+		bool keyTrgDown = false; // 現フレームでスティックがニュートラルから倒されたか
+		bool keyTrgUp   = false; // 現フレームでスティックがニュートラルに戻ったか
 	};
 
 	// マウス
 	struct MouseInfo
 	{
-		bool keyOld;		// 1フレーム前の押下状態
-		bool keyNew;		// 現フレームの押下状態
-		bool keyTrgDown;	// 現フレームでボタンが押されたか
-		bool keyTrgUp;		// 現フレームでボタンが離されたか
+		bool keyOld;	 // 1フレーム前の押下状態
+		bool keyNew;	 // 現フレームの押下状態
+		bool keyTrgDown; // 現フレームでボタンが押されたか
+		bool keyTrgUp;	 // 現フレームでボタンが離されたか
 	};
+
 
 	// コントローラ情報
 	DINPUT_JOYSTATE joyDInState_;
@@ -222,24 +239,24 @@ private:
 	XINPUT_STATE joyXInState_;
 
 	// キー情報
-	std::map<int, Input::Info> keyInfos_;
-	Input::Info infoEmpty_;
+	std::map<int, Input::KeyInfo> keyInfos_;
+	Input::KeyInfo infoEmpty_;
 
 	// マウス情報
 	std::map<MOUSE, Input::MouseInfo> mouseInfos_;
 	Input::MouseInfo mouseInfoEmpty_;
 
-	// カーソル状態
-	CURSOR_MODE cursorMode_;
-
 	// スティック情報
 	std::map<JOYPAD_NO, std::vector<Input::StickInfo>> stickInfos_;
 
+	// カーソル状態
+	CURSOR_MODE cursorMode_;
+	
 	// マウスカーソルの位置
 	Vector2 mousePrePos_;
 	Vector2 mousePos_;
 
-	//マウスホイール回転量
+	// マウスホイール回転量
 	int wheelRot_;
 
 	// マウスボタンの入力状態
@@ -248,27 +265,29 @@ private:
 	// パッド情報
 	JOYPAD_IN_STATE padInfos_[5];
 
+
+	/// @brief マウスの入力情報を更新
 	void UpdateMouse(void);
 
-	// 配列の中からキー情報を取得する
-	const Input::Info& Find(int key) const;
+	/// @brief 配列の中からキー情報を取得
+	const Input::KeyInfo& Find(int key) const;
 
-	// 配列の中からマウス情報を取得する
+	/// @brief 配列の中からマウス情報を取得
 	const Input::MouseInfo& FindMouse(MOUSE key) const;
 
-	// スティックの倒れ具合を取得する
+	/// @brief スティックの倒れ具合を取得
 	int PadStickOverSize(const JOYPAD_NO no, const JOYPAD_STICK stick);
 
-	// 接続されたコントローラの種別を取得する
+	/// @brief 接続されたコントローラの種別を取得
 	JOYPAD_TYPE GetJPadType(JOYPAD_NO no);
 
-	// コントローラの入力情報を取得する
+	/// @brief コントローラの入力情報を取得
 	DINPUT_JOYSTATE GetJPadDInputState(JOYPAD_NO no);
 
-	// コントローラ(XBOX)の入力情報を取得する
+	/// @brief コントローラ(XBOX)の入力情報を取得
 	XINPUT_STATE GetJPadXInputState(JOYPAD_NO no);
 
-	// コントローラの入力情報を更新する
+	/// @brief コントローラの入力情報を更新
 	void SetJPadInState(JOYPAD_NO jpNo);
 
 };

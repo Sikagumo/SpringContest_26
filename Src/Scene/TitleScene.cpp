@@ -8,7 +8,7 @@
 #include "../Manager/Camera.h"
 #include "../Manager/SoundManager.h"
 #include "../Manager/ResourceManager.h"
-#include "../Common/Vector2F.h"
+#include "../Common/Vector2.h"
 #include "../Object/Common/AnimationController.h"
 #include "../Object/SkyDome/SkyDome.h"
 
@@ -20,6 +20,7 @@ TitleScene::TitleScene(void)
     , updateStateFunc_(nullptr)
     , drawFuncTitle_(nullptr), drawFuncSelect_(nullptr)
     , titleImage_(-1), titleBackImage_(-1)
+    , backImagesPos_()
 {
     // 画像読み込み
     titleImage_ = resMng_.LoadHandleId(ResourceManager::SRC::IMG_TITLE);
@@ -32,7 +33,7 @@ TitleScene::TitleScene(void)
 
 void TitleScene::Init(void)
 {
-    ChangeTitleState(TITLE_STATE::SELECT_START);
+    _ChangeStateProc(TITLE_STATE::SELECT_START);
 
     backImagesPos_[0] = Vector2F(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y);
     backImagesPos_[1] = Vector2F(Application::SCREEN_HALF_X + (BACK_HALF_X + Application::SCREEN_SIZE_X),
@@ -123,8 +124,26 @@ void TitleScene::Release(void)
 {
 }
 
+void TitleScene::ChangeStateProc(TITLE_STATE _selectUp, TITLE_STATE _selectDown)
+{
+    if (input_.IsTrgDown(InputManager::TYPE::SELECT_UP, Input::JOYPAD_NO::PAD1)
+        || input_.IsTrgDown(InputManager::TYPE::SELECT_LEFT, Input::JOYPAD_NO::PAD1)
+        || input_.IsTrgDown(InputManager::TYPE::SELECT_UP, Input::JOYPAD_NO::PAD2)
+        || input_.IsTrgDown(InputManager::TYPE::SELECT_LEFT, Input::JOYPAD_NO::PAD2))
+    {
+        _ChangeStateProc(_selectUp);
+    }
 
-void TitleScene::ChangeTitleState(TITLE_STATE _state)
+    //
+    if (input_.IsTrgDown(InputManager::TYPE::SELECT_DOWN, Input::JOYPAD_NO::PAD1)
+        || input_.IsTrgDown(InputManager::TYPE::SELECT_RIGHT, Input::JOYPAD_NO::PAD1)
+        || input_.IsTrgDown(InputManager::TYPE::SELECT_DOWN, Input::JOYPAD_NO::PAD2)
+        || input_.IsTrgDown(InputManager::TYPE::SELECT_RIGHT, Input::JOYPAD_NO::PAD2))
+    {
+        _ChangeStateProc(_selectDown);
+    }
+}
+void TitleScene::_ChangeStateProc(TITLE_STATE _state)
 {
     state_ = _state;
 
@@ -163,17 +182,18 @@ void TitleScene::ChangeTitleState(TITLE_STATE _state)
     }
 }
 
+
 void TitleScene::Update_SelectStart(void)
 {
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2))
     {
-        ChangeTitleState(TITLE_STATE::SELECT_MOVE);
+        _ChangeStateProc(TITLE_STATE::SELECT_MOVE);
     }
     if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
         ||input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
     {
-        ChangeTitleState(TITLE_STATE::GAME_END);
+        _ChangeStateProc(TITLE_STATE::GAME_END);
     }
 
     // タイトル状態遷移入力
@@ -207,7 +227,7 @@ void TitleScene::Update_SelectMove(void)
     if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
     {
-        ChangeTitleState(TITLE_STATE::SELECT_START);
+        _ChangeStateProc(TITLE_STATE::SELECT_START);
     }
 
     // タイトル状態遷移入力
@@ -226,7 +246,7 @@ void TitleScene::Update_SelectGravity(void)
     if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
     {
-        ChangeTitleState(TITLE_STATE::SELECT_START);
+        _ChangeStateProc(TITLE_STATE::SELECT_START);
     }
 
     // タイトル状態遷移入力
@@ -238,12 +258,12 @@ void TitleScene::Update_SelectCancel(void)
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2))
     {
-        ChangeTitleState(TITLE_STATE::SELECT_START);
+        _ChangeStateProc(TITLE_STATE::SELECT_START);
     }
     if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
     {
-        ChangeTitleState(TITLE_STATE::SELECT_START);
+        _ChangeStateProc(TITLE_STATE::SELECT_START);
     }
 
     // タイトル状態遷移入力
@@ -367,24 +387,4 @@ void TitleScene::Draw_SelectCancel(void)
                   , selectUIHandle_[static_cast<int>(SELECT_UI_IMAGE::GRAVITY_NOT_SELECT)], true);
 
     SetDrawBlendMode(DX_BLENDMODE_NOBLEND, 0);
-}
-
-void TitleScene::ChangeStateProc(TITLE_STATE _selectUp, TITLE_STATE _selectDown)
-{
-    if (input_.IsTrgDown(InputManager::TYPE::SELECT_UP, Input::JOYPAD_NO::PAD1)
-        || input_.IsTrgDown(InputManager::TYPE::SELECT_LEFT, Input::JOYPAD_NO::PAD1)
-        || input_.IsTrgDown(InputManager::TYPE::SELECT_UP, Input::JOYPAD_NO::PAD2)
-        || input_.IsTrgDown(InputManager::TYPE::SELECT_LEFT, Input::JOYPAD_NO::PAD2))
-    {
-        ChangeTitleState(_selectUp);
-    }
-
-    //
-    if (input_.IsTrgDown(InputManager::TYPE::SELECT_DOWN, Input::JOYPAD_NO::PAD1)
-        || input_.IsTrgDown(InputManager::TYPE::SELECT_RIGHT, Input::JOYPAD_NO::PAD1)
-        || input_.IsTrgDown(InputManager::TYPE::SELECT_DOWN, Input::JOYPAD_NO::PAD2)
-        || input_.IsTrgDown(InputManager::TYPE::SELECT_RIGHT, Input::JOYPAD_NO::PAD2))
-    {
-        ChangeTitleState(_selectDown);
-    }
 }

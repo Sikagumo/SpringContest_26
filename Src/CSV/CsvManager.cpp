@@ -58,9 +58,11 @@ void CsvManager::Load(void)
 
 std::string CsvManager::ReadCsvFile(const std::string& path)
 {
+	// CSVファイルの内容を格納する変数
 	std::string content;
 
 #ifdef _DEBUG
+
 	// デバッグビルド：通常のファイルシステムから読み込み
 	std::ifstream file(path);
 
@@ -94,16 +96,12 @@ std::string CsvManager::ReadCsvFile(const std::string& path)
 		return "";
 	}
 
-	// バッファ確保
-	int fileSize = FileRead_size(path.c_str());
-	char* buffer = new char[fileSize + 1];
-
-	FileRead_read(buffer, fileSize, fileHandle);
-	buffer[fileSize] = '\0';
+	// バッファ確保	
+	int fileSize = static_cast<int>(FileRead_size(path.c_str()));
+	std::vector<char> buffer((fileSize + 1), '\0'); // +1 for null terminator
+	FileRead_read(buffer.data(), fileSize, fileHandle);
 	FileRead_close(fileHandle);
-
-	content = std::string(buffer);
-	delete[] buffer;
+	content = std::string(buffer.data());
 #endif
 
 	return content;

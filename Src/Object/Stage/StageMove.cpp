@@ -15,11 +15,6 @@ StageMove::StageMove(bool _isBack)
 	: StageBase::StageBase(((_isBack) ? TYPE::MOVE3D : TYPE::MOVE)
 						   , CsvManager::GetInstance().GetStageMoveMapNum())
 {
-
-}
-
-void StageMove::DrawDebug(void)
-{
 }
 
 
@@ -38,17 +33,17 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 
 	// プレイヤー１登録
 	if (objType == BLOCK_TYPE::PLAYER_WIDTH
-		&& AsoUtility::EqualsVZero(playersPos_[0]))
+		&& AsoUtility::EqualsVZero(initialPlayersPos_[0]))
 	{
-		playersPos_[0] = pos;
+		initialPlayersPos_[0] = pos;
 	}
 
 	// プレイヤー２登録
 	else if (objType == BLOCK_TYPE::PLAYER_HEIGHT
-			&& stageType_ == TYPE::MOVE
-			&& AsoUtility::EqualsVZero(playersPos_[1]))
+			&& curStageType_ == TYPE::MOVE
+			&& AsoUtility::EqualsVZero(initialPlayersPos_[1]))
 	{
-		playersPos_[1] = pos;
+		initialPlayersPos_[1] = pos;
 	}
 
 	// ゴール登録
@@ -58,7 +53,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 		ret->Init(pos);
 		goalPos_ = ret->GetTransform().pos;
 
-		if (stageType_ == TYPE::MOVE)
+		if (curStageType_ == TYPE::MOVE)
 		{
 			goalPosBack_ = ret->GetTransform().pos;
 		}
@@ -138,7 +133,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alpha, bool _isCollision)
 {
 	// 奥行がない場合はnullで返す
-	if (stageType_ != TYPE::MOVE3D) { return nullptr; }
+	if (curStageType_ != TYPE::MOVE3D) { return nullptr; }
 
 	StageObjBase* ret = nullptr;
 
@@ -150,10 +145,10 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alp
 
 	// プレイヤー２登録
 	if (objType == BLOCK_TYPE::PLAYER_HEIGHT
-			 && AsoUtility::EqualsVZero(playersPos_[1]))
+			 && AsoUtility::EqualsVZero(initialPlayersPos_[1]))
 	{
 		pos.z += PLAYER_OFFSET_Z;
-		playersPos_[1] = pos;
+		initialPlayersPos_[1] = pos;
 	}
 
 	// ゴール登録
@@ -218,7 +213,7 @@ void StageMove::Update(void)
 	trapPositions_.clear();
 
 	//表側の全オブジェクトをチェック
-	for (auto& row : placeType_) // 行(vector)を取り出す
+	for (auto& row : placeFrontList_) // 行(vector)を取り出す
 	{
 		for (auto& obj : row) // 各行の中のオブジェクトを取り出す
 		{
@@ -239,7 +234,7 @@ void StageMove::Update(void)
 	}
 
 	//裏側の全オブジェクトもチェック（3Dモード等の場合）
-	for (auto& row : placeBackType_)
+	for (auto& row : placeBackList_)
 	{
 		for (auto& obj : row)
 		{

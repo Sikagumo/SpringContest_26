@@ -221,29 +221,23 @@ unsigned int UtilityCommon::SetColor(UtilityCommon::Color _color)
 }
 unsigned int UtilityCommon::SetColor(COLOR_F _color)
 {
-    if (_color.r > 1.0f || _color.g > 1.0f || _color.b > 1.0f)
-    {
-        OutputDebugString("\n引数の値が1.0以上になっています...\n");
-    }
-
     int r, g, b;
-    r = static_cast<int>(_color.r * COLOR_RATE_MAX);
-    g = static_cast<int>(_color.g * COLOR_RATE_MAX);
-    b = static_cast<int>(_color.b * COLOR_RATE_MAX);
+
+    /* 引数の値が1.0以上時、色の値を最大にする */
+    r = ((_color.r <= 1.0f) ? static_cast<int>(_color.r * COLOR_RATE_MAX) : COLOR_RATE_MAX);
+    g = ((_color.g <= 1.0f) ? static_cast<int>(_color.g * COLOR_RATE_MAX) : COLOR_RATE_MAX);
+    b = ((_color.b <= 1.0f) ? static_cast<int>(_color.b * COLOR_RATE_MAX) : COLOR_RATE_MAX);
     return GetColor(r, g, b);
 }
 
 unsigned int UtilityCommon::SetColor(float _red, float _green, float _blue)
 {
-    if (_red > 1.0f || _green > 1.0f || _blue > 1.0f)
-    {
-        OutputDebugString("\n引数の値が1.0以上になっています...\n");
-        return GetColor(_red, _green, _blue);
-    }
     int r, g, b;
-    r = static_cast<int>(_red * COLOR_RATE_MAX);
-    g = static_cast<int>(_green * COLOR_RATE_MAX);
-    b = static_cast<int>(_blue * COLOR_RATE_MAX);
+
+    /* 引数の値が1.0以上時、色の値を最大にする */
+    r = ((_red <= 1.0f) ? static_cast<int>(_red * COLOR_RATE_MAX) : COLOR_RATE_MAX);
+    g = ((_green <= 1.0f) ? static_cast<int>(_green * COLOR_RATE_MAX) : COLOR_RATE_MAX);
+    b = ((_blue <= 1.0f) ? static_cast<int>(_blue * COLOR_RATE_MAX) : COLOR_RATE_MAX);
     return GetColor(r, g, b);
 }
 
@@ -309,8 +303,9 @@ bool UtilityCommon::WrapValue(float& _num, float _maxNum, float _minNum)
     return isWrap;
 }
 
-float UtilityCommon::EasingNum(float _curNum, float _maxNum, float _powNum)
+float UtilityCommon::EasingLine(float _curNum, float _maxNum, float _powNum)
 {
+    /* 線形補間処理 */
     float num = (_curNum / _maxNum);
 
     // 補正値を最大に補正

@@ -16,6 +16,7 @@
 #include "../Object/SkyDome/SkyDome.h"
 #include "../Object/Player/Player.h"
 #include "../Object/Collider/ColliderBase.h"
+#include "../UI/GameTimer.h"
 #include "../Common/Perform.h"
 #include "../Manager/Camera.h"
 #include "../Utility/AsoUtility.h"
@@ -24,15 +25,12 @@ GameScene::GameScene(void)
 	: SceneBase()
 	, state_(GAME_STATE::NONE)
 	, skyDome_(nullptr)
-	, stage_(nullptr)
-	, player1_(PlayerParam()), player2_(PlayerParam())
-	, gameTimer_(GAME_TIME), performTime_(0.0f), isPerform_(false)
-	, isGameTimeActive_(false), currentSwapRight_(SWAP_RIGHT::P1)
+	, stage_(nullptr), timer_(nullptr)
+	, player1_(nullptr), player2_(nullptr)
+	, performTime_(0.0f), isPerform_(false)
+	, isSwapPlayer1_(true)
 	, curInfoNum_(-1), preStageType_(-1)
 {
-	for (int& time : timeText_) { time = -1; }
-
-	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT_TIME, timeText_);
 	
 	for (int& image : infoImages_)
 	{
@@ -43,11 +41,11 @@ GameScene::GameScene(void)
 
 void GameScene::Init(void)
 {
-	currentSwapRight_ = SWAP_RIGHT::P1;
-
 	// ステージ初期化
 	stage_ = new StageController(sceneMng_.GetIsStageMove());
 	stage_->Init();
+
+	timer_ = new GameTimer(GAME_TIME);
 
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
@@ -67,21 +65,18 @@ void GameScene::Init(void)
 	VECTOR stagePos = AsoUtility::VECTOR_ZERO;
 
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
-	player1_.player = new Player(Player::PLAYER_NO::P1, stagePos);
-	player1_.player->Init(stagePos, pStageType);
-	player1_.initialPos = stagePos;
-	player1_.player->SetAuthority(true);
+	player1_ = new Player(Player::PLAYER_NO::P1, stagePos, pStageType);
+	player1_->Init();
+	player1_->SetAuthority(true);
 	
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
-	player2_.player = new Player(Player::PLAYER_NO::P2, stagePos);
-	player2_.player->Init(stagePos, pStageType);
-	player2_.player->SetAuthority(false);
-	player2_.initialPos = stagePos;
+	player2_= new Player(Player::PLAYER_NO::P2, stagePos, pStageType);
+	player2_->Init();
 	
 
 	// ステージ当たり判定登録
-	stage_->AddStageColliders(*player1_.player);
-	stage_->AddStageColliders(*player2_.player);
+	stage_->AddStageColliders(*player1_);
+	stage_->AddStageColliders(*player2_);
 
 	// スカイドーム
 	skyDome_ = new SkyDome({});
@@ -91,10 +86,10 @@ void GameScene::Init(void)
 	Camera* camera = sceneMng_.GetCamera();
 	camera->Init();
 
-	isGameTimeActive_ = false;
-	gameTimer_ = GAME_TIME;
-
 	isPerform_ = false;
+
+	// プレイヤー１が交代可能
+	isSwapPlayer1_ = true;
 
 	ChangeState(GAME_STATE::INFO);
 }
@@ -112,21 +107,15 @@ void GameScene::Update(void)
 		|| state_ == GAME_STATE::INFO3D)
 	{ return; }
 
-
-	if (stage_->GetIsStageClear() || gameTimer_ <= 0.0f) { return; }
-
 	// 時間減少
-	if (isGameTimeActive_)
-	{
-		gameTimer_ -= sceneMng_.GetDeltaTime();
+	timer_->Update();
 
-		if (gameTimer_ < 0.0f) { isGameTimeActive_ = false; }
-	}
+	if (stage_->GetIsStageClear() || timer_->GetTime() <= 0.0f) { return; }
 
 
 	// プレイヤー更新処理
-	if (!player1_.player->GetIsGoal()) { player1_.player->Update(); }
-	if (!player2_.player->GetIsGoal()) { player2_.player->Update(); }
+	player1_->Update();
+	player2_->Update();
 
 	if (!isSwapping_ && !isRespawning_)
 	{
@@ -145,25 +134,19 @@ void GameScene::Update(void)
 		bool executeSwap = false;
 
 		//今どちらが権限を持っていて、かつ対応するボタンが押されたか
-		if (input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1)
-			&& currentSwapRight_ == SWAP_RIGHT::P1
-			|| input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2)
-			&& currentSwapRight_ == SWAP_RIGHT::P2)
+		if (isSwapPlayer1_
+			&& input_.IsTrgDown(InputManager::TYPE::PLAYER1_CHANGE, Input::JOYPAD_NO::PAD1)
+			|| !isSwapPlayer1_
+			&& input_.IsTrgDown(InputManager::TYPE::PLAYER2_CHANGE, Input::JOYPAD_NO::PAD2)
+			)
 		{
 			executeSwap = true;
 			isSwapping_ = true;
 			swapTimer_ = 0;
 
 			//移動開始時の両者の位置を保持する
-			player1_.startPos = player1_.player->GetTransform().pos;
-			player2_.startPos = player2_.player->GetTransform().pos;
-
-			//目的地を保存する
-			player1_.endPos = player2_.startPos;
-			player2_.endPos = player1_.startPos;
-
-			player1_.player->SetIsGoal(false);
-			player2_.player->SetIsGoal(false);
+			player1_->SetEasingActive(player2_->GetTransform().pos);
+			player2_->SetEasingActive(player1_->GetTransform().pos);
 
 			sound_.Play(static_cast<int>(ResourceManager::SRC::SE_CHANGE), false, true);
 
@@ -197,29 +180,29 @@ void GameScene::Draw(void)
 
 	stage_->DrawPre();
 
-	if (currentSwapRight_ == SWAP_RIGHT::P1)
-	{
-		player2_.player->Draw();
-	}
-	else
-	{
-		player1_.player->Draw();
-	}
+	// 交代の状態により、プレイヤーの描画順を交代
+	if (isSwapPlayer1_) { player2_->Draw(); }
+	else { player1_->Draw(); }
 
 	stage_->Draw();
 
-	if (currentSwapRight_ == SWAP_RIGHT::P1)
-	{
-		player1_.player->Draw();
-	}
-	else
-	{
-		player2_.player->Draw();
-	}
+	// 交代の状態により、プレイヤーの描画順を交代
+	if (isSwapPlayer1_) { player1_->Draw(); }
+	else { player2_->Draw(); }
+
 
 	stage_->DrawDebug();
 
-	DrawTimer();
+	DrawRotaGraph((Application::SCREEN_HALF_X - 100), UI_TEXT_SIZE,
+		0.5, 0.0, uiText_[static_cast<int>(UI_TEXT::TIME_LIMIT)], true);
+
+	timer_->DrawTimer();
+
+	// ゲーム開始カウンタ
+	if (state_ == GAME_STATE::ACTIVE && performTime_ > -1.0f)
+	{
+		timer_->DrawCountDown(performTime_, uiText_[static_cast<int>(UI_TEXT::GAME_START)]);
+	}
 
 	DrawInfo();
 
@@ -280,41 +263,33 @@ void GameScene::Draw(void)
 
 void GameScene::Release(void)
 {
+	delete timer_;
+
 	stage_->Release();
 	delete stage_;
 
 	skyDome_->Release();
 	delete skyDome_;
 
-	player1_.player->Release();
-	delete player1_.player;
+	player1_->Release();
+	delete player1_;
 
-	player2_.player->Release();
-	delete player2_.player;
+	player2_->Release();
+	delete player2_;
 }
 
 void GameScene::UpdateSwap(void)
 {
 	/* 交代処理 */
 	// タイマー更新
-	swapTimer_ += 1.0f;
+	swapTimer_ += sceneMng_.GetDeltaTime();
 
 	// イージング関数の適用
 	float easingNum = UtilityCommon::EasingLine(swapTimer_, SWAP_LIMIT_FRAME, 3.0f);
 
-	// プレイヤー1の座標を更新
-	Transform& t1 = player1_.player->GetTransform();
-	t1.pos.x = (player1_.startPos.x + (player1_.endPos.x - player1_.startPos.x) * easingNum);
-	t1.pos.y = (player1_.startPos.y + (player1_.endPos.y - player1_.startPos.y) * easingNum);
-	t1.pos.z = (player1_.startPos.z + (player1_.endPos.z - player1_.startPos.z) * easingNum);
-	t1.prePos = t1.pos;
-
-	// プレイヤー2の座標を更新
-	Transform& t2 = player2_.player->GetTransform();
-	t2.pos.x = player2_.startPos.x + (player2_.endPos.x - player2_.startPos.x) * easingNum;
-	t2.pos.y = player2_.startPos.y + (player2_.endPos.y - player2_.startPos.y) * easingNum;
-	t2.pos.z = player2_.startPos.z + (player2_.endPos.z - player2_.startPos.z) * easingNum;
-	t2.prePos = t2.pos;
+	// プレイヤーの座標を滑らかに更新
+	player1_->SetEasingPos(easingNum);
+	player2_->SetEasingPos(easingNum);
 
 	// 移動完了判定
 	if (swapTimer_ >= SWAP_LIMIT_FRAME)
@@ -322,11 +297,13 @@ void GameScene::UpdateSwap(void)
 		isSwapping_ = false;
 
 		//ここで権限を譲渡する
-		currentSwapRight_ = (currentSwapRight_ == SWAP_RIGHT::P1)
-							  ? SWAP_RIGHT::P2 : SWAP_RIGHT::P1;
+		isSwapPlayer1_ = !isSwapPlayer1_;
 
-		player1_.player->SetAuthority(currentSwapRight_ == SWAP_RIGHT::P1);
-		player2_.player->SetAuthority(currentSwapRight_ == SWAP_RIGHT::P2);
+		player1_->ChangeState(Player::STATE::ACTIVE);
+		player2_->ChangeState(Player::STATE::ACTIVE);
+
+		player1_->SetAuthority(isSwapPlayer1_);
+		player2_->SetAuthority(!isSwapPlayer1_);
 	}
 }
 
@@ -334,24 +311,15 @@ void GameScene::UpdateRespawn(void)
 {
 	/* リスタート処理 */
 	//タイマー更新
-	respawnTimer_ += 1.0f;
+	respawnTimer_ += sceneMng_.GetDeltaTime();
 
 	//イージング関数の適用
 	float easingNum = UtilityCommon::EasingLine(respawnTimer_, RESPAWN_LIMIT_FRAME, 3.0f);
 
-	//プレイヤー１の座標を補間
-	Transform& t1 = player1_.player->GetTransform();
-	t1.pos.x = player1_.deathPos.x + (player1_.initialPos.x - player1_.deathPos.x) * easingNum;
-	t1.pos.y = player1_.deathPos.y + (player1_.initialPos.y - player1_.deathPos.y) * easingNum;
-	t1.pos.z = player1_.deathPos.z + (player1_.initialPos.z - player1_.deathPos.z) * easingNum;
-	t1.prePos = t1.pos;
+	// プレイヤーの座標を滑らかに更新
+	player1_->SetEasingPos(easingNum);
+	player2_->SetEasingPos(easingNum);
 
-	// プレイヤー2の座標を補間（死んだ場所 -> 初期位置）
-	Transform& t2 = player2_.player->GetTransform();
-	t2.pos.x = player2_.deathPos.x + (player2_.initialPos.x - player2_.deathPos.x) * easingNum;
-	t2.pos.y = player2_.deathPos.y + (player2_.initialPos.y - player2_.deathPos.y) * easingNum;
-	t2.pos.z = player2_.deathPos.z + (player2_.initialPos.z - player2_.deathPos.z) * easingNum;
-	t2.prePos = t2.pos;
 
 	// 完了判定
 	if (respawnTimer_ >= RESPAWN_LIMIT_FRAME)
@@ -360,12 +328,12 @@ void GameScene::UpdateRespawn(void)
 		respawnTimer_ = 0.0f;
 
 		// プレイヤーの見た目をもとに戻す
-		player1_.player->SetIsChangeModel(false);
-		player2_.player->SetIsChangeModel(false);
+		player1_->ChangeState(Player::STATE::ACTIVE);
+		player2_->ChangeState(Player::STATE::ACTIVE);
 
-		currentSwapRight_ = SWAP_RIGHT::P1;
-		player1_.player->SetAuthority(true);
-		player2_.player->SetAuthority(false);
+		isSwapPlayer1_ = true;
+		player1_->SetAuthority(true);
+		player2_->SetAuthority(false);
 	}
 }
 
@@ -377,7 +345,7 @@ bool GameScene::TrapProcess(void)
 	//親クラス StageBaseで定義されている GetTrapPos()を使用
 	const auto& trapList = stage_->GetTrapPos();
 
-	Player* targetPlayers[] = { player1_.player, player2_.player };
+	Player* targetPlayers[] = { player1_, player2_ };
 
 	for (Player* p : targetPlayers)
 	{
@@ -395,14 +363,12 @@ bool GameScene::TrapProcess(void)
 				respawnTimer_ = 0.0f;
 
 				// プレイヤーの見た目を変更
-				player1_.player->SetIsChangeModel(true);
-				player2_.player->SetIsChangeModel(true);
+				player1_->SetIsChangeModel(true);
+				player2_->SetIsChangeModel(true);
 
-				player1_.player->SetIsGoal(false);
-				player2_.player->SetIsGoal(false);
-
-				player1_.deathPos = player1_.player->GetTransform().pos;
-				player2_.deathPos = player2_.player->GetTransform().pos;
+				// 交代位置の割り当て
+				player1_->SetHitTrap();
+				player2_->SetHitTrap();
 
 				for (int i = 0; i < GetJoypadNum(); i++)
 				{
@@ -437,23 +403,24 @@ bool GameScene::GoalProcess(void)
 	for (int i = 0; i < static_cast<int>(Player::PLAYER_NO::MAX); i++)
 	{
 		// 各プレイヤーとゴールの XY 距離判定
-		if (!player1_.player->GetIsGoal()
-			&& AsoUtility::IsHitSpheres(player1_.player->GetTransform().pos, 0.0f
+		if (player1_->GetState() != Player::STATE::GOAL
+			&& AsoUtility::IsHitSpheres(player1_->GetTransform().pos, 0.0f
 										, stage_->GetGoalPos(i), GOAL_HIT_RANGE))
 		{
-			player1_.player->SetIsGoal(true);
+			player1_->ChangeState(Player::STATE::GOAL);
 		}
 
-		if (!player2_.player->GetIsGoal()
-			&& AsoUtility::IsHitSpheres(player2_.player->GetTransform().pos, 0.0f
+		if (player2_->GetState() != Player::STATE::GOAL
+			&& AsoUtility::IsHitSpheres(player2_->GetTransform().pos, 0.0f
 										, stage_->GetGoalPos((i + 1) % 2), GOAL_HIT_RANGE))
 		{
-			player2_.player->SetIsGoal(true);
+			player2_->ChangeState(Player::STATE::GOAL);
 		}
 	}
 
 	// 二人が星に触れた状態になったらゴール状態に遷移
-	if (player1_.player->GetIsGoal() && player2_.player->GetIsGoal())
+	if (player1_->GetState() == Player::STATE::GOAL
+		&& player2_->GetState() == Player::STATE::GOAL)
 	{
 		isProcessStop = true;
 
@@ -497,7 +464,7 @@ void GameScene::ChangeState(GAME_STATE _state)
 		sound_.SetVolume(static_cast<int>(ResourceManager::SRC::BGM_GAME), sound_.VOLUME_GAME);
 
 		/* 初回のみ自動時間移動 */
-		isGameTimeActive_ = (state_ == GAME_STATE::NONE);
+		timer_->SetIsTimeActive(state_ == GAME_STATE::INFO);
 
 		if (state_ == GAME_STATE::INFO)
 		{
@@ -592,7 +559,7 @@ void GameScene::Update_Active(void)
 		|| input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_RIGHT, Input::JOYPAD_NO::PAD2)
 		|| input_.IsTrgDown(InputManager::TYPE::PLAYER_CHANGE, Input::JOYPAD_NO::PAD2))
 	{
-		isGameTimeActive_ = true;
+		timer_->SetIsTimeActive(true);
 	}
 
 	// 一時停止状態の切替
@@ -607,7 +574,7 @@ void GameScene::Update_Active(void)
 
 	if (stage_->GetIsStageClear()) { return; }
 
-	if (gameTimer_ <= 0.0f)
+	if (timer_->GetTime() <= 0.0f)
 	{
 		ChangeState(GAME_STATE::GAME_OVER);
 	}
@@ -748,13 +715,13 @@ void GameScene::SetStageType(void)
 	preStageType_ = static_cast<int>(stage_->GetStageType());
 
 	// 時間を停止
-	isGameTimeActive_ = false;
+	timer_->SetIsTimeActive(false);
 
 	// ステージ当たり判定を削除
-	player1_.player->RemoveHitCollider(ColliderBase::TAG::STAGE);
-	player1_.player->RemoveHitCollider(ColliderBase::TAG::GOAL);
-	player2_.player->RemoveHitCollider(ColliderBase::TAG::STAGE);
-	player2_.player->RemoveHitCollider(ColliderBase::TAG::GOAL);
+	player1_->RemoveHitCollider(ColliderBase::TAG::STAGE);
+	player1_->RemoveHitCollider(ColliderBase::TAG::GOAL);
+	player2_->RemoveHitCollider(ColliderBase::TAG::STAGE);
+	player2_->RemoveHitCollider(ColliderBase::TAG::GOAL);
 
 	// ステージ状態を進める
 	stage_->ChangeStages();
@@ -767,8 +734,8 @@ void GameScene::SetStageType(void)
 	}
 
 
-	stage_->AddStageColliders(*player1_.player);
-	stage_->AddStageColliders(*player2_.player);
+	stage_->AddStageColliders(*player1_);
+	stage_->AddStageColliders(*player2_);
 
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
 
@@ -783,92 +750,22 @@ void GameScene::SetStageType(void)
 		pStageType = Player::STAGE_TYPE::GRAVITY;
 	}
 
-	if (player1_.player != nullptr)
+	if (player1_ != nullptr)
 	{
 		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
-		player1_.player->Init(stagePos, pStageType);
-		player1_.player->Update();
-		player1_.initialPos = stagePos;
+		player1_->ReInit(stagePos, pStageType);
 	}
-	if (player2_.player != nullptr)
+	if (player2_ != nullptr)
 	{
 		VECTOR stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
-		player2_.player->Init(stagePos, pStageType);
-		player2_.player->Update();
-		player2_.initialPos = stagePos;
+		player2_->ReInit(stagePos, pStageType);
 	}
 
-	currentSwapRight_ = SWAP_RIGHT::P1;
+	isSwapPlayer1_ = true;
 	ChangeState(GAME_STATE::ACTIVE);
 }
 
 void GameScene::DrawTimer(void)
 {
-	const float TEXT_SCALE = 0.5f;
-	const int TEXT_SIZE = static_cast<int>((80 * TEXT_SCALE));
-
-	int x = Application::SCREEN_HALF_X - 100;
-	int arrayNum = 0;
-
-	// 小数点以下の数値
-	float frac = (gameTimer_ - std::floor(gameTimer_));
-
-
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, uiText_[static_cast<int>(UI_TEXT::TIME_LIMIT)], true);
-
-	// 100の位
-	x += 150;
-	arrayNum = static_cast<int>(gameTimer_ / 100.0f);
-	if (arrayNum > 0)
-	{
-		x += TEXT_SIZE;
-		DrawRotaGraph(x, TEXT_SIZE,
-			TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-	}
-
-	// 10の位
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(gameTimer_ / 10.0f) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-	// 1の位
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(gameTimer_) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-	// 小数点
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(gameTimer_) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[10], true);
-
-	// 第1小数点
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(frac * 10.0f) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-	// 第2小数点
-	x += TEXT_SIZE;
-	arrayNum = static_cast<int>(frac * 100.0f) % 10;
-	DrawRotaGraph(x, TEXT_SIZE,
-		TEXT_SCALE, 0.0, timeText_[arrayNum], true);
-
-
-	// ゲーム開始カウンタ
-	if (state_ == GAME_STATE::ACTIVE && performTime_ > -1.0f)
-	{
-		arrayNum = static_cast<int>(performTime_) + 1;
-		int image = ((performTime_ > 0.0f)
-			? timeText_[arrayNum]
-			: uiText_[static_cast<int>(UI_TEXT::GAME_START)]);
-
-		double scale = ((performTime_ > 0.0f) ? 2.0 : 1.0);
-
-		DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y - 100
-			, scale, 0.0, image, true);
-	}
+	
 }

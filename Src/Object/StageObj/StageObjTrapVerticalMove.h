@@ -23,6 +23,7 @@ protected:
 	static constexpr float COLLISION_SIZE_Y = 10.0f;
 	static constexpr VECTOR MODEL_OFFSET = { 0.0f, 0.0f, 0.0f };
 
+
 	StageBase* stage_ = nullptr;
 	float moveSpeed_ = 2.0f;
 	int moveDir_ = 1;

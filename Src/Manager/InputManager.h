@@ -25,22 +25,13 @@ public:
 		PLAYER1_MOVE_LEFT,  // 移動左
 		PLAYER1_MOVE_BACK,  // 移動上
 		PLAYER1_MOVE_FRONT, // 移動下
-		PLAYER1_ACTION,
 		PLAYER1_CHANGE, // 位置変更
 
 		PLAYER2_MOVE_RIGHT, // 移動右
 		PLAYER2_MOVE_LEFT,  // 移動左
-		PLAYER2_MOVE_UP,  // 移動上
-		PLAYER2_MOVE_DOWN, // 移動下
-		PLAYER2_ACTION,
+		PLAYER2_MOVE_UP,    // 移動上
+		PLAYER2_MOVE_DOWN,  // 移動下
 		PLAYER2_CHANGE, // 位置変更
-
-		// GRAVITY専用
-		GRAVITY_MOVE_LEFT,  // P1用: A
-		GRAVITY_MOVE_RIGHT, // P1用: D
-		GRAVITY_MOVE_UP,    // P2用: ↑
-		GRAVITY_MOVE_DOWN,  // P2用: ↓
-
 		CAMERA_MOVE_LEFT,  // カメラ左移動
 		CAMERA_MOVE_RIGHT, // カメラ右移動
 		CAMERA_MOVE_UP,	   // カメラ上移動
@@ -90,19 +81,19 @@ public:
 	/// @param _type 状況の種類
 	/// @param _padNo パッド番号(デフォルトはPAD1)
 	/// @returns true=[入力中], false=[未入力]
-	bool IsNew(const TYPE _type, const Input::JOYPAD_NO _padNo = Input::JOYPAD_NO::PAD1);
+	bool IsNew(const TYPE _type, const Input::JOYPAD_NO _padNo = Input::JOYPAD_NO::PAD_ALL);
 
 	/// @brief 指定した状況での各入力機器の押下判定(最初のみ)
 	/// @param _type 状況の種類
 	/// @param padNo パッド番号(デフォルトはPAD1)
 	/// @returns true=[入力中], false=[未入力]
-	bool IsTrgDown(const TYPE _type, const Input::JOYPAD_NO _padNo = Input::JOYPAD_NO::PAD1);
+	bool IsTrgDown(const TYPE _type, const Input::JOYPAD_NO _padNo = Input::JOYPAD_NO::PAD_ALL);
 
 	/// @brief 指定した状況での各入力機器の離した判定
 	/// @param _type 状況の種類
 	/// @param _padNo パッド番号(デフォルトはPAD1)
 	/// @returns true=[離したタイミング], false=[まだ押下中]
-	bool IsTrgUp(const TYPE _type, const Input::JOYPAD_NO _padNo = Input::JOYPAD_NO::PAD1);
+	bool IsTrgUp(const TYPE _type, const Input::JOYPAD_NO _padNo = Input::JOYPAD_NO::PAD_ALL);
 
 	/// @brief マウス位置を設定
 	void SetMousePos(const Vector2& _pos);

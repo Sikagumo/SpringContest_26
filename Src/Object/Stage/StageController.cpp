@@ -6,7 +6,7 @@
 
 StageController::StageController(bool _isMoveStage)
 	: isMoveStage_(_isMoveStage)
-	, stageType_(STAGE_TYPE::NONE), stage_(nullptr)
+	, curStageType_(STAGE_TYPE::NONE), stage_(nullptr)
 	, isStageClear_(false)
 	, curStageNum_(0)
 	, STAGE_SIZE_MAX(((_isMoveStage == true)
@@ -46,8 +46,6 @@ void StageController::DrawPre(void)
 
 void StageController::DrawDebug(void)
 {
-	stage_->DrawDebug();
-
 	/*
 #ifdef _DEBUG
 	std::string text = "";
@@ -75,7 +73,7 @@ void StageController::Release(void)
 
 void StageController::SetStageType(StageController::STAGE_TYPE _type)
 {
-	stageType_ = _type;
+	curStageType_ = _type;
 
 	if (stage_ != nullptr)
 	{
@@ -96,6 +94,7 @@ void StageController::SetStageType(StageController::STAGE_TYPE _type)
 		stage_ = new StageGravity((_type == STAGE_TYPE::GRAVITY3D));
 	}
 
+	// ステージ初期化
 	stage_->Init(GetStageChoice());
 }
 

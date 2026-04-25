@@ -10,16 +10,14 @@
 #include "../../Application.h"
 
 
-CharaBase::CharaBase(void)
+CharaBase::CharaBase(STAGE_TYPE _stageType)
 	: ActorBase::ActorBase()
-	, isJump_(false), jumpPow_(0.0f), stepJump_(0.0f)
-	, moveSpeed_(0.0f)
+	, isGround_(false), gravityPow_(0.0f)
 	, shadowHandle_(-1)
 	, prevPos_(AsoUtility::VECTOR_ZERO)
 	, moveDir_(AsoUtility::VECTOR_ZERO)
 	, movePow_(AsoUtility::VECTOR_ZERO)
-	, animation_(nullptr)
-	, stageType_(-1)
+	, curStageType_(_stageType)
 {
 }
 
@@ -33,30 +31,17 @@ void CharaBase::InitLoad(void)
 	InitLoadPost();
 }
 
-void CharaBase::InitAnimation(void)
-{
-	if (transform_.modelId != -1)
-	{
-		animation_ = new AnimationController(transform_.modelId);
-	}
-
-	// 各アニメーション初期化
-	InitAnimationPost();
-}
-
 void CharaBase::Update(void)
 {
 	// 移動前座標を更新
 	prevPos_ = transform_.pos;
+
 
 	// 各キャラクターごとの更新処理
 	UpdateProcess();
 
 	// 移動方向に応じた遅延回転
 	DelayRotate();
-
-	// 重力による移動量
-	//CalcGravityPow();
 
 	// 衝突判定前準備
 	CollisionReserve();
@@ -67,25 +52,11 @@ void CharaBase::Update(void)
 	// モデル制御更新
 	transform_.Update();
 
-	// アニメーション再生
-	if (animation_ != nullptr) 
-	{
-		animation_->Update();
-	}
-
 	// 各キャラクターごとの更新後処理
 	UpdateProcessPost();
 
 }
 
-void CharaBase::Release(void)
-{
-	if (animation_ != nullptr)
-	{
-		animation_->Release();
-		delete animation_;
-	}
-}
 
 void CharaBase::CalcGravityPow(void)
 {
@@ -97,10 +68,10 @@ void CharaBase::CalcGravityPow(void)
 
 	// 重力
 	VECTOR gravity = VScale(dirGravity, gravityPow);
-	jumpPow_ = VAdd(jumpPow_, gravity);
+	gravityPow_ = VAdd(gravityPow_, gravity);
 
 	// 重力制限	
-	jumpPow_.y = ((jumpPow_.y < MAX_FALL_SPEED) ? MAX_FALL_SPEED : jumpPow_.y);
+	gravityPow_.y = ((gravityPow_.y < MAX_FALL_SPEED) ? MAX_FALL_SPEED : gravityPow_.y);
 }
 
 void CharaBase::Collision(void)
@@ -114,10 +85,10 @@ void CharaBase::Collision(void)
 	CollisionCapsule();
 
 	// ジャンプ量を加算
-	transform_.pos = VAdd(transform_.pos, jumpPow_);
+	transform_.pos = VAdd(transform_.pos, gravityPow_);
 
 	/* GRAVITYステージ用の速度リセット */
-	if (stageType_ == static_cast<int>(STAGE_TYPE::GRAVITY))
+	if (curStageType_ == STAGE_TYPE::GRAVITY)
 	{
 		// もし押し戻されて移動できていない、あるいは速度方向と逆方向に補正された場合
 		// 簡易的に「移動前後の差」が「出そうとした速度」より小さければ、壁に当たっていると判断
@@ -131,9 +102,9 @@ void CharaBase::Collision(void)
 	}
 
 	/* MOVEステージ用の既存処理 */
-	else if (stageType_ == static_cast<int>(STAGE_TYPE::MOVE))
+	else if (curStageType_ == STAGE_TYPE::MOVE)
 	{
-		transform_.pos = VAdd(transform_.pos, jumpPow_);
+		transform_.pos = VAdd(transform_.pos, gravityPow_);
 		CollisionGravity();
 	}
 
@@ -142,7 +113,7 @@ void CharaBase::Collision(void)
 void CharaBase::CollisionGravity(void)
 {
 	// 落下中しか判定しない
-	if (!(VDot(AsoUtility::DIR_DOWN, jumpPow_) > 0.9f)) { return; }
+	if (!(VDot(AsoUtility::DIR_DOWN, gravityPow_) > 0.9f)) { return; }
 
 	// 線分コライダ
 	int lineType = static_cast<int>(COLLIDER_TYPE::LINE);
@@ -192,19 +163,16 @@ void CharaBase::CollisionGravity(void)
 			}
 
 			// ジャンプ判定
-			isJump_ = false;
+			isGround_ = false;
 		}
 
 		// 検出した地面ポリゴン情報の後始末
 		MV1CollResultPolyDimTerminate(hits);
 	}
-	if (!isJump_)
+	if (!isGround_)
 	{
 		// ジャンプリセット
-		jumpPow_ = AsoUtility::VECTOR_ZERO;
-
-		// ジャンプの入力受付時間をリセット
-		stepJump_ = 0.0f;
+		gravityPow_ = AsoUtility::VECTOR_ZERO;
 	}
 }
 

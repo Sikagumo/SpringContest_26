@@ -6,9 +6,15 @@
 #include <algorithm>
 
 
-Input::Input(void):
-	mouseInput_(-1),
-	cursorMode_(CURSOR_MODE::NONE)
+Input::Input(void)
+	: mouseInput_(-1)
+	, cursorMode_(CURSOR_MODE::NONE)
+	, joyDInState_(), joyXInState_()
+	, keyInfos_(), infoEmpty_()
+	, mouseInfos_(), mouseInfoEmpty_()
+	, stickInfos_(), padInfos_()
+	, mousePrePos_(AsoUtility::VECTOR2_ZERO), mousePos_(AsoUtility::VECTOR2_ZERO)
+	, wheelRot_(0)
 {
 }
 
@@ -70,7 +76,7 @@ void Input::Update(void)
 			stick.keyOld = stick.keyNew;
 			stick.keyNew = (overSize > STICK_THRESHOLD);
 			stick.keyTrgDown = (!stick.keyOld && stick.keyNew);
-			stick.keyTrgUp   = (stick.keyOld && !stick.keyNew);
+			stick.keyTrgUp	 = (stick.keyOld && !stick.keyNew);
 		}
 	}
 }
@@ -172,18 +178,13 @@ void Input::Add(int key)
 		if (type == key) { return; }
 	}
 
-	Input::Info info = Input::Info();
+	Input::KeyInfo info = Input::KeyInfo();
 	info.key = key;
 	info.keyOld = false;
 	info.keyNew = false;
 	info.keyTrgDown = false;
 	info.keyTrgUp = false;
 	keyInfos_.emplace(key, info);
-}
-
-void Input::Clear(void)
-{
-	keyInfos_.clear();
 }
 
 bool Input::IsNew(int key) const
@@ -229,7 +230,7 @@ bool Input::IsMouseTrgDown(MOUSE mouse) const
 	return FindMouse(mouse).keyTrgDown;
 }
 
-const Input::Info& Input::Find(int key) const
+const Input::KeyInfo& Input::Find(int key) const
 {
 
 	auto it = keyInfos_.find(key);
@@ -274,6 +275,8 @@ XINPUT_STATE Input::GetJPadXInputState(JOYPAD_NO no)
 
 void Input::SetJPadInState(JOYPAD_NO jpNo)
 {
+	// ‘Sƒpƒbƒh”»’è‚Í“o˜^‚³‚¹‚È‚¢
+	if (jpNo == JOYPAD_NO::PAD_ALL) { return; };
 
 	int no = static_cast<int>(jpNo);
 	auto stateNew = GetJPadInputState(jpNo);
@@ -286,12 +289,12 @@ void Input::SetJPadInState(JOYPAD_NO jpNo)
 		stateNow.ButtonsOld[i] = stateNow.ButtonsNew[i];
 		stateNow.ButtonsNew[i] = stateNew.ButtonsNew[i];
 
-		stateNow.IsOld[i]   = stateNow.IsNew[i];
+		stateNow.IsOld[i] = stateNow.IsNew[i];
 		//stateNow.IsNew[i] = (stateNow.ButtonsNew[i] == 128 || stateNow.ButtonsNew[i] == 255);
-		stateNow.IsNew[i]   = stateNow.ButtonsNew[i] > 0;
+		stateNow.IsNew[i] = (stateNow.ButtonsNew[i] > 0);
 
 		stateNow.IsTrgDown[i] = (stateNow.IsNew[i] && !stateNow.IsOld[i]);
-		stateNow.IsTrgUp[i]   = (!stateNow.IsNew[i] && stateNow.IsOld[i]);
+		stateNow.IsTrgUp[i] = (!stateNow.IsNew[i] && stateNow.IsOld[i]);
 
 
 		stateNow.AKeyLX = stateNew.AKeyLX;

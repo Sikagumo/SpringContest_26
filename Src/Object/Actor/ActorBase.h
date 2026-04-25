@@ -13,45 +13,44 @@ public:
 
 	using ColliderMap = std::map<int, ColliderBase*>;
 
-	// コンストラクタ
+	/// @brief コンストラクタ
 	ActorBase(void);
 
-	// デストラクタ
+	/// @brief デストラクタ
 	virtual ~ActorBase(void) = default;
 
-	// 初期化
+	/// @brief 初期化
 	void Init(void);
 
-	// 更新
+	/// @brief 更新
 	virtual void Update(void) = 0;
 
-	// 描画
+	/// @brief 描画
 	virtual void Draw(void);
 
-	// 解放
+	/// @brief 解放
 	virtual void Release(void);
 
-	// 大きさ、回転、座標等の取得
+
+	/// @brief 大きさ、回転、座標等の取得
 	const Transform& GetTransform(void) const { return transform_; };
 
-	Transform& GetTransform();
+	/// @brief 自身の衝突情報取得
+	const ColliderMap& GetOwnColliders(void) const { return ownColliders_; }
 
-	// 自身の衝突情報取得
-	const ColliderMap& GetOwnColliders(void) const
-	{
-		return ownColliders_;
-	}
-	// 特定の自身の衝突情報取得
-	const ColliderBase* GetOwnCollider(int key) const;
+	/// @brief 特定の自身の衝突情報取得
+	/// @param _key 
+	const ColliderBase* GetOwnCollider(int _key) const;
 
-	// 衝突対象となるコライダを登録
-	void AddHitCollider(const ColliderBase* hitCollider);
+	/// @brief 衝突対象となるコライダを登録
+	/// @param hitCollider 対象のコライタ
+	void AddHitCollider(const ColliderBase* _hitCollider);
 
 	/// @brief 指定したタグがついた衝突対象となるコライダを除外
 	/// @param _targetTag 対象のタグ
 	void RemoveHitCollider(const ColliderBase::TAG _targetTag);
 
-	// 衝突対象となるコライダをクリア
+	/// @brief 衝突対象となるコライダをクリア
 	void ClearHitCollider(void);
 
 
@@ -67,27 +66,25 @@ protected:
 	// 自身の衝突情報
 	ColliderMap ownColliders_;
 
-	// 衝突相手の情報
+	// 衝突相手の情報リスト
 	std::vector<const ColliderBase*> hitColliders_;
 
-	// リソースロード
+
+	/// @brief リソースロード
 	virtual void InitLoad(void) = 0;
 
-	// 大きさ、回転、座標の初期化
+	/// @brief 大きさ、回転、座標の初期化
 	virtual void InitTransform(void) = 0;
 
-	// 衝突判定の初期化
+	/// @brief 衝突判定の初期化
 	virtual void InitCollider(void) = 0;
 
-	// アニメーションの初期化
-	virtual void InitAnimation(void) = 0;
-
-	// 初期化後の個別処理
+	/// @brief 初期化後の個別処理
 	virtual void InitPost(void) = 0;
 
-	// 前描画
+	/// @brief 前描画
 	virtual void DrawPre(void) {};
 
-	// 後描画
+	/// @brief 後描画
 	virtual void DrawLate(void) {};
 };

@@ -5,14 +5,17 @@
 #include "../Collider/ColliderBase.h"
 
 ActorBase::ActorBase(void)
-	: 
-	resMng_(ResourceManager::GetInstance()),
-	sceneMng_(SceneManager::GetInstance()),
-	transform_(Transform())
+	: resMng_(ResourceManager::GetInstance())
+	, sceneMng_(SceneManager::GetInstance())
+	, transform_(Transform())
 {
 }
+
+
 void ActorBase::Init(void)
 {
+	/* 初期化処理 */
+
 	// リソースロード
 	InitLoad();
 
@@ -22,9 +25,6 @@ void ActorBase::Init(void)
 	// 衝突判定の初期化an
 	InitCollider();
 
-	// アニメーションの初期化
-	InitAnimation();
-
 	// 初期化後の個別処理
 	InitPost();
 
@@ -32,11 +32,14 @@ void ActorBase::Init(void)
 
 void ActorBase::Draw(void)
 {
+	/* 描画処理 */
+
 	// 前描画
 	DrawPre();
 
 	if (transform_.modelId != -1)
 	{
+		// モデル描画
 		MV1DrawModel(transform_.modelId);
 	}
 
@@ -58,6 +61,7 @@ void ActorBase::Draw(void)
 
 void ActorBase::Release(void)
 {
+	/* メモリの解放 */
 	transform_.Release();
 
 	// 自身のコライダ解放
@@ -67,13 +71,11 @@ void ActorBase::Release(void)
 	}
 }
 
-Transform& ActorBase::GetTransform()
-{
-	return transform_;
-}
-
 const ColliderBase* ActorBase::GetOwnCollider(int key) const
 {
+	/* 衝突情報取得 */
+
+	// 指定のコライダが無ければnullptrを返す
 	if (ownColliders_.count(key) == 0)
 	{
 		return nullptr;
@@ -84,15 +86,18 @@ const ColliderBase* ActorBase::GetOwnCollider(int key) const
 
 void ActorBase::AddHitCollider(const ColliderBase* hitCollider)
 {
-	for (const auto& c : hitColliders_)
+	/* 衝突判定登録 */
+	for (const auto& collider : hitColliders_)
 	{
 		// 衝突相手の登録
-		if (c == hitCollider) { return; }
+		if (collider == hitCollider) { return; }
 	}
 	hitColliders_.emplace_back(hitCollider);
 }
 void ActorBase::RemoveHitCollider(const ColliderBase::TAG _targetTag)
 {
+	/* 対象の衝突判定を削除 */
+
 	const int SIZE = (static_cast<int>(hitColliders_.size()) - 1);
 	for (int i = SIZE; i >= 0; i--)
 	{
@@ -106,5 +111,6 @@ void ActorBase::RemoveHitCollider(const ColliderBase::TAG _targetTag)
 
 void ActorBase::ClearHitCollider(void)
 {
+	// 衝突相手の登録を全てクリア
 	hitColliders_.clear();
 }

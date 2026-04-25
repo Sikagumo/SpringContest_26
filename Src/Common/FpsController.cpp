@@ -1,5 +1,7 @@
-#include "../Application.h"
 #include "FpsController.h"
+#include "../Application.h"
+#include "../Utility/UtilityCommon.h"
+
 
 FpsController::FpsController(int fixedFps)
     :
@@ -19,12 +21,10 @@ FpsController::FpsController(int fixedFps)
 
 }
 
-FpsController::~FpsController(void)
-{
-}
 
 void FpsController::Wait()
 {
+    /* FPS制御処理 */
 
     // 現在時間
     auto nowTime = std::chrono::high_resolution_clock::now();
@@ -47,7 +47,6 @@ void FpsController::Wait()
         {
             // 指定ミリ秒数待つ(DxLib関数)
             WaitTimer(static_cast<int>(waitMiliSecond));
-
         }
 
         // 指定時間になるまでbusyになるが待つ
@@ -55,7 +54,7 @@ void FpsController::Wait()
         {
             // 再計測
             nowTime = std::chrono::high_resolution_clock::now();
-            delta = nowTime - prevTime_;
+            delta = (nowTime - prevTime_);
             deltaTime = delta.count();
         }
 
@@ -90,10 +89,10 @@ void FpsController::Draw()
     int textWidth = GetDrawFormatStringWidth(TEXT_FORMAT.c_str(), fps_);
 
     // 右上位置を計算
-    int x = Application::SCREEN_SIZE_X - textWidth - MARGIN;
+    int x = (Application::SCREEN_SIZE_X - textWidth - MARGIN);
     int y = MARGIN;
 
     // 右寄せ描画
-    DrawFormatString(x, y, COLOR, TEXT_FORMAT.c_str(), fps_);
+    DrawFormatString(x, y, UtilityCommon::SetColor(COLOR), TEXT_FORMAT.c_str(), fps_);
 
 }

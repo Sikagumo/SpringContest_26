@@ -1,6 +1,5 @@
 #pragma once
 #include "../Actor/ActorBase.h"
-#include "../../Common/Vector2F.h"
 #include "../../Common/Vector2.h"
 
 class StageObjBase : public ActorBase
@@ -52,6 +51,7 @@ protected:
 	// ”z—ñˆÊ’u
 	int x, y;
 
+	// ƒ‚ƒfƒ‹‚Ì“§‰ß—¦(0.0`1.0)
 	float alpha_;
 
 	virtual void InitLoad(void)override = 0;

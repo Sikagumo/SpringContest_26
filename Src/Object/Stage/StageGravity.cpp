@@ -16,9 +16,6 @@ StageGravity::StageGravity(bool _isBack)
 {
 }
 
-void StageGravity::DrawDebug(void)
-{
-}
 
 StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 {
@@ -33,17 +30,17 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 
     // プレイヤー1 (下重力) 登録
     if (objType == BLOCK_TYPE::PLAYER_WIDTH
-		&& AsoUtility::EqualsVZero(playersPos_[0]))
+		&& AsoUtility::EqualsVZero(initialPlayersPos_[0]))
     {
-        playersPos_[0] = pos;
+        initialPlayersPos_[0] = pos;
     }
 
     // プレイヤー2 (上重力) 登録
     else if (objType == BLOCK_TYPE::PLAYER_HEIGHT
-			 && stageType_ == TYPE::GRAVITY
-			 && AsoUtility::EqualsVZero(playersPos_[1]))
+			 && curStageType_ == TYPE::GRAVITY
+			 && AsoUtility::EqualsVZero(initialPlayersPos_[1]))
     {
-        playersPos_[1] = pos;
+        initialPlayersPos_[1] = pos;
     }
 
     // ゴール登録
@@ -53,10 +50,8 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
         ret->Init(pos);
         goalPos_ = ret->GetTransform().pos;
 
-		if (stageType_ == TYPE::GRAVITY)
-		{
-			goalPosBack_ = ret->GetTransform().pos;
-		}
+		if (curStageType_ == TYPE::GRAVITY)
+			{ goalPosBack_ = goalPos_; }
     }
 
     // 壁登録
@@ -135,7 +130,7 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _alpha, bool _isCollision)
 {
 	// 奥行がない場合はnullで返す
-	if (stageType_ != TYPE::GRAVITY3D) { return nullptr; }
+	if (curStageType_ != TYPE::GRAVITY3D) { return nullptr; }
 
 	StageObjBase* ret = nullptr;
 
@@ -148,10 +143,10 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _
 
 	// プレイヤー２登録
 	if (objType == BLOCK_TYPE::PLAYER_HEIGHT
-		&& AsoUtility::EqualsVZero(playersPos_[1]))
+		&& AsoUtility::EqualsVZero(initialPlayersPos_[1]))
 	{
 		pos.z += PLAYER_OFFSET_Z;
-		playersPos_[1] = pos;
+		initialPlayersPos_[1] = pos;
 	}
 
 	// ゴール登録
@@ -216,7 +211,7 @@ void StageGravity::Update(void)
 	trapPositions_.clear();
 
 	//表側の全オブジェクトをチェック
-	for (auto& row : placeType_) // 行(vector)を取り出す
+	for (auto& row : placeFrontList_) // 行(vector)を取り出す
 	{
 		for (auto& obj : row) // 各行の中のオブジェクトを取り出す
 		{
@@ -238,7 +233,7 @@ void StageGravity::Update(void)
 
 	
 	//裏側の全オブジェクトもチェック（3Dモード等の場合）
-	for (auto& row : placeBackType_)
+	for (auto& row : placeBackList_)
 	{
 		for (auto& obj : row)
 		{

@@ -23,14 +23,14 @@ public:
 	};
 
 	// コンストラクタ
-	CharaBase(void);
+	CharaBase(STAGE_TYPE _stageType);
 
 	// デストラクタ
 	virtual ~CharaBase(void) override = default;
 
 	void Update(void)override final;
 
-	void Release(void)override;
+	void Release(void)override {};
 
 
 protected:
@@ -44,35 +44,29 @@ protected:
 	// 衝突時の押し戻し量
 	static constexpr float COLLISION_BACK_DIS = 1.0f;
 
-
+	// 丸影の画像ハンドル
 	int shadowHandle_;
-
-	float moveSpeed_;
 
 	VECTOR moveDir_;
 
+	// 移動量
 	VECTOR movePow_;
 
-	VECTOR jumpPow_;
+	// 重力量
+	VECTOR gravityPow_;
+
+	// ジャンプ判定
+	bool isGround_;
 
 	// 移動前の座標
 	VECTOR prevPos_;
 
-	// ジャンプの入力受付時間
-	float stepJump_;
-
-	// ジャンプ判定
-	bool isJump_;
-
-	int stageType_;
-
-	AnimationController* animation_;
+	// 現在ステージの状態
+	STAGE_TYPE curStageType_;
 
 
 	virtual void InitLoad(void)override final;
 	virtual void InitLoadPost(void) = 0;
-	virtual void InitAnimation(void)override final;
-	virtual void InitAnimationPost(void) = 0;
 
 	virtual void UpdateProcess(void) = 0;
 	virtual void UpdateProcessPost(void) = 0;

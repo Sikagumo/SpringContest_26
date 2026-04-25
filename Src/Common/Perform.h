@@ -79,5 +79,4 @@ private:
     bool ProcSlow(void);
     void ProcShake(void);
     void ProcShakeSmooth(void);
-    bool ProcShakeSlow(void);
 };

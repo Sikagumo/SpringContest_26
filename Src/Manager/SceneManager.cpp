@@ -28,15 +28,17 @@ SceneManager& SceneManager::GetInstance(void)
 	return *instance_;
 }
 
+
 SceneManager::SceneManager(void)
 	: sceneId_(SCENE_ID::NONE)
 	, waitSceneId_(SCENE_ID::NONE)
 	, scene_(nullptr), fader_(nullptr)
-	, camera_(nullptr)
+	, camera_(nullptr), perform_(nullptr)
 	, deltaTime_(1.0f / 60.0f)
 	, isSceneChanging_(false)
 	, isDebugMode_(false)
 	, isChoiceMove_(true)
+	, shadowMapHandle_(-1)
 {
 	bool isDebug = false;
 
