@@ -1,7 +1,7 @@
 #include "Camera.h"
 #include <DxLib.h>
 #include <EffekseerForDXLib.h>
-#include "../Utility/AsoUtility.h"
+#include "../Utility/UtilityMath.h"
 #include "../Manager/InputManager.h"
 #include "../Object/Common/Transform.h"
 #include "../Object/Collider/ColliderBase.h"
@@ -12,11 +12,11 @@
 Camera::Camera(void) :
 	ActorBase::ActorBase(),
 	followTransform_(nullptr),
-	prePos_(AsoUtility::VECTOR_ZERO),
+	prePos_(UtilityMath::VECTOR_ZERO),
 	mode_(MODE::NONE),
-	angles_(AsoUtility::VECTOR_ZERO),
+	angles_(UtilityMath::VECTOR_ZERO),
 	rotY_(Quaternion::Identity()),
-	targetPos_(AsoUtility::VECTOR_ZERO)
+	targetPos_(UtilityMath::VECTOR_ZERO)
 {
 	// DxLibの初期設定では、
 	// カメラの位置が x = 320.0f, y = 240.0f, z = (画面のサイズによって変化)、
@@ -30,7 +30,7 @@ void Camera::InitCollider(void)
 	// 主に地面との衝突で使用する球体コライダ
 	ColliderSphere* colliderSphere = new ColliderSphere(ColliderBase::TAG::CAMERA,
 														&transform_,
-														AsoUtility::VECTOR_ZERO,
+														UtilityMath::VECTOR_ZERO,
 														COL_CAPSULE_SPHERE
 														);
 	ownColliders_.emplace(
@@ -135,7 +135,7 @@ void Camera::SetDefault(void)
 	transform_.quaRot = Quaternion::Identity();
 
 	// 注視点
-	targetPos_ = AsoUtility::VECTOR_ZERO;
+	targetPos_ = UtilityMath::VECTOR_ZERO;
 }
 
 void Camera::SyncFollow(void)
@@ -144,10 +144,10 @@ void Camera::SyncFollow(void)
 	VECTOR pos = followTransform_->pos;
 
 	// Y軸
-	rotY_ = Quaternion::AngleAxis(angles_.y, AsoUtility::AXIS_Y);
+	rotY_ = Quaternion::AngleAxis(angles_.y, UtilityMath::AXIS_Y);
 
 	// Y軸 + X軸
-	transform_.quaRot = rotY_.Mult(Quaternion::AngleAxis(angles_.x, AsoUtility::AXIS_X));
+	transform_.quaRot = rotY_.Mult(Quaternion::AngleAxis(angles_.x, UtilityMath::AXIS_X));
 
 	VECTOR localPos;
 
@@ -162,14 +162,14 @@ void Camera::SyncFollow(void)
 
 void Camera::ProcessMove(void)
 {
-	VECTOR moveDir = AsoUtility::VECTOR_ZERO;
+	VECTOR moveDir = UtilityMath::VECTOR_ZERO;
 
 	if (GetJoypadNum() == 0)
 	{
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_DOWN)) { moveDir = AsoUtility::DIR_FORWARD; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_UP))   { moveDir = AsoUtility::DIR_BACK; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_LEFT))  { moveDir = AsoUtility::DIR_LEFT; }
-		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_RIGHT)) { moveDir = AsoUtility::DIR_RIGHT; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_DOWN)) { moveDir = UtilityMath::DIR_FORWARD; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_UP))   { moveDir = UtilityMath::DIR_BACK; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_LEFT))  { moveDir = UtilityMath::DIR_LEFT; }
+		if (InputManager::GetInstance().IsNew(InputManager::TYPE::PLAYER_MOVE_RIGHT)) { moveDir = UtilityMath::DIR_RIGHT; }
 	}
 	else
 	{
@@ -178,7 +178,7 @@ void Camera::ProcessMove(void)
 	}
 
 	// 移動処理
-	if (!AsoUtility::EqualsVZero(moveDir))
+	if (!UtilityMath::EqualsVZero(moveDir))
 	{
 
 		// 移動させたい方向(ベクトル)に変換
@@ -210,7 +210,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 			CheckHitKey(KEY_INPUT_RSHIFT)) { transform_.pos.y += move; }
 
 		else if (CheckHitKey(KEY_INPUT_LCONTROL) ||
-				CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_X, rot); }
+				CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(UtilityMath::AXIS_X, rot); }
 
 		else { transform_.pos.z += move; }
 	}
@@ -221,7 +221,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 			CheckHitKey(KEY_INPUT_RSHIFT)) { transform_.pos.y -= move; }
 
 		else if (CheckHitKey(KEY_INPUT_LCONTROL) ||
-				 CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_X, -rot); }
+				 CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(UtilityMath::AXIS_X, -rot); }
 
 		else { transform_.pos.z -= move; }
 	}
@@ -229,7 +229,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 	if (InputManager::GetInstance().IsNew(InputManager::TYPE::CAMERA_MOVE_RIGHT))
 	{
 		if (CheckHitKey(KEY_INPUT_LCONTROL) ||
-			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_Y, rot); }
+			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(UtilityMath::AXIS_Y, rot); }
 
 		else { transform_.pos.x += move; }
 	}
@@ -237,7 +237,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 	if (InputManager::GetInstance().IsNew(InputManager::TYPE::CAMERA_MOVE_LEFT))
 	{
 		if (CheckHitKey(KEY_INPUT_LCONTROL) ||
-			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(AsoUtility::AXIS_Y, -rot); }
+			CheckHitKey(KEY_INPUT_RCONTROL)) { transform_.Rotate(UtilityMath::AXIS_Y, -rot); }
 
 		else { transform_.pos.x -= move; }
 	}
@@ -250,10 +250,10 @@ void Camera::SetBeforeDrawFree(void)
 	ProcessMove();
 
 	// Y軸
-	rotY_ = Quaternion::AngleAxis(angles_.y, AsoUtility::AXIS_Y);
+	rotY_ = Quaternion::AngleAxis(angles_.y, UtilityMath::AXIS_Y);
 
 	// Y軸 + X軸
-	transform_.quaRot = rotY_.Mult(Quaternion::AngleAxis(angles_.x, AsoUtility::AXIS_X));
+	transform_.quaRot = rotY_.Mult(Quaternion::AngleAxis(angles_.x, UtilityMath::AXIS_X));
 
 	// 注視点更新
 	targetPos_ = VAdd(transform_.pos, transform_.quaRot.PosAxis(FOLLOW_TARGET_LOCAL_POS));
@@ -262,7 +262,7 @@ void Camera::SetBeforeDrawFree(void)
 void Camera::SetBeforeDrawFollow(void)
 {
 	// カメラ位置の補間
-	transform_.pos = AsoUtility::Lerp(prePos_,
+	transform_.pos = UtilityMath::Lerp(prePos_,
 									  transform_.pos, LERP_RATE_MOVE);
 
 	if (followTransform_ == nullptr) return;
@@ -340,7 +340,7 @@ void Camera::Collision(void)
 			return;
 		}
 		// カメラ位置から注視点への方向
-		VECTOR dirToTarget = AsoUtility::VNormalize(VSub(targetPos_, transform_.pos));
+		VECTOR dirToTarget = UtilityMath::VNormalize(VSub(targetPos_, transform_.pos));
 
 		// 衝突点の少し手前にカメラを置く
 		transform_.pos =

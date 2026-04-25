@@ -2,7 +2,7 @@
 #include "./StageObjBase.h"
 #include "../Collider/ColliderSphere.h"
 #include "../../Manager/ResourceManager.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityMath.h"
 
 StageObjTrap::StageObjTrap(int _x, int _y, int _objType, float _alpha) :
 	StageObjBase::StageObjBase(_x, _y, { COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType, _alpha)
@@ -18,7 +18,7 @@ void StageObjTrap::InitLoad(void)
 void StageObjTrap::InitTransform(void)
 {
 	transform_.InitTransform(BLOCK_SCALE,
-		Quaternion::Identity(), Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_Y));
+		Quaternion::Identity(), Quaternion::AngleAxis(90.0f, UtilityMath::AXIS_Y));
 }
 
 void StageObjTrap::InitCollider(void)

@@ -9,7 +9,7 @@
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Common/Vector2.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityMath.h"
 #include "../Common/Transform.h"
 
 
@@ -19,30 +19,30 @@ StageBase::StageBase(TYPE stageType, int mapNum, int mapBackNum)
 	,csvMng_(CsvManager::GetInstance())
 	,curStageType_(stageType), curStageNum_(-1)
 	,mapNumMax_(mapNum), mapBackNumMax_(mapBackNum)
-	,goalPos_(AsoUtility::VECTOR_ZERO), goalPosBack_(AsoUtility::VECTOR_ZERO)
+	,goalPos_(UtilityMath::VECTOR_ZERO), goalPosBack_(UtilityMath::VECTOR_ZERO)
 {
 	placeFrontList_.clear();
 	placeBackList_.clear();
 	placeBackBlankList_.clear();
 	backGroundList_.clear();
 	trapPositions_.clear();
-	initialPlayersPos_.fill(AsoUtility::VECTOR_ZERO);
+	initialPlayersPos_.fill(UtilityMath::VECTOR_ZERO);
 }
 
 void StageBase::Init(int _stageNum)
 {
 	for (VECTOR& pos : initialPlayersPos_)
 	{
-		pos = AsoUtility::VECTOR_ZERO;
+		pos = UtilityMath::VECTOR_ZERO;
 	}
-	goalPos_ = goalPosBack_ = AsoUtility::VECTOR_ZERO;
+	goalPos_ = goalPosBack_ = UtilityMath::VECTOR_ZERO;
 
 	placeFrontList_.clear();
 	placeBackList_.clear();
 	placeBackBlankList_.clear();
 	backGroundList_.clear();
 	trapPositions_.clear();
-	initialPlayersPos_.fill(AsoUtility::VECTOR_ZERO);
+	initialPlayersPos_.fill(UtilityMath::VECTOR_ZERO);
 
 	// ステージ割り当て
 	StageChoice(_stageNum);
@@ -86,7 +86,7 @@ void StageBase::Draw(void)
 
 			for (auto& trapPos : trapPositions_)
 			{
-				if (AsoUtility::Equals(back->GetTransform().pos,
+				if (UtilityMath::Equals(back->GetTransform().pos,
 									   trapPos))
 				{
 					isTrap = true;
@@ -134,7 +134,7 @@ void StageBase::DrawPre(void)
 
 			for (auto& trapPos : trapPositions_)
 			{
-				if (AsoUtility::Equals(back->GetTransform().pos,
+				if (UtilityMath::Equals(back->GetTransform().pos,
 					trapPos))
 				{
 					isTrap = true;

@@ -1,9 +1,8 @@
 #include "Player.h"
 #include "../../Manager/ResourceManager.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityMath.h"
 #include "../../Utility/UtilityCommon.h"
-#include "../../Utility/MatrixUtility.h"
-#include "../Common/AnimationController.h"
+#include "../../Utility/UtilityMatrix.h"
 #include "../../Manager/InputManager.h"
 #include "../../Manager/SceneManager.h"
 #include "../../Manager/Camera.h"
@@ -20,7 +19,7 @@ Player::Player(PLAYER_NO _playerNo, const VECTOR& _pos, STAGE_TYPE _stageType)
 	, isChangeModel_(false), isHasAuthority_(false)
 	, playerState_(STATE::NONE), arrowHandle_(-1)
 	, initialPos_(_pos)
-	, easingPosStart_(AsoUtility::VECTOR_ZERO),easingPosEnd_(AsoUtility::VECTOR_ZERO)
+	, easingPosStart_(UtilityMath::VECTOR_ZERO),easingPosEnd_(UtilityMath::VECTOR_ZERO)
 {
 	transform_.pos = _pos;
 }
@@ -52,8 +51,8 @@ void Player::SetGameStageType(void)
 			curGravityDir_ = GRAVITY_DIR::RIGHT;
 
 			const Quaternion START_ROT = Quaternion::Mult(
-				Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_Z)
-				, Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_X)
+				Quaternion::AngleAxis(90.0f, UtilityMath::AXIS_Z)
+				, Quaternion::AngleAxis(90.0f, UtilityMath::AXIS_X)
 			);
 			transform_.quaRot = START_ROT;
 		}
@@ -63,8 +62,8 @@ void Player::SetGameStageType(void)
 			//transform_.quaRot = Quaternion::Identity();
 
 			const Quaternion START_ROT = Quaternion::Mult(
-				Quaternion::AngleAxis(0.0f, AsoUtility::AXIS_Z)
-				, Quaternion::AngleAxis(0.0f, AsoUtility::AXIS_Z));
+				Quaternion::AngleAxis(0.0f, UtilityMath::AXIS_Z)
+				, Quaternion::AngleAxis(0.0f, UtilityMath::AXIS_Z));
 			transform_.quaRot = START_ROT;
 		}
 	}
@@ -178,8 +177,8 @@ void Player::UpdateGravityRotation(void)
 		}
 
 		// 合成：P1は横(90度)を向いた状態で、画面のZ軸を中心に回転
-		const Quaternion qBase = Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_X);
-		Quaternion qGrav = Quaternion::AngleAxis(rotZ, AsoUtility::AXIS_Z);
+		const Quaternion qBase = Quaternion::AngleAxis(90.0f, UtilityMath::AXIS_X);
+		Quaternion qGrav = Quaternion::AngleAxis(rotZ, UtilityMath::AXIS_Z);
 		transform_.quaRot = qGrav.Mult(qBase);
 	}
 	else
@@ -195,7 +194,7 @@ void Player::UpdateGravityRotation(void)
 			default: return;
 		}
 
-		Quaternion qGrav = Quaternion::AngleAxis(rotZ, AsoUtility::AXIS_Z);
+		Quaternion qGrav = Quaternion::AngleAxis(rotZ, UtilityMath::AXIS_Z);
 		transform_.quaRot = qGrav; // P2は正面向きなのでqBaseなしでOK
 	}
 }
@@ -247,7 +246,7 @@ void Player::InitPost(void)
 	isChangeModel_ = false;
 
 	curGravityDir_ = GRAVITY_DIR::NONE;
-	movePow_ = AsoUtility::VECTOR_ZERO;	
+	movePow_ = UtilityMath::VECTOR_ZERO;	
 	SetGameStageType();
 }
 
@@ -294,18 +293,18 @@ void Player::InitTransform(void)
 
 
 	//transform_.InitTransform(MODEL_SCALE,
-	//						 Quaternion::AngleAxis(rot, AsoUtility::AXIS_Y),
-	//						 Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y));
+	//						 Quaternion::AngleAxis(rot, UtilityMath::AXIS_Y),
+	//						 Quaternion::AngleAxis(180.0f, UtilityMath::AXIS_Y));
 
 	constexpr float MODEL_SCALE = 1.0f;
 	float rotY = (playerNo_ == PLAYER_NO::P1) ? 90.0f : 0.0f;
-	VECTOR localRot = AsoUtility::VECTOR_ZERO;
+	VECTOR localRot = UtilityMath::VECTOR_ZERO;
 	localRot.x = ((playerNo_ == PLAYER_NO::P1) ? -90.0f : 0.0f);
 	localRot.y = ((playerNo_ == PLAYER_NO::P1) ? 0.0f : 0.0f);
 	localRot.z = ((playerNo_ == PLAYER_NO::P1) ? 180.0f : 0.0f);
 
-	Quaternion rotLocal = Quaternion::Mult(Quaternion::AngleAxis(localRot.x, AsoUtility::AXIS_X),
-										   Quaternion::AngleAxis(localRot.y, AsoUtility::AXIS_Y));
+	Quaternion rotLocal = Quaternion::Mult(Quaternion::AngleAxis(localRot.x, UtilityMath::AXIS_X),
+										   Quaternion::AngleAxis(localRot.y, UtilityMath::AXIS_Y));
 
 	// P2かつ重力モードならZ軸で180度回転（逆さま）
 	if (playerNo_ == PLAYER_NO::P2
@@ -315,8 +314,8 @@ void Player::InitTransform(void)
 	}
 	
 	transform_.InitTransform(MODEL_SCALE,
-		Quaternion::AngleAxis(rotY, AsoUtility::AXIS_Y),
-		rotLocal.Mult(Quaternion::AngleAxis(localRot.z, AsoUtility::AXIS_Z)));
+		Quaternion::AngleAxis(rotY, UtilityMath::AXIS_Y),
+		rotLocal.Mult(Quaternion::AngleAxis(localRot.z, UtilityMath::AXIS_Z)));
 
 }
 
@@ -404,7 +403,7 @@ void Player::ProcessMove(void)
 	// 移動ステージ
 	if (curStageType_ == STAGE_TYPE::MOVE)
 	{
-		VECTOR dir = AsoUtility::VECTOR_ZERO;
+		VECTOR dir = UtilityMath::VECTOR_ZERO;
 
 		if (playerNo_ == PLAYER_NO::P1)
 		{
@@ -418,7 +417,7 @@ void Player::ProcessMove(void)
 			if (input_.IsNew(InputManager::TYPE::PLAYER2_MOVE_DOWN, Input::JOYPAD_NO::PAD2)) { dir.y -= 1.0f; }
 		}
 
-		if (!AsoUtility::EqualsVZero(dir))
+		if (!UtilityMath::EqualsVZero(dir))
 		{
 			Quaternion cameraRot = sceneMng_.GetCamera()->GetQuaRotY();
 			moveDir_ = Quaternion::PosAxis(cameraRot, dir);
@@ -426,7 +425,7 @@ void Player::ProcessMove(void)
 		}
 		else
 		{
-			movePow_ = AsoUtility::VECTOR_ZERO;
+			movePow_ = UtilityMath::VECTOR_ZERO;
 		}
 
 		return;
@@ -454,7 +453,7 @@ void Player::ProcessMove(void)
 		}
 
 		// 物理計算：現在の方向に基づいて加速
-		VECTOR accel = AsoUtility::VECTOR_ZERO;
+		VECTOR accel = UtilityMath::VECTOR_ZERO;
 		switch (curGravityDir_)
 		{
 			case GRAVITY_DIR::UP:    accel.y =  GRAVITY_ACCEL; break;

@@ -2,7 +2,7 @@
 #include <DxLib.h>
 #include "../../Manager/ResourceManager.h"
 #include "../../Common/Vector2.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityMath.h"
 #include "../StageObj/StageObjBase.h"
 #include "../StageObj/StageObjWall.h"
 #include "../StageObj/StageObjGoal.h"
@@ -33,7 +33,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 
 	// ÉvÉåÉCÉÑÅ[ÇPìoò^
 	if (objType == BLOCK_TYPE::PLAYER_WIDTH
-		&& AsoUtility::EqualsVZero(initialPlayersPos_[0]))
+		&& UtilityMath::EqualsVZero(initialPlayersPos_[0]))
 	{
 		initialPlayersPos_[0] = pos;
 	}
@@ -41,7 +41,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	// ÉvÉåÉCÉÑÅ[ÇQìoò^
 	else if (objType == BLOCK_TYPE::PLAYER_HEIGHT
 			&& curStageType_ == TYPE::MOVE
-			&& AsoUtility::EqualsVZero(initialPlayersPos_[1]))
+			&& UtilityMath::EqualsVZero(initialPlayersPos_[1]))
 	{
 		initialPlayersPos_[1] = pos;
 	}
@@ -145,7 +145,7 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alp
 
 	// ÉvÉåÉCÉÑÅ[ÇQìoò^
 	if (objType == BLOCK_TYPE::PLAYER_HEIGHT
-			 && AsoUtility::EqualsVZero(initialPlayersPos_[1]))
+			 && UtilityMath::EqualsVZero(initialPlayersPos_[1]))
 	{
 		pos.z += PLAYER_OFFSET_Z;
 		initialPlayersPos_[1] = pos;

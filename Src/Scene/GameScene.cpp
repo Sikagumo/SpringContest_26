@@ -19,7 +19,7 @@
 #include "../UI/GameTimer.h"
 #include "../Common/Perform.h"
 #include "../Manager/Camera.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/UtilityMath.h"
 
 GameScene::GameScene(void)
 	: SceneBase()
@@ -62,7 +62,7 @@ void GameScene::Init(void)
 	}
 
 
-	VECTOR stagePos = AsoUtility::VECTOR_ZERO;
+	VECTOR stagePos = UtilityMath::VECTOR_ZERO;
 
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
 	player1_ = new Player(Player::PLAYER_NO::P1, stagePos, pStageType);
@@ -355,7 +355,7 @@ bool GameScene::TrapProcess(void)
 		//リストの中にあるトラップを一つずつ取り出して判定
 		for (auto& tPos : trapList)
 		{
-			if (AsoUtility::IsHitSpheres(pPos, Player::COL_CAPSULE_RADIUS,
+			if (UtilityMath::IsHitSpheres(pPos, Player::COL_CAPSULE_RADIUS,
 										 tPos, StageObjTrap::COLLISION_RADIUS))
 			{
 				if(fabsf(pPos.z - tPos.z) < 40.0f)
@@ -404,14 +404,14 @@ bool GameScene::GoalProcess(void)
 	{
 		// 各プレイヤーとゴールの XY 距離判定
 		if (player1_->GetState() != Player::STATE::GOAL
-			&& AsoUtility::IsHitSpheres(player1_->GetTransform().pos, 0.0f
+			&& UtilityMath::IsHitSpheres(player1_->GetTransform().pos, 0.0f
 										, stage_->GetGoalPos(i), GOAL_HIT_RANGE))
 		{
 			player1_->ChangeState(Player::STATE::GOAL);
 		}
 
 		if (player2_->GetState() != Player::STATE::GOAL
-			&& AsoUtility::IsHitSpheres(player2_->GetTransform().pos, 0.0f
+			&& UtilityMath::IsHitSpheres(player2_->GetTransform().pos, 0.0f
 										, stage_->GetGoalPos((i + 1) % 2), GOAL_HIT_RANGE))
 		{
 			player2_->ChangeState(Player::STATE::GOAL);

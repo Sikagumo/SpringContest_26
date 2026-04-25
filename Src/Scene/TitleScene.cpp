@@ -2,14 +2,13 @@
 #include <DxLib.h>
 #include <functional>
 #include "../Application.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/UtilityMath.h"
 #include "../Manager/InputManager.h"
 #include "../Manager/SceneManager.h"
 #include "../Manager/Camera.h"
 #include "../Manager/SoundManager.h"
 #include "../Manager/ResourceManager.h"
 #include "../Common/Vector2.h"
-#include "../Object/Common/AnimationController.h"
 #include "../Object/SkyDome/SkyDome.h"
 
 

@@ -2,7 +2,7 @@
 #include "./StageObjBase.h"
 #include "../Collider/ColliderSphere.h"
 #include "../../Manager/ResourceManager.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityMath.h"
 #include "../Stage/StageBase.h"
 
 StageObjTrapVerticalMove::StageObjTrapVerticalMove(int _x, int _y, int _objType, float _alpha) :
@@ -19,7 +19,7 @@ void StageObjTrapVerticalMove::InitLoad(void)
 void StageObjTrapVerticalMove::InitTransform(void)
 {
 	transform_.InitTransform(BLOCK_SCALE,
-		Quaternion::Identity(), Quaternion::AngleAxis(90.0f, AsoUtility::AXIS_Y));
+		Quaternion::Identity(), Quaternion::AngleAxis(90.0f, UtilityMath::AXIS_Y));
 }
 
 void StageObjTrapVerticalMove::InitCollider(void)
@@ -50,7 +50,7 @@ void StageObjTrapVerticalMove::Update(void)
 
                 // 壁との距離判定 (球体判定)
                 // 80.0f や 100.0f など、ブロックのサイズに合わせて調整してください
-                if (AsoUtility::IsHitSpheres(nextPos, COLLISION_RADIUS, obj->GetTransform().pos, 100.0f))
+                if (UtilityMath::IsHitSpheres(nextPos, COLLISION_RADIUS, obj->GetTransform().pos, 100.0f))
                 {
                     isHitWall = true;
                     break;
@@ -69,7 +69,7 @@ void StageObjTrapVerticalMove::Update(void)
                     if (obj->GetObjType() != static_cast<int>(StageBase::BLOCK_TYPE::WALL)) continue;
 
                     // X軸の移動先に壁があるか判定 (判定距離は 80.0f 前後で調整)
-                    if (AsoUtility::IsHitSpheres(nextPos, COLLISION_RADIUS, obj->GetTransform().pos, 80.0f))
+                    if (UtilityMath::IsHitSpheres(nextPos, COLLISION_RADIUS, obj->GetTransform().pos, 80.0f))
                     {
                         isHitWall = true;
                         break;

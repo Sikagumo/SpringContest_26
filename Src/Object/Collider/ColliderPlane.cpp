@@ -1,7 +1,7 @@
 #include "ColliderPlane.h"
 #include "./ColliderBase.h"
 #include "../Common/Transform.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityMath.h"
 #include <DxLib.h>
 #include <array>
 
@@ -161,7 +161,7 @@ VECTOR ColliderPlane::_PushBack(const VECTOR& _target, int _dirType, float pushD
 {
 	/* 反発処理 */
 	VECTOR ret = _target;
-	VECTOR pushDir = AsoUtility::VECTOR_ZERO;
+	VECTOR pushDir = UtilityMath::VECTOR_ZERO;
 	const int MAX = static_cast<int>(DIR::MAX);
 
 	// マイナス方向(左と下)の時、処理を反転

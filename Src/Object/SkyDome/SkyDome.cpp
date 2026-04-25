@@ -3,7 +3,7 @@
 #include "../Actor/ActorBase.h"
 #include "../../Manager/ResourceManager.h"
 #include "../../Manager/SceneManager.h"
-#include "../../Utility/AsoUtility.h"
+#include "../../Utility/UtilityMath.h"
 
 SkyDome::SkyDome(const Transform& _transform)
 	: ActorBase()
@@ -19,8 +19,8 @@ void SkyDome::InitLoad(void)
 void SkyDome::InitTransform(void)
 {
 	transform_.InitTransform(SCALE,
-							 Quaternion::Identity(), Quaternion::AngleAxis(180.0f, AsoUtility::AXIS_Y),
-							 AsoUtility::VECTOR_ZERO);
+							 Quaternion::Identity(), Quaternion::AngleAxis(180.0f, UtilityMath::AXIS_Y),
+							 UtilityMath::VECTOR_ZERO);
 }
 
 void SkyDome::InitPost(void)
@@ -46,12 +46,12 @@ void SkyDome::Update(void)
 void SkyDome::UpdateStay(void)
 {
 	// âÒì]èàóù
-	transform_.Rotate(AsoUtility::AXIS_Y, ROT_SPEED);
+	transform_.Rotate(UtilityMath::AXIS_Y, ROT_SPEED);
 }
 void SkyDome::UpdateFollow(void)
 {
 	// âÒì]èàóù
-	transform_.Rotate(AsoUtility::AXIS_Y, ROT_SPEED);
+	transform_.Rotate(UtilityMath::AXIS_Y, ROT_SPEED);
 
 	// í«è]èàóù
 	transform_.pos = followTransform_.pos;

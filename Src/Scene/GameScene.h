@@ -3,7 +3,7 @@
 #include<array>
 #include <functional>
 #include "SceneBase.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/UtilityMath.h"
 class SkyDome;
 class StageBase;
 class StageController;

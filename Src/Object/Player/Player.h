@@ -43,7 +43,7 @@ public:
 
 
 	void SetIsChangeModel(bool _isChangeModel);
-	bool GetIsChangeModel(void) { return isChangeModel_; };
+	bool GetIsChangeModel(void)const { return isChangeModel_; };
 
 	void ChangeState(STATE _state);
 	STATE GetState(void) { return playerState_; };

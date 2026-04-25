@@ -1,7 +1,7 @@
 #include "Input.h"
 #include "../Application.h"
 #include "../Utility/UtilityCommon.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/UtilityMath.h"
 #include <DxLib.h>
 #include <algorithm>
 
@@ -13,7 +13,7 @@ Input::Input(void)
 	, keyInfos_(), infoEmpty_()
 	, mouseInfos_(), mouseInfoEmpty_()
 	, stickInfos_(), padInfos_()
-	, mousePrePos_(AsoUtility::VECTOR2_ZERO), mousePos_(AsoUtility::VECTOR2_ZERO)
+	, mousePrePos_(UtilityMath::VECTOR2_ZERO), mousePos_(UtilityMath::VECTOR2_ZERO)
 	, wheelRot_(0)
 {
 }
@@ -104,8 +104,8 @@ void Input::UpdateMouse(void)
 	else if (cursorMode_ == CURSOR_MODE::CONFINED)
 	{
 		// マウス座標を制限
-		mousePos_.x = std::clamp(mousePos_.x, AsoUtility::VECTOR2_ZERO.x, SCREEN_SIZE.x);
-		mousePos_.y = std::clamp(mousePos_.y, AsoUtility::VECTOR2_ZERO.y, SCREEN_SIZE.y);
+		mousePos_.x = std::clamp(mousePos_.x, UtilityMath::VECTOR2_ZERO.x, SCREEN_SIZE.x);
+		mousePos_.y = std::clamp(mousePos_.y, UtilityMath::VECTOR2_ZERO.y, SCREEN_SIZE.y);
 		if (isWrap) { SetMousePos(mousePos_); }
 	}
 

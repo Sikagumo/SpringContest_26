@@ -6,7 +6,7 @@
 #include "../Common/Fader.h"
 #include "../Scene/TitleScene.h"
 #include "../Scene/GameScene.h"
-#include "../Utility/AsoUtility.h"
+#include "../Utility/UtilityMath.h"
 #include "./InputManager.h"
 #include "./Camera.h"
 #include "./ResourceManager.h"
@@ -124,8 +124,8 @@ void SceneManager::InitShadow(void)
 	shadowMapHandle_ = MakeShadowMap(SHADOW_MAP_SIZE, SHADOW_MAP_SIZE);
 
 	// シャドウマップが想定するライトの方向をセット
-	const VECTOR SHADOW_DIR = VAdd(AsoUtility::DIR_DOWN, AsoUtility::DIR_FORWARD);
-	SetShadowMapLightDirection(shadowMapHandle_, AsoUtility::VNormalize(SHADOW_DIR));
+	const VECTOR SHADOW_DIR = VAdd(UtilityMath::DIR_DOWN, UtilityMath::DIR_FORWARD);
+	SetShadowMapLightDirection(shadowMapHandle_, UtilityMath::VNormalize(SHADOW_DIR));
 
 	// シャドウマップに描画する範囲を設定
 	const VECTOR SHADOW_AREA_MIN = VGet(-10000.0f, -1.0f, -10000.0f);

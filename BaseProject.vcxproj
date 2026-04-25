@@ -43,7 +43,6 @@
     <ClCompile Include="Src\Object\Collider\ColliderLine.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderModel.cpp" />
     <ClCompile Include="Src\Object\Collider\ColliderSphere.cpp" />
-    <ClCompile Include="Src\Object\Common\AnimationController.cpp" />
     <ClCompile Include="Src\Object\Common\Transform.cpp" />
     <ClCompile Include="Src\Object\Player\Player.cpp" />
     <ClCompile Include="Src\Object\SkyDome\SkyDome.cpp" />
@@ -57,8 +56,8 @@
     <ClCompile Include="Src\Scene\SceneBase.cpp" />
     <ClCompile Include="Src\Scene\TitleScene.cpp" />
     <ClCompile Include="Src\UI\GameTimer.cpp" />
-    <ClCompile Include="Src\Utility\AsoUtility.cpp" />
-    <ClCompile Include="Src\Utility\MatrixUtility.cpp" />
+    <ClCompile Include="Src\Utility\UtilityMath.cpp" />
+    <ClCompile Include="Src\Utility\UtilityMatrix.cpp" />
     <ClCompile Include="Src\Utility\UtilityCommon.cpp" />
     <ClCompile Include="Src\Object\Stage\StageGravity.cpp" />
     <ClCompile Include="Src\Object\StageObj\StageObjTrap.cpp" />
@@ -90,7 +89,6 @@
     <ClInclude Include="Src\Object\Collider\ColliderLine.h" />
     <ClInclude Include="Src\Object\Collider\ColliderModel.h" />
     <ClInclude Include="Src\Object\Collider\ColliderSphere.h" />
-    <ClInclude Include="Src\Object\Common\AnimationController.h" />
     <ClInclude Include="Src\Object\Common\Transform.h" />
     <ClInclude Include="Src\Object\Player\Player.h" />
     <ClInclude Include="Src\Object\SkyDome\SkyDome.h" />
@@ -104,8 +102,8 @@
     <ClInclude Include="Src\Scene\SceneBase.h" />
     <ClInclude Include="Src\Scene\TitleScene.h" />
     <ClInclude Include="Src\UI\GameTimer.h" />
-    <ClInclude Include="Src\Utility\AsoUtility.h" />
-    <ClInclude Include="Src\Utility\MatrixUtility.h" />
+    <ClInclude Include="Src\Utility\UtilityMath.h" />
+    <ClInclude Include="Src\Utility\UtilityMatrix.h" />
     <ClInclude Include="Src\Utility\UtilityCommon.h" />
     <ClInclude Include="Src\Object\Stage\StageGravity.h" />
     <ClInclude Include="Src\Object\StageObj\StageObjTrap.h" />
@@ -202,14 +200,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./Lib/DxLib</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(DXLIB_DIR)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./Lib/DxLib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -239,7 +237,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(DXLIB_DIR)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./Lib/DxLib</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
@@ -248,7 +246,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(DXLIB_DIR)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./Lib/DxLib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

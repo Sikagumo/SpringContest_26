@@ -5,7 +5,6 @@
 #include "../Application.h"
 #include "../Object/Common/Transform.h"
 #include "../Utility/UtilityCommon.h"
-class AnimationController;
 
 class TitleScene : public SceneBase
 {
