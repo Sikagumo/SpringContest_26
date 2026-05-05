@@ -9,6 +9,7 @@ public:
 	{
 		MOVE,
 		GRAVITY,
+
 		MAX,
 	};
 	
@@ -17,7 +18,6 @@ public:
 	{
 		LINE,
 		CAPSULE,
-		VIEW_RANGE,
 		MAX,
 	};
 
@@ -70,22 +70,25 @@ protected:
 	virtual void UpdateProcess(void) = 0;
 	virtual void UpdateProcessPost(void) = 0;
 
-	virtual void DrawPre(void)override;
 
-	// ˆÚ“®•ûŒü‚É‰‚¶‚½’x‰„‰ñ“]
+	/// @brief ˆÚ“®•ûŒü‚É‰‚¶‚½’x‰„‰ñ“]
+	/// @param  
 	void DelayRotate(void);
 
 	void CalcGravityPow(void);
 
-	// Õ“Ë”»’è
+	/* Õ“Ë”»’è */
 	void Collision(void);
 	void CollisionGravity(void);
 	void CollisionCapsule(void);
 	virtual void CollisionReserve(void) {};
 
+	/// @brief ‘O•`‰æˆ—
+	virtual void DrawPre(void)override;
 	
+	/// @brief Œã•`‰æˆ—
 	void DrawLate(void)override;
 
-	// ‰e•`‰æ
+	/// @brief ‰e•`‰æ
 	void DrawShadowRound(void);
 };

@@ -7,36 +7,41 @@ class ColliderModel : public ColliderBase
 {
 public:
 
-	// コンストラクタ
+	/// @brief コンストラクタ
+	/// @param _tag タグ対象
+	/// @param _follow 追従対象
 	ColliderModel(TAG _tag, const Transform * _follow);
 
-	// デストラクタ
 	~ColliderModel(void) override = default;
 
 
-	// 指定された文字を含むフレームを衝突判定から除外
+	/// @brief 指定された文字を含むフレームを衝突判定から除外
 	void AddExcludeFrameIds(const std::string& _name);
 
-	// 衝突判定から除外するフレームをクリアする
+	/// @brief 衝突判定から除外するフレームをクリア
 	void ClearExcludeFrame(void);
 
-	// 除外フレーム判定
+	/// @brief 指定した除外フレームがあるか否か
 	bool IsExcludeFrame(int _frameIdx) const;
 
-	// 指定された文字を含むフレームを衝突判定対象とする
+	/// @brief 指定された文字を含むフレームを衝突判定対象とする
+	/// @param _name 
 	void AddTargetFrameIds(const std::string& _name);
 
-	// 衝突判定の対象するフレームをクリアする
+	/// @brief 衝突判定の対象するフレームをクリア
 	void ClearTargetFrame(void);
 
-	// 対象フレーム判定
+	/// @brief 対象フレームがあるか否か
 	bool IsTargetFrame(int _frameIdx) const;
 
-	// 線分とモデルの最近接(startに近い)衝突ポリゴンを取得
-	MV1_COLL_RESULT_POLY GetNearestHitPolyLine(
-		const VECTOR& start,
-		const VECTOR& end,
-		bool isExclude = false, bool isTarget = false) const;
+	/// @brief 線分とモデルの最近接(startに近い)衝突ポリゴンを取得
+	/// @param _start 始点
+	/// @param _end 終点
+	/// @param _isExclude 除外するか否か
+	/// @param _isTarget 
+	MV1_COLL_RESULT_POLY GetNearestHitPolyLine(const VECTOR& _start, const VECTOR& _end,
+											   bool _isExclude = false, bool _isTarget = false) const;
+
 
 protected:
 
@@ -47,8 +52,9 @@ protected:
 	std::vector<int> targetFrameIds_;
 
 
-	// デバッグ用描画
-	void DrawDebug(int color) override {}
+	/// @brief デバッグ描画
+	/// @param _color 
+	void DrawDebug(unsigned int _color) override {};
 
 
 };

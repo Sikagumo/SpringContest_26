@@ -10,7 +10,7 @@ void InputManager::CreateInstance(void)
 		instance_ = new InputManager();
 	}
 
-	instance_->Init();
+	instance_->Initialize();
 }
 
 InputManager::InputManager(void):
@@ -22,11 +22,11 @@ InputManager::InputManager(void):
 	funcTrgUpMap_.clear();
 }
 
-void InputManager::Init(void)
+void InputManager::Initialize(void)
 {
 	// “ü—Í”»’èˆ—‚Ì¶¬‚Æ‰Šú‰»
 	input_ = std::make_unique<Input>();
-	input_->Init();
+	input_->Initialize();
 
 	// “ü—Íó‹µ‚É‰‚¶‚½ƒgƒŠƒK[‚Ì“o˜^
 	using BTN   = Input::JOYPAD_BTN;
@@ -95,7 +95,7 @@ void InputManager::Release(void)
 	funcTrgUpMap_.clear();
 	input_->Release();
 }
-void InputManager::Destroy(void)
+void InputManager::DestroyInstance(void)
 {
 	instance_->Release();
 

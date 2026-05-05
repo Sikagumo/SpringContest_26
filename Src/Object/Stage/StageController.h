@@ -19,30 +19,18 @@ public:
 		GAME_CLEAR,	// ゲームクリア
 	};
 
-	/// @brief コンストラクタ
-	/// @param _isMoveStage 移動ステージか否か
-	StageController(bool _isMoveStage);
 
-	/// @brief デフォルトデストラクタ
+	StageController(bool _isMoveStage);
 	~StageController(void) = default;
 
-	/// @brief 初期化処理
-	void Init(void);
-
-	/// @brief 更新処理
+	void Initialize(void);
 	void Update(void);
-
-	/// @brief 描画処理
 	void Draw(void);
+	void DrawDebug(void);
+	void Release(void);
 
 	/// @brief 描画前処理
 	void DrawPre(void);
-
-	/// @brief デバッグ描画処理
-	void DrawDebug(void);
-
-	/// @brief メモリ開放処理
-	void Release(void);
 
 
 	/// @brief 指定した状態と現在の状態が一致しているか否か

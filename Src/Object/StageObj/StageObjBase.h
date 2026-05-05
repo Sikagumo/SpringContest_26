@@ -7,20 +7,18 @@ class StageObjBase : public ActorBase
 public:
 
 	/// @brief ステージのオブジェクト
-	/// @param _x 配列横位置
-	/// @param _y 配列縦位置
+	/// @param _arrayPos ステージの配列位置
 	/// @param _collisionSize 当たり判定サイズ
 	/// @param _objType オブジェクトの種類
 	/// @param _alpha モデルの透過率(0.0～1.0)
-	StageObjBase(int _x, int _y, const VECTOR& _collisionSize, int _objType = -1, float _alpha = 1.0f);
+	StageObjBase(Vector2 _arrayPos, const VECTOR& _collisionSize, int _objType = -1, float _alpha = 1.0f);
 
 	virtual ~StageObjBase(void)override = default;
 
-	void Init(const VECTOR& _pos);
-
-	/// @brief 更新処理
+	/// @brief 初期化処理
+	/// @param _pos 位置
+	void Initialize(const VECTOR& _pos);
 	virtual void Update(void)override = 0;
-
 	void Draw(void)override;
 
 
@@ -30,11 +28,13 @@ public:
 
 	const ColliderBase* GetOwnCollider(void);
 
-	int GetObjType(void) { return objType_; };
+	int GetObjType(void)const { return objType_; };
 
+	/// @brief モデルの透過率割り当て(0.0～1.0)
 	void SetAlpha(float _alpha);
 
-	Vector2 GetObjArrayPos(void) { return Vector2(x, y); };
+	/// @brief オブジェクトのステージ位置取得
+	const Vector2& GetObjArrayPos(void)const { return arrayPos_; };
 
 
 protected:
@@ -49,10 +49,11 @@ protected:
 	Vector2F collisionSize_;
 
 	// 配列位置
-	int x, y;
+	Vector2 arrayPos_;
 
 	// モデルの透過率(0.0～1.0)
 	float alpha_;
+
 
 	virtual void InitLoad(void)override = 0;
 	virtual void InitTransform(void)override = 0;

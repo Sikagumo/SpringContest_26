@@ -10,11 +10,12 @@ class SoundManager
 public:
 
 	// ピッチの増減値
-	static constexpr float PITCH_RANGE_DEF = 1.0f;
+	static constexpr int PITCH_RANGE_DEF = 1;
 
-	// マスターボリューム
+	// 主音量最大
 	static constexpr int VOLUME_MASTER_MAX = 255;
 
+	// 主音量の(1/100)の値
 	static constexpr float VOLUME_MASTER_NUM = (VOLUME_MASTER_MAX / 100);
 
 
@@ -47,18 +48,12 @@ public:
 
 
 
-	/// @brief インスタンス生成
 	static void CreateInstance(void);
-
-	/// @brief インスタンス取得処理
 	static SoundManager& GetInstance(void) { return *instance_; };
+	void DestroyInstance(void);
 
-
-	/// @brief 初期化処理
 	void Load(void);
 
-	/// @brief リソース完全破棄処理
-	void Destroy(void);
 
 	/// @brief 2Dサウンド再生処理
 	/// @param _src 再生するサウンドの種類
@@ -66,9 +61,9 @@ public:
 	/// @param _isPitch ピッチを変えるか否か
 	/// @param _pitchRange ピッチ増減の範囲
 	/// @param _isForce 
-	bool Play(int _src, bool _isLoop, bool _isPitch = false, float _pitchRange = PITCH_RANGE_DEF, bool _isForce = false);
+	bool Play(int _src, bool _isLoop, bool _isPitch = false, int _pitchRange = PITCH_RANGE_DEF, bool _isForce = false);
 
-	/// @breif 3Dサウンド再生処理
+	/// @brief 3Dサウンド再生処理
 	/// @param _sec 再生するサウンドの種類
 	/// @param _isLoop ループするか否か
 	/// @param _pos 音量が出てくる座標
@@ -110,10 +105,11 @@ public:
 	float GetVolume(int _src);
 
 	/// @brief 主音量割り当て
-	void SetVolumeMaster(float master = 255.0f);
+	/// @param _volumeRate 指定する割合(0.0～1.0)
+	void SetVolumeMaster(float _volumeRate = 1.0f);
 
 	/// @brief 主音量取得
-	int GetVolumeMaster(void) { return volumeMaster_; };
+	int GetVolumeMaster(void)const { return volumeMaster_; };
 
 
 
@@ -125,16 +121,14 @@ private:
 	// 静的インスタンス
 	static SoundManager* instance_;
 
+	// 音声リスト
 	std::map<int, Sound*> sounds_;
 
 	// 主音量
 	int volumeMaster_;
 
 
-	/// @brief デフォルトコントラクタ
 	SoundManager(void);
-
-	/// @brief デフォルトデストラクタ
 	~SoundManager(void) = default;
 
 	/* コピーコンストラクタ対策 */

@@ -4,8 +4,8 @@
 #include "../../Manager/ResourceManager.h"
 #include "../../Utility/UtilityMath.h"
 
-StageObjTrap::StageObjTrap(int _x, int _y, int _objType, float _alpha) :
-	StageObjBase::StageObjBase(_x, _y, { COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType, _alpha)
+StageObjTrap::StageObjTrap(Vector2 _arrayPos, int _objType, float _alpha)
+	: StageObjBase::StageObjBase(_arrayPos, { COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType, _alpha)
 {
 }
 

@@ -1,8 +1,5 @@
 #include "GameScene.h"
-#include <DxLib.h>
 #include <cmath>
-#include <functional>
-#include <array>
 #include "../Application.h"
 #include "../Manager/SceneManager.h"
 #include "../Manager/ResourceManager.h"
@@ -21,31 +18,44 @@
 #include "../Manager/Camera.h"
 #include "../Utility/UtilityMath.h"
 
+constexpr float TIME_START = 2.0f;
+constexpr float TIME_PAUSE = 0.0f;
+constexpr float TIME_GAME_END = 2.0f;
+constexpr float TIME_CLEAR = 0.5f;
+
+constexpr float GAME_TIME = 350.0f;
+
+
+constexpr float HIT_STOP_TRAP = 1.5f;
+
+constexpr float UI_TEXT_SCALE = 0.5f;
+constexpr int UI_TEXT_SIZE = static_cast<int>((80 * UI_TEXT_SCALE));
+
+
 GameScene::GameScene(void)
 	: SceneBase()
 	, state_(GAME_STATE::NONE)
-	, skyDome_(nullptr)
-	, stage_(nullptr), timer_(nullptr)
 	, player1_(nullptr), player2_(nullptr)
 	, performTime_(0.0f), isPerform_(false)
 	, isSwapPlayer1_(true)
 	, curInfoNum_(-1), preStageType_(-1)
+	, isRespawning_(false), respawnTimer_(0.0f)
+	, isSwapping_(false), swapTimer_(0.0f)
+	, infoImages_{}
 {
-	
-	for (int& image : infoImages_)
-	{
-		image = -1;
-	}
-	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_INFO, infoImages_);
+	infoImages_.fill(-1);
+	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_INFO, infoImages_.data());
 }
 
-void GameScene::Init(void)
+void GameScene::Initialize(void)
 {
-	// ステージ初期化
-	stage_ = new StageController(sceneMng_.GetIsStageMove());
-	stage_->Init();
+	/* 初期化処理 */
 
-	timer_ = new GameTimer(GAME_TIME);
+	// ステージ初期化
+	stage_ = std::make_unique<StageController>(sceneMng_.GetIsStageMove());
+	stage_->Initialize();
+
+	timer_ = std::make_unique<GameTimer>(GAME_TIME);
 
 	// ステージ状態登録
 	Player::STAGE_TYPE pStageType = Player::STAGE_TYPE::MAX;
@@ -66,12 +76,12 @@ void GameScene::Init(void)
 
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P1));
 	player1_ = new Player(Player::PLAYER_NO::P1, stagePos, pStageType);
-	player1_->Init();
+	player1_->Initialize();
 	player1_->SetAuthority(true);
 	
 	stagePos = stage_->GetPlayerPos(static_cast<int>(Player::PLAYER_NO::P2));
 	player2_= new Player(Player::PLAYER_NO::P2, stagePos, pStageType);
-	player2_->Init();
+	player2_->Initialize();
 	
 
 	// ステージ当たり判定登録
@@ -79,12 +89,12 @@ void GameScene::Init(void)
 	stage_->AddStageColliders(*player2_);
 
 	// スカイドーム
-	skyDome_ = new SkyDome({});
-	skyDome_->Init();
+	skyDome_ = std::make_unique<SkyDome>();
+	skyDome_->Initialize();
 	
 	// カメラ
 	Camera* camera = sceneMng_.GetCamera();
-	camera->Init();
+	camera->Initialize();
 
 	isPerform_ = false;
 
@@ -96,6 +106,8 @@ void GameScene::Init(void)
 
 void GameScene::Update(void)
 {
+	/* 更新処理 */
+
 	// 状態別更新処理
 	updateGameStateProc_();
 
@@ -155,6 +167,7 @@ void GameScene::Update(void)
 		}
 
 	}
+
 	else
 	{
 		// 入れ替え実行と権限の譲渡
@@ -163,6 +176,7 @@ void GameScene::Update(void)
 			UpdateSwap();
 		}
 
+		// リスタートの実行と状態の復帰
 		if (isRespawning_)
 		{
 			UpdateRespawn();
@@ -176,6 +190,8 @@ void GameScene::Update(void)
 
 void GameScene::Draw(void)
 {
+	/* 描画処理 */
+
 	skyDome_->Draw();
 
 	stage_->DrawPre();
@@ -196,11 +212,10 @@ void GameScene::Draw(void)
 	DrawRotaGraph((Application::SCREEN_HALF_X - 100), UI_TEXT_SIZE,
 		0.5, 0.0, uiText_[static_cast<int>(UI_TEXT::TIME_LIMIT)], true);
 
-	timer_->DrawTimer();
-
-	// ゲーム開始カウンタ
-	if (state_ == GAME_STATE::ACTIVE && performTime_ > -1.0f)
+	if (state_ == GAME_STATE::ACTIVE
+		&& performTime_ > -1.0f)
 	{
+		// ゲーム開始前のカウンタの描画
 		timer_->DrawCountDown(performTime_, uiText_[static_cast<int>(UI_TEXT::GAME_START)]);
 	}
 
@@ -263,13 +278,9 @@ void GameScene::Draw(void)
 
 void GameScene::Release(void)
 {
-	delete timer_;
-
 	stage_->Release();
-	delete stage_;
 
 	skyDome_->Release();
-	delete skyDome_;
 
 	player1_->Release();
 	delete player1_;
@@ -382,7 +393,7 @@ bool GameScene::TrapProcess(void)
 				}
 
 				
-				sceneMng_.GetPerform().SetHitStop(HIT_STOP_TRAP);
+				sceneMng_.GetPerform()->SetHitStop(HIT_STOP_TRAP);
 
 				// ダメージSE再生
 				sound_.Play(static_cast<int>(ResourceManager::SRC::SE_DAMAGE), false, true);
@@ -432,9 +443,11 @@ bool GameScene::GoalProcess(void)
 
 void GameScene::DrawInfo(void)
 {
-	if (state_ != GAME_STATE::INFO && state_ != GAME_STATE::INFO3D) { return; }
+	if (state_ != GAME_STATE::INFO
+		&& state_ != GAME_STATE::INFO3D) { return; }
 
-	int imgNum = curInfoNum_ * 2;
+	int imgNum = (curInfoNum_ * 2);
+
 	if (stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY
 		|| stage_->GetStageType() == StageController::STAGE_TYPE::GRAVITY3D)
 	{
@@ -445,19 +458,25 @@ void GameScene::DrawInfo(void)
 		imgNum += (INFO_MAX * 2);
 	}
 
-	const float SCALE = 0.8f;
+	constexpr float SCALE = 0.8f;
 	DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y, SCALE, 0.0,
 				  infoImages_[imgNum], true);
 }
 
 void GameScene::ChangeState(GAME_STATE _state)
 {
+	/* ゲーム状態遷移処理 */
+
 	// BGM減少量
-	const float BGM_SOUND_DEC = 0.3f;
+	constexpr float BGM_SOUND_DEC = 0.3f;
+
+	constexpr float HIT_STOP_GOAL = 1.5f;
 
 	if (_state == GAME_STATE::ACTIVE)
 	{
 		updateGameStateProc_ = std::bind(&GameScene::Update_Active, this);
+
+		// 一時停止時、
 		performTime_ = ((state_ == GAME_STATE::PAUSE) ? TIME_PAUSE : TIME_START);
 
 		// BGMの音量を調整
@@ -521,8 +540,7 @@ void GameScene::ChangeState(GAME_STATE _state)
 		updateGameStateProc_ = std::bind(&GameScene::Update_Goal, this);
 		performTime_ = TIME_CLEAR;
 
-		const float HIT_STOP_GOAL = 1.5f;
-		sceneMng_.GetPerform().SetHitStop(HIT_STOP_GOAL);
+		sceneMng_.GetPerform()->SetHitStop(HIT_STOP_GOAL);
 	}
 
 	else if (_state == GAME_STATE::GAME_CLEAR)
@@ -546,6 +564,8 @@ void GameScene::ChangeState(GAME_STATE _state)
 
 void GameScene::Update_Active(void)
 {
+	/* プレイ中の更新処理 */
+
 	// 移動操作時、ゲーム開始
 	if (input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_UP, Input::JOYPAD_NO::PAD1)
 		|| input_.IsTrgDown(InputManager::TYPE::PLAYER_MOVE_DOWN, Input::JOYPAD_NO::PAD1)
@@ -586,6 +606,8 @@ void GameScene::Update_Active(void)
 }
 void GameScene::Update_Info(void)
 {
+	/* "説明表示"の更新処理 */
+
 	if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
 		|| input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
 	{
@@ -614,6 +636,7 @@ void GameScene::Update_Info(void)
 }
 void GameScene::Update_Goal(void)
 {
+	/* "ゴール状態s"の更新処理 */
 	if (performTime_ >= 0.0f && isPerform_)
 	{
 		performTime_ -= sceneMng_.GetDeltaTime();
@@ -625,6 +648,7 @@ void GameScene::Update_Goal(void)
 }
 void GameScene::Update_Pause(void)
 {
+	/* "一時停止状態"の更新処理 */
 	// 一時停止状態の切替
 	if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
 		|| input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
@@ -647,6 +671,8 @@ void GameScene::Update_Pause(void)
 }
 void GameScene::Update_Clear(void)
 {
+	/* "ゲームクリア状態"の更新処理 */
+
 	if (performTime_ > 0.0f)
 	{
 		performTime_ -= sceneMng_.GetDeltaTime();
@@ -679,6 +705,8 @@ void GameScene::Update_Clear(void)
 }
 void GameScene::Update_GameOver(void)
 {
+	/* "ゲームオーバー状態"の更新処理 */
+
 	if (performTime_ > 0.0f)
 	{
 		performTime_ -= sceneMng_.GetDeltaTime();
@@ -712,6 +740,8 @@ void GameScene::Update_GameOver(void)
 
 void GameScene::SetStageType(void)
 {
+	/* ステージ状態の切替処理 */
+
 	preStageType_ = static_cast<int>(stage_->GetStageType());
 
 	// 時間を停止
@@ -763,9 +793,4 @@ void GameScene::SetStageType(void)
 
 	isSwapPlayer1_ = true;
 	ChangeState(GAME_STATE::ACTIVE);
-}
-
-void GameScene::DrawTimer(void)
-{
-	
 }

@@ -1,20 +1,22 @@
 #include "StageObjBase.h"
 #include "../Actor/ActorBase.h"
 #include "../../Common/Vector2.h"
+#include "../../Utility/UtilityMath.h"
 
 
-StageObjBase::StageObjBase(int _x, int _y, const VECTOR& _collisionSize, int _objType, float _alpha):
-	ActorBase::ActorBase(),
-	x(_x), y(_y),
-	collisionPos_(Vector2F(0.0f, 0.0f)),
-	collisionSize_(Vector2F(_collisionSize.x, _collisionSize.y)),
-	objType_(_objType), alpha_(_alpha)
+StageObjBase::StageObjBase(Vector2 _arrayPos, const VECTOR& _collisionSize, int _objType, float _alpha)
+	: ActorBase::ActorBase()
+	, arrayPos_(_arrayPos)
+	, collisionPos_(UtilityMath::VECTOR2F_ZERO)
+	, collisionSize_(Vector2F(_collisionSize.x, _collisionSize.y))
+	, objType_(_objType), alpha_(_alpha)
 {
 }
 
-void StageObjBase::Init(const VECTOR& _pos)
+void StageObjBase::Initialize(const VECTOR& _pos)
 {
-	ActorBase::Init();
+	/* 初期化処理 */
+	ActorBase::Initialize();
 
 	transform_.pos = VAdd(transform_.pos, _pos);
 
@@ -25,12 +27,13 @@ void StageObjBase::Init(const VECTOR& _pos)
 
 void StageObjBase::Draw(void)
 {
+	/* 描画処理 */
 	if (alpha_ < 1.0f)
 	{
+		SetUseLighting(FALSE);
+
 		// Zバッファへの書き込みを無効にして内側モデルを描画
 		SetWriteZBuffer3D(FALSE);
-
-		SetUseLighting(FALSE);
 
 		// モデルの１番目のメッシュの描画ブレンドモード
 		MV1SetMeshDrawBlendMode(transform_.modelId, 0, DX_BLENDMODE_ALPHA);
@@ -61,6 +64,7 @@ const ColliderBase* StageObjBase::GetOwnCollider(void)
 
 void StageObjBase::SetAlpha(float _alpha)
 {
+	/* モデルの透過率割り当て */
 	alpha_ = _alpha;
 	transform_.SetAlpha(_alpha);
 }

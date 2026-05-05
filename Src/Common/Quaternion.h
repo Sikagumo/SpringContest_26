@@ -15,6 +15,7 @@ public:
 	double y;
 	double z;
 
+
 	/* コンストラクタ */
 	Quaternion(void);
 	explicit Quaternion(const VECTOR& rad);
@@ -107,6 +108,7 @@ public:
 	/// @param angle 
 	/// @param axis 
 	void ToAngleAxis(float* angle, VECTOR* axis);
+
 
 private:
 

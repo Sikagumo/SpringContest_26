@@ -11,7 +11,7 @@ Fader::Fader(void)
 }
 
 
-void Fader::Init(void)
+void Fader::Initialize(void)
 {
 }
 

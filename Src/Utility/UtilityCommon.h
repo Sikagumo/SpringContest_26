@@ -68,14 +68,12 @@ public:
 	/// @param _vec 対象
 	/// @param _maxVec 最大値
 	/// @param _minVec 最小値
-	/// @return 
 	static bool WrapValue(Vector2& _vec, const Vector2& _maxVec, const Vector2& _minVec = {0, 0});
 
 	/// @brief 対象が最大値/最小値を超えたときに値を変える
 	/// @param _num 対象
 	/// @param _maxNum 最大値
 	/// @param _minNum 最小値
-	/// @return 
 	static bool WrapValue(int& _num, int _maxNum, int _minNum = 0);
 
 	/// @brief 対象が最大値/最小値を超えたときに値を変える

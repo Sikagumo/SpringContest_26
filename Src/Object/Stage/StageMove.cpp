@@ -12,7 +12,7 @@
 
 
 StageMove::StageMove(bool _isBack)
-	: StageBase::StageBase(((_isBack) ? TYPE::MOVE3D : TYPE::MOVE)
+	: StageBase::StageBase(((_isBack) ? STAGE_TYPE::MOVE3D : STAGE_TYPE::MOVE)
 						   , CsvManager::GetInstance().GetStageMoveMapNum())
 {
 }
@@ -40,7 +40,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 
 	// ƒvƒŒƒCƒ„[‚Q“o˜^
 	else if (objType == BLOCK_TYPE::PLAYER_HEIGHT
-			&& curStageType_ == TYPE::MOVE
+			&& curStageType_ == STAGE_TYPE::MOVE
 			&& UtilityMath::EqualsVZero(initialPlayersPos_[1]))
 	{
 		initialPlayersPos_[1] = pos;
@@ -49,11 +49,11 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	// ƒS[ƒ‹“o˜^
 	else if (objType == BLOCK_TYPE::GOAL)
 	{
-		ret = new StageObjGoal(_x, _y, _blockType);
-		ret->Init(pos);
+		ret = new StageObjGoal(Vector2(_x, _y), _blockType);
+		ret->Initialize(pos);
 		goalPos_ = ret->GetTransform().pos;
 
-		if (curStageType_ == TYPE::MOVE)
+		if (curStageType_ == STAGE_TYPE::MOVE)
 		{
 			goalPosBack_ = ret->GetTransform().pos;
 		}
@@ -62,8 +62,8 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	// •Ç“o˜^
 	else if (objType == BLOCK_TYPE::WALL)
 	{
-		ret = new StageObjWall(_x, _y, _blockType);
-		ret->Init(pos);
+		ret = new StageObjWall(Vector2(_x, _y), _blockType);
+		ret->Initialize(pos);
 
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
 
@@ -75,8 +75,8 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	//ƒgƒ‰ƒbƒv“o˜^
 	else if (objType == BLOCK_TYPE::TRAP)
 	{
-		ret = new StageObjTrap(_x, _y, _blockType);
-		ret->Init(pos);
+		ret = new StageObjTrap(Vector2(_x, _y), _blockType);
+		ret->Initialize(pos);
 
 		// F“o˜^
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
@@ -93,9 +93,9 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	// ‚’¼ˆÚ“®ƒgƒ‰ƒbƒv“o˜^
 	else if (objType == BLOCK_TYPE::TRAP_VEERTICAL_MOVE)
 	{
-		auto* vTrap = new StageObjTrapVerticalMove(_x, _y, _blockType);
+		auto* vTrap = new StageObjTrapVerticalMove(Vector2(_x, _y), _blockType);
 		vTrap->SetStage(this);
-		vTrap->Init(pos);      // ‚±‚ê‚ðŒÄ‚Î‚È‚¢‚Æ InitLoad ‚ª‘–‚ç‚¸•`‰æ‚³‚ê‚Ü‚¹‚ñ
+		vTrap->Initialize(pos);      // ‚±‚ê‚ðŒÄ‚Î‚È‚¢‚Æ InitLoad ‚ª‘–‚ç‚¸•`‰æ‚³‚ê‚Ü‚¹‚ñ
 		ret = vTrap;
 		// F“o˜^
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
@@ -111,9 +111,9 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 	//‰¡ˆÚ“®ƒgƒ‰ƒbƒv“o˜^
 	else if (objType == BLOCK_TYPE::TRAP_HORIZONTAL_MOVE)
 	{
-		auto* hTrap = new StageObjTrapHorizontalMove(_x, _y, _blockType);
+		auto* hTrap = new StageObjTrapHorizontalMove(Vector2(_x, _y), _blockType);
 		hTrap->SetStage(this);
-		hTrap->Init(pos);
+		hTrap->Initialize(pos);
 		ret = hTrap;
 
 		// F“o˜^
@@ -133,7 +133,7 @@ StageObjBase* StageMove::SetParam(int _blockType, int _x, int _y)
 StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alpha, bool _isCollision)
 {
 	// ‰œs‚ª‚È‚¢ê‡‚Ínull‚Å•Ô‚·
-	if (curStageType_ != TYPE::MOVE3D) { return nullptr; }
+	if (curStageType_ != STAGE_TYPE::MOVE3D) { return nullptr; }
 
 	StageObjBase* ret = nullptr;
 
@@ -154,16 +154,16 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alp
 	// ƒS[ƒ‹“o˜^
 	else if (objType == BLOCK_TYPE::GOAL)
 	{
-		ret = new StageObjGoal(_x, _y, _blockType);
-		ret->Init(pos);
+		ret = new StageObjGoal(Vector2(_x, _y), _blockType);
+		ret->Initialize(pos);
 		goalPosBack_ = ret->GetTransform().pos;
 	}
 
 	// •Ç“o˜^
 	else if (objType == BLOCK_TYPE::WALL)
 	{
-		ret = new StageObjWall(_x, _y, _blockType, _alpha, _isCollision);
-		ret->Init(pos);
+		ret = new StageObjWall(Vector2(_x, _y), _blockType, _alpha, _isCollision);
+		ret->Initialize(pos);
 		
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_BACK);
 
@@ -175,8 +175,8 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alp
 	//ƒgƒ‰ƒbƒv“o˜^
 	else if (objType == BLOCK_TYPE::TRAP)
 	{
-		ret = new StageObjTrap(_x, _y, _blockType);
-		ret->Init(pos);
+		ret = new StageObjTrap(Vector2(_x, _y), _blockType);
+		ret->Initialize(pos);
 
 		//ƒgƒ‰ƒbƒv‚ÌÀ•W‚ðƒŠƒXƒg‚É•Û‘¶‚·‚é
 		trapPositions_.push_back(ret->GetTransform().pos);
@@ -185,9 +185,9 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alp
 	else if (objType == BLOCK_TYPE::TRAP_VEERTICAL_MOVE) // —ñ‹“Œ^‚É’Ç‰Á‚µ‚½–¼‘O
 	{
 		// ƒXƒe[ƒW‚Ìƒ|ƒCƒ“ƒ^‚ð“n‚·•K—v‚ª‚ ‚éê‡‚ÍAƒRƒ“ƒXƒgƒ‰ƒNƒ^‚âInit‚ð’²®
-		auto* vTrap = new StageObjTrapVerticalMove(_x, _y, _blockType);
+		auto* vTrap = new StageObjTrapVerticalMove(Vector2(_x, _y), _blockType);
 		vTrap->SetStage(this); // •Ç”»’è‚Ì‚½‚ß‚ÉŽ©•ª(Stage)‚ð‹³‚¦‚é
-		vTrap->Init(pos);
+		vTrap->Initialize(pos);
 		ret = vTrap;
 
 		// ¦“®‚­ƒgƒ‰ƒbƒv‚Ìê‡A‚±‚±‚Å push_back ‚µ‚½ pos ‚ÍŒÅ’è’l‚É‚È‚Á‚Ä‚µ‚Ü‚¢‚Ü‚·B
@@ -197,9 +197,9 @@ StageObjBase* StageMove::SetParamBack(int _blockType, int _x, int _y, float _alp
 	//‰¡ˆÚ“®ƒgƒ‰ƒbƒv“o˜^
 	else if (objType == BLOCK_TYPE::TRAP_HORIZONTAL_MOVE)
 	{
-		auto* hTrap = new StageObjTrapHorizontalMove(_x, _y, _blockType);
+		auto* hTrap = new StageObjTrapHorizontalMove(Vector2(_x, _y), _blockType);
 		hTrap->SetStage(this);
-		hTrap->Init(pos);
+		hTrap->Initialize(pos);
 		ret = hTrap;
 		trapPositions_.push_back(ret->GetTransform().pos);
 	}

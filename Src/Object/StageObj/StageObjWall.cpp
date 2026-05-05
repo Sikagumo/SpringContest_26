@@ -2,17 +2,18 @@
 #include <DxLib.h>
 #include "./StageObjBase.h"
 #include "../Collider/ColliderModel.h"
-#include "../Collider/ColliderPlane.h"
 #include "../../Manager/ResourceManager.h"
 
-StageObjWall::StageObjWall(int _x, int _y, int _objType, float _alpha, bool _isCollision) :
-	StageObjBase::StageObjBase(_x, _y, { COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType, _alpha),
-	isCollision_(_isCollision)
+StageObjWall::StageObjWall(Vector2 _arrayPos, int _objType, float _alpha, bool _isCollision)
+	: StageObjBase::StageObjBase(_arrayPos, VGet(COLLISION_SIZE, COLLISION_SIZE, COLLISION_SIZE)
+								 , _objType, _alpha)
+	, isCollision_(_isCollision)
 {
 }
 
 void StageObjWall::InitLoad(void)
 {
+	/* 初回読み込み処理 */
 	transform_.SetModel(resMng_.LoadModelDuplicate(ResourceManager::SRC::MODEL_STAGE_STONE));
 
 	transform_.SetAlpha(alpha_);
@@ -20,21 +21,20 @@ void StageObjWall::InitLoad(void)
 
 void StageObjWall::InitTransform(void)
 {
-	transform_.InitTransform(BLOCK_SCALE,
-							 Quaternion::Identity(), Quaternion::Identity());
+	/* オブジェクトのトランスフォーム初期化 */
+	transform_.InitTransform(BLOCK_SCALE
+							 , Quaternion::Identity()
+							 , Quaternion::Identity());
 }
 
 void StageObjWall::InitCollider(void)
 {
-	if (isCollision_)
-	{
-		// 3D平面コライダ登録
-		//ColliderPlane* plane = new ColliderPlane(ColliderBase::TAG::STAGE, &transform_,
-												 //COLLISION_SIZE_X, COLLISION_SIZE_Y, false);
+	/* 当たり判定初期化処理　*/
 
-		//ownColliders_.emplace(static_cast<int>(ColliderBase::SHAPE::PLANE), plane);
+	// 衝突させない場合、処理終了
+	if (!isCollision_) { return; }
 
-		ColliderModel* model = new ColliderModel(ColliderBase::TAG::STAGE, &transform_);
-		ownColliders_.emplace(static_cast<int>(ColliderBase::SHAPE::MODEL), model);
-	}
+
+	ColliderModel* model = new ColliderModel(ColliderBase::TAG::STAGE, &transform_);
+	ownColliders_.emplace(static_cast<int>(ColliderBase::SHAPE::MODEL), model);
 }

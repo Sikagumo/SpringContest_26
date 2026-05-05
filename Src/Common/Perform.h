@@ -24,7 +24,7 @@ public:
     ~Perform(void) = default;
 
 
-    void Init(void);
+    void Initialize(void);
 
     void Update(void);
 

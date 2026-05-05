@@ -5,13 +5,13 @@
 #include "../Common/Transform.h"
 
 
-ColliderModel::ColliderModel(TAG tag, const Transform* follow)
-	:
-	ColliderBase(SHAPE::MODEL, tag, follow)
+ColliderModel::ColliderModel(TAG _tag, const Transform* _follow)
+	: ColliderBase(SHAPE::MODEL, _tag, _follow)
+	, excludeFrameIds_{}, targetFrameIds_{}
 {
 }
 
-void ColliderModel::AddExcludeFrameIds(const std::string& name)
+void ColliderModel::AddExcludeFrameIds(const std::string& _name)
 {
 	// フレーム数を取得
 	int num = MV1GetFrameNum(follow_->modelId);
@@ -20,7 +20,7 @@ void ColliderModel::AddExcludeFrameIds(const std::string& name)
 		// フレーム名称を取得
 		std::string frameName = MV1GetFrameName(follow_->modelId, i);
 
-		if (frameName.find(name) != std::string::npos)
+		if (frameName.find(_name) != std::string::npos)
 		{
 			// 除外フレームに追加(ホワイトリスト)
 			excludeFrameIds_.emplace_back(i);
@@ -33,11 +33,12 @@ void ColliderModel::ClearExcludeFrame(void)
 	excludeFrameIds_.clear();
 }
 
-bool ColliderModel::IsExcludeFrame(int frameIdx) const
+bool ColliderModel::IsExcludeFrame(int _frameIdx) const
 {
 	// 除外判定
 	if (std::find(excludeFrameIds_.begin(),
-				  excludeFrameIds_.end(),frameIdx) != excludeFrameIds_.end())
+				  excludeFrameIds_.end(),
+				  _frameIdx) != excludeFrameIds_.end())
 	{
 		// 除外に該当する
 		return true;
@@ -79,26 +80,27 @@ bool ColliderModel::IsTargetFrame(int _frameIdx) const
 	return false;
 }
 
-MV1_COLL_RESULT_POLY ColliderModel::GetNearestHitPolyLine(const VECTOR& start, const VECTOR& end, bool isExclude, bool isTarget) const
+MV1_COLL_RESULT_POLY ColliderModel::GetNearestHitPolyLine(const VECTOR& _start, const VECTOR& _end
+														  , bool _isExclude, bool _isTarget) const
 {
 	// 線分で衝突判定
 	auto hits = MV1CollCheck_LineDim(
 		follow_->modelId,
 		-1,
-		start,
-		end
+		_start,
+		_end
 	);
 
 	// 追従対象に一番近い衝突点を探す
 	bool isCollision = false;
-	MV1_COLL_RESULT_POLY hitPoly;
+	MV1_COLL_RESULT_POLY hitPoly = MV1_COLL_RESULT_POLY();
 	double minDist = DBL_MAX;
 
 	for (int i = 0; i < hits.HitNum; i++)
 	{
 		const auto& hit = hits.Dim[i];
 
-		if (isExclude)
+		if (_isExclude)
 		{
 			// 除外フレームは無視する
 			if (IsExcludeFrame(hit.FrameIndex)) { continue; }
@@ -112,7 +114,7 @@ MV1_COLL_RESULT_POLY ColliderModel::GetNearestHitPolyLine(const VECTOR& start, c
 		isCollision = true;
 
 		// 距離判定
-		float dist = VSize(VSub(hit.HitPosition, start));
+		float dist = VSize(VSub(hit.HitPosition, _start));
 
 		if (minDist > dist/* && minDist > VIEW_NEAR*/)
 		{

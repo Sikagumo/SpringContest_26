@@ -9,8 +9,8 @@
 #include "./CSV/CsvManager.h"
 #include "./Common/FpsController.h"
 
-// シングルトンインスタンス
 Application* Application::instance_ = nullptr;
+
 
 
 void Application::CreateInstance(void)
@@ -20,7 +20,7 @@ void Application::CreateInstance(void)
 	// インスタンス未生成時 生成
 	if (instance_ == nullptr) { instance_ = new Application(); };
 
-	instance_->Init(); // 初期化処理
+	instance_->Initialize();
 }
 
 Application::Application(void)
@@ -30,15 +30,21 @@ Application::Application(void)
 {
 }
 
-void Application::Init(void)
+void Application::Initialize(void)
 {
 	/* 初期化処理 */
 
-	// ゲーム名
+	const char* GAME_NAME	= "ちぇんじでGO";
+	constexpr int COLOR_BIT = 32;
+	static constexpr int FRAME_RATE = 60;
+
+	// ゲームをウィンドウで起動するか否か
+	static constexpr bool IS_WINDOW = true;
+
+
 	SetWindowText(GAME_NAME);
 
 	// ウィンドウサイズ
-	const int COLOR_BIT = 32;
 	SetGraphMode(SCREEN_SIZE_X, SCREEN_SIZE_Y, COLOR_BIT);
 
 	ChangeWindowMode(IS_WINDOW);
@@ -96,11 +102,13 @@ void Application::Run(void)
 		// 描画処理
 		SceneManager::GetInstance().Draw();
 
+#ifdef _DEBUG
 		if (SceneManager::GetInstance().GetIsDebugMode())
 		{
 			// 平均FPS描画
 			fpsController_->Draw();
 		}
+#endif // _DEBUG
 
 		ScreenFlip();
 
@@ -109,16 +117,16 @@ void Application::Run(void)
 	}
 }
 
-void Application::Destroy(void)
+void Application::DestroyInstance(void)
 {
 	/*　インスタンス削除処理　*/
 
 	/* 各マネージャインスタンスのメモリ解放処理 */
-	SceneManager::GetInstance().Destroy();
-	SoundManager::GetInstance().Destroy();
-	ResourceManager::GetInstance().Destroy();
-	CsvManager::GetInstance().Destroy();
-	InputManager::GetInstance().Destroy();
+	SceneManager::GetInstance().DestroyInstance();
+	SoundManager::GetInstance().DestroyInstance();
+	ResourceManager::GetInstance().DestroyInstance();
+	CsvManager::GetInstance().DestroyInstance();
+	InputManager::GetInstance().DestroyInstance();
 
 
 	// Effekseerを終了する。
@@ -137,6 +145,10 @@ void Application::Destroy(void)
 void Application::InitEffekseer(void)
 {
 	/* Effekseerの初期化 */
+
+	// エフェクト表示最大数
+	static constexpr int EFFECT_VIRW_MAX = 8000;
+
 	if (Effekseer_Init(EFFECT_VIRW_MAX) == -1)
 	{
 		DxLib_End();

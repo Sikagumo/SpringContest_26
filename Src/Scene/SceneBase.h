@@ -1,4 +1,5 @@
 #pragma once
+#include <array>
 class ResourceManager;
 class SceneManager;
 class InputManager;
@@ -9,43 +10,34 @@ class SceneBase
 
 public:
 
-	// コンストラクタ
 	SceneBase(void);
-
-	// デストラクタ
 	virtual ~SceneBase(void) = 0;
 
-	// 初期化
-	virtual void Init(void) = 0;
+	virtual void Initialize(void) = 0;
+	virtual void Update(void)	  = 0;
+	virtual void Draw(void)		  = 0;
+	virtual void Release(void)	  = 0;
 
-	// 更新
-	virtual void Update(void) = 0;
-
-	// 描画
-	virtual void Draw(void) = 0;
-
-	// 解放
-	virtual void Release(void) = 0;
 
 protected:
 
 	enum class UI_TEXT
 	{
-		PAUSE_MAIN,
-		PAUSE_SUB,
-		DECISION_SUB,
-		GAME_START,
-		GAME_END,
-		GAME_OVER,
-		GAME_CLEAR,
-		STAGE_SELECT,
-		TIME_LIMIT,
-		TIME_CLEAR,
-		HIGH_SCORE,
+		PAUSE_MAIN,	  // 一時停止のメインテキスト
+		PAUSE_SUB,	  // 一時停止のサブテキスト
+		DECISION_SUB, // 決定のサブテキスト
+		GAME_START,	  // ゲーム開始
+		GAME_END,	  // ゲーム終了
+		GAME_OVER,	  // ゲームオーバー
+		GAME_CLEAR,	  // ゲームクリア
+		STAGE_SELECT, // ステージ選択
+		TIME_LIMIT,	  // タイムリミット
+		TIME_CLEAR,	  // タイムクリア
+		HIGH_SCORE,	  // ハイスコア
 
 		MAX
 	};
-	int uiText_[static_cast<int>(UI_TEXT::MAX)];
+	std::array<int, static_cast<int>(UI_TEXT::MAX)> uiText_;
 
 	// リソース管理
 	ResourceManager& resMng_;

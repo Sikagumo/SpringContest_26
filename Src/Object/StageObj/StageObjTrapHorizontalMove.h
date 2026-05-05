@@ -1,12 +1,14 @@
 #pragma once
 #include "StageObjBase.h"
+#include "../../Common/Vector2.h"
 class StageBase;
 
 /// @brief 横移動トラップクラス
 class StageObjTrapHorizontalMove : public StageObjBase
 {
 public:
-    StageObjTrapHorizontalMove(int _x, int _y, int _objType, float _alpha = 1.0f);
+
+    StageObjTrapHorizontalMove(Vector2 _arrayPos, int _objType, float _alpha = 1.0f);
     virtual ~StageObjTrapHorizontalMove(void) = default;
 
     /// @brief 初期化
@@ -24,8 +26,7 @@ private:
     // 定数設定
     static constexpr float COLLISION_RADIUS = 40.0f;
     static constexpr float BLOCK_SCALE = 0.15f;
-    static constexpr float COLLISION_SIZE_X = 10.0f;
-    static constexpr float COLLISION_SIZE_Y = 10.0f;
+    static constexpr float COLLISION_SIZE = 10.0f;
 
     static constexpr VECTOR MODEL_OFFSET = { 0.0f, 0.0f, 0.0f };
 

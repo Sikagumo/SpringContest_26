@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include "../Application.h"
 #include "../CSV/CsvManager.h"
+#include "../Utility/UtilityMath.h"
 
 ResourceManager* ResourceManager::instance_ = nullptr;
 
@@ -38,7 +39,7 @@ void ResourceManager::CreateInstance(void)
 		instance_ = new ResourceManager();
 	}
 
-	instance_->Init();
+	instance_->Initialize();
 }
 
 ResourceManager::ResourceManager(void)
@@ -47,15 +48,9 @@ ResourceManager::ResourceManager(void)
 }
 
 
-void ResourceManager::Init(void)
-{
-	SetResource(); // リソース取得
-}
-
-void ResourceManager::SetResource(void)
+void ResourceManager::Initialize(void)
 {
 	using LOAD_TYPE = Resource::LOAD_TYPE;
-	int allNum, numX, numY, sizeX, sizeY = 0;
 
 	/* 画像 */
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_TITLE, PATH_IMAGE + "Title.png");
@@ -64,49 +59,47 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::IMAGE, SRC::IMG_PLAYER_ARROW, PATH_IMAGE + "Arrow.png");
 
 	/* 複数画像 */
-	allNum = 3;
-	numX = 1;
-	numY = 3;
-	sizeX = 440;
-	sizeY = 145;
+
+	// 画像枚数
+	int imagesAllNum = 0;
+
+	// １画像の横枚数
+	int imagesNumX = 0;
+	int imagesNumY = 0;
+
+	imagesAllNum = 3;
+	imagesNumX = 1;
+	imagesNumY = 3;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI_TITLE, PATH_IMAGE + "TitleUI.png"
-				 , allNum, numX, numY, sizeX, sizeY);
+		, imagesAllNum, imagesNumX, imagesNumY);
 
-	allNum = 5;
-	numX = 3;
-	numY = 2;
-	sizeX = 522;
-	sizeY = 823;
+	imagesAllNum = 5;
+	imagesNumX = 3;
+	imagesNumY = 2;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_UI_SELECT, PATH_IMAGE + "SelectUI.png"
-				 , allNum, numX, numY, sizeX, sizeY);
+		, imagesAllNum, imagesNumX, imagesNumY);
 
-	allNum = 11;
-	numX = 1;
-	numY = 11;
-	sizeX = 1024;
-	sizeY = 112;
+	imagesAllNum = 11;
+	imagesNumX = 1;
+	imagesNumY = 11;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT, PATH_IMAGE + "Text.png"
-				 , allNum, numX, numY, sizeX, sizeY);
+		, imagesAllNum, imagesNumX, imagesNumY);
 
-	allNum = 11;
-	numX = 11;
-	numY = 1;
-	sizeX = 80;
-	sizeY = 80;
+	imagesAllNum = 11;
+	imagesNumX = 11;
+	imagesNumY = 1;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_TEXT_TIME, PATH_IMAGE + "TextTime.png"
-				 , allNum, numX, numY, sizeX, sizeY);
+		, imagesAllNum, imagesNumX, imagesNumY);
 
-	allNum = 10;
-	numX = 2;
-	numY = 5;
-	sizeX = (3020 / numX);
-	sizeY = (5085 / numY);
+	imagesAllNum = 10;
+	imagesNumX = 2;
+	imagesNumY = 5;
 	_SetResource(LOAD_TYPE::IMAGES, SRC::IMGS_INFO, PATH_IMAGE + "Info.png"
-				 , allNum, numX, numY, sizeX, sizeY);
+		, imagesAllNum, imagesNumX, imagesNumY);
 
 	/* モデル */
- 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_MOVE, PATH_MODEL + "Player/PlayerMove.mv1");
- 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_GRAVITY, PATH_MODEL + "Player/PlayerGravity.mv1");
+	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_MOVE, PATH_MODEL + "Player/PlayerMove.mv1");
+	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_PLAYER_GRAVITY, PATH_MODEL + "Player/PlayerGravity.mv1");
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_SKYDOME, PATH_MODEL + "SkyDome/SkyDome.mv1");
 
 	_SetResource(LOAD_TYPE::MODEL, SRC::MODEL_STAGE_BLANK, PATH_MODEL + "Blocks/Block_Blank.mv1");
@@ -118,7 +111,7 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::SOUND, SRC::BGM_TITLE, PATH_BGM + "TitleBGM.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::BGM_GAME, PATH_BGM + "GameBGM.mp3");
 
-	/* サウンドエフェクト */
+	/* 効果音 */
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_CLICK, PATH_SE + "Click.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_SELECT, PATH_SE + "Select.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_CHANGE, PATH_SE + "Change.mp3");
@@ -127,10 +120,10 @@ void ResourceManager::SetResource(void)
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_COUNT_SHORT, PATH_SE + "CountDownShort.mp3");
 	_SetResource(LOAD_TYPE::SOUND, SRC::SE_DAMAGE, PATH_SE + "Damage.mp3");
 }
-
 void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path
-								   , int _allNum, int _numX, int _numY, int _sizeX, int _sizeY)
+								   , int _allNum, int _numX, int _numY)
 {
+	Resource* ret = new Resource();
 	Resource res;
 	if (_allNum == -1)
 	{
@@ -141,7 +134,7 @@ void ResourceManager::_SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std:
 	{
 		// 複数画像読み込み
 		resourcesMap_.emplace(_src,
-			Resource(_loadType, _path, _allNum, _numX, _numY, _sizeX, _sizeY));
+			Resource(_loadType, _path, _allNum, _numX, _numY));
 	}
 	
 }
@@ -169,8 +162,7 @@ void ResourceManager::Release(void)
 		loadedMap_.clear();
 	}
 }
-
-void ResourceManager::Destroy(void)
+void ResourceManager::DestroyInstance(void)
 {
 	/*　インスタンス削除処理　*/
 	instance_->Release();
@@ -178,10 +170,10 @@ void ResourceManager::Destroy(void)
 }
 
 
-Resource ResourceManager::Load(SRC src)
+Resource ResourceManager::Load(SRC _src)
 {
-	// 読み込み処理
-	Resource* res = _Load(src);
+	/* 読み込み処理 */
+	Resource* res = _Load(_src);
 
 	if (res == nullptr) return Resource();
 
@@ -191,6 +183,7 @@ Resource ResourceManager::Load(SRC src)
 }
 const int ResourceManager::LoadHandleId(SRC _src)
 {
+	// リソースの
 	return Load(_src).GetHandleId();
 }
 void ResourceManager::LoadHandleIds(SRC _src, int* _target)

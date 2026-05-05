@@ -13,28 +13,21 @@
 #include "../Common/Transform.h"
 
 
-StageBase::StageBase(TYPE stageType, int mapNum, int mapBackNum)
+StageBase::StageBase(STAGE_TYPE stageType, int mapNum, int mapBackNum)
 	: resMng_(ResourceManager::GetInstance())
-	,sceneMng_(SceneManager::GetInstance())
-	,csvMng_(CsvManager::GetInstance())
-	,curStageType_(stageType), curStageNum_(-1)
-	,mapNumMax_(mapNum), mapBackNumMax_(mapBackNum)
-	,goalPos_(UtilityMath::VECTOR_ZERO), goalPosBack_(UtilityMath::VECTOR_ZERO)
+	, sceneMng_(SceneManager::GetInstance())
+	, csvMng_(CsvManager::GetInstance())
+	, curStageType_(stageType), curStageNum_(-1)
+	, mapNumMax_(mapNum), mapBackNumMax_(mapBackNum)
+	, goalPos_(UtilityMath::VECTOR_ZERO), goalPosBack_(UtilityMath::VECTOR_ZERO)
+	, placeFrontList_{}, placeBackList_{}, placeBackBlankList_{}
+	, trapPositions_{}
 {
-	placeFrontList_.clear();
-	placeBackList_.clear();
-	placeBackBlankList_.clear();
-	backGroundList_.clear();
-	trapPositions_.clear();
 	initialPlayersPos_.fill(UtilityMath::VECTOR_ZERO);
 }
 
-void StageBase::Init(int _stageNum)
+void StageBase::Initialize(int _stageNum)
 {
-	for (VECTOR& pos : initialPlayersPos_)
-	{
-		pos = UtilityMath::VECTOR_ZERO;
-	}
 	goalPos_ = goalPosBack_ = UtilityMath::VECTOR_ZERO;
 
 	placeFrontList_.clear();
@@ -42,6 +35,7 @@ void StageBase::Init(int _stageNum)
 	placeBackBlankList_.clear();
 	backGroundList_.clear();
 	trapPositions_.clear();
+
 	initialPlayersPos_.fill(UtilityMath::VECTOR_ZERO);
 
 	// ステージ割り当て
@@ -61,8 +55,9 @@ void StageBase::StageChoice(int _stageNum)
 	// ステージ配置処理
 	SetBlockTypeList(curStageNum_, CsvManager::STAGE_X, CsvManager::STAGE_Y);
 
-	if (curStageType_ == TYPE::MOVE3D ||
-		curStageType_ == TYPE::GRAVITY3D)
+	/* 3Dステージ時の処理 */
+	if (curStageType_ == STAGE_TYPE::MOVE3D ||
+		curStageType_ == STAGE_TYPE::GRAVITY3D)
 	{
 		// ステージ奥配置処理
 		SetBlockBackTypeList(curStageNum_, CsvManager::STAGE_X, CsvManager::STAGE_Y);
@@ -236,13 +231,13 @@ void StageBase::SetBlockTypeList(int _mapType, int _xMax, int _yMax)
 		{
 			mapNum = -1;
 
-			if (curStageType_ == TYPE::MOVE ||
-				curStageType_ == TYPE::MOVE3D)
+			if (curStageType_ == STAGE_TYPE::MOVE ||
+				curStageType_ == STAGE_TYPE::MOVE3D)
 			{
 				mapNum = csvMng_.GetStageMoveNum(mapType, x, y);
 			}
-			else if (curStageType_ == TYPE::GRAVITY ||
-					 curStageType_ == TYPE::GRAVITY3D)
+			else if (curStageType_ == STAGE_TYPE::GRAVITY ||
+					 curStageType_ == STAGE_TYPE::GRAVITY3D)
 			{
 				mapNum = csvMng_.GetStageGravityNum(mapType, x, y);
 			}
@@ -276,13 +271,13 @@ void StageBase::SetBlockBackTypeList(int _mapType, int _xMax, int _yMax)
 		{
 			mapNum = -1;
 
-			if (curStageType_ == TYPE::MOVE3D)
+			if (curStageType_ == STAGE_TYPE::MOVE3D)
 			{
-				mapNum = csvMng_.GetStageBackMoveNum(mapjType, x, y);
+				mapNum = csvMng_.GetStageMoveBackNum(mapjType, x, y);
 			}
-			else if (curStageType_ == TYPE::GRAVITY3D)
+			else if (curStageType_ == STAGE_TYPE::GRAVITY3D)
 			{
-				mapNum = csvMng_.GetStageBackGravityNum(mapjType, x, y);
+				mapNum = csvMng_.GetStageGravityBackNum(mapjType, x, y);
 			}
 
 			// ステージ情報割り当て
@@ -321,9 +316,9 @@ void StageBase::SetBackGroundList(int _xMax, int _yMax)
 		for (int x = 0; x < _xMax; x++)
 		{
 			// ステージ情報割り当て
-			StageObjWall* param = new StageObjWall(x, y, static_cast<int>(BLOCK_TYPE::WALL), BACK_ALPHA, false);
+			StageObjWall* param = new StageObjWall(Vector2(x, y), static_cast<int>(BLOCK_TYPE::WALL), BACK_ALPHA, false);
 
-			param->Init(VGet((x * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
+			param->Initialize(VGet((x * (BLOCK_OFFSET.x * BLOCK_SCALE) + STAGE_POS.x),
 							 (y * (BLOCK_OFFSET.y * BLOCK_SCALE) + STAGE_POS.y),
 							 posZ));
 

@@ -5,8 +5,9 @@
 #include "../../Utility/UtilityMath.h"
 #include "../Stage/StageBase.h"
 
-StageObjTrapVerticalMove::StageObjTrapVerticalMove(int _x, int _y, int _objType, float _alpha) :
-	StageObjBase::StageObjBase(_x, _y, { COLLISION_SIZE_X, COLLISION_SIZE_Y }, _objType, _alpha)
+StageObjTrapVerticalMove::StageObjTrapVerticalMove(Vector2 _arrayPos, int _objType, float _alpha)
+    : StageObjBase::StageObjBase(_arrayPos, VGet(COLLISION_SIZE, COLLISION_SIZE, COLLISION_SIZE)
+                                 , _objType, _alpha)
 {
 }
 

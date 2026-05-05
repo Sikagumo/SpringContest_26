@@ -6,7 +6,7 @@
 #include "./UtilityMath.h"
 
 
-void UtilityCommon::ChangeString(const std::string& _text, int& target, int minNum)
+void UtilityCommon::ChangeString(const std::string& _text, int& _target, int _minNum)
 {
     /* 文字列→int */
 
@@ -18,7 +18,7 @@ void UtilityCommon::ChangeString(const std::string& _text, int& target, int minN
     // 文字が空白のとき、最小値にする
     if (_text == "" || _text == " ")
     {
-        target = minNum;
+        _target = _minNum;
         return;
     }
 
@@ -44,10 +44,10 @@ void UtilityCommon::ChangeString(const std::string& _text, int& target, int minN
         int num = stoi(txt);
 
         // 最小値より小さいとき最小値にする
-        num = ((num < minNum) ? minNum : num);
+        num = ((num < _minNum) ? _minNum : num);
 
         // 数値に反映
-        target = num;
+        _target = num;
     }
     else
     {
@@ -57,47 +57,47 @@ void UtilityCommon::ChangeString(const std::string& _text, int& target, int minN
     }
 }
 
-void UtilityCommon::ChangeString(const std::string& text, int& target)
+void UtilityCommon::ChangeString(const std::string& _text, int& _target)
 {
     /* 文字列→int */
 
-    std::string txt = "";
+    std::string text = "";
 
     // マイナス
     const char& minus = *"-";
 
 
     // 文字が空白のとき、0にする
-    if (text == "" || text == " ")
+    if (_text == "" || _text == " ")
     {
-        target = 0;
+        _target = 0;
         return;
     }
 
-    for (char t : text)
+    for (char txt : text)
     {
         // 数字・マイナスではない文字列のとき、終了
-        if (!isdigit(static_cast<unsigned char>(t)) &&
-            t != minus)
+        if (!isdigit(static_cast<unsigned char>(txt)) &&
+            txt != minus)
         {
             break;
         }
 
         // 文字に現在の単語を追加 (文章の末尾の余分な文字対策)
-        txt += t;
+        text += txt;
     }
     
 
-    if (!txt.empty())
+    if (!text.empty())
     {
         // 文字列→int変換
-        int num = stoi(txt);
+        int num = stoi(text);
 
         // 最小値より小さいとき最小値にする
         num = ((num < 0) ? 0 : num);
 
         // 数値に反映
-        target = num;
+        _target = num;
     }
     else
     {
@@ -107,11 +107,11 @@ void UtilityCommon::ChangeString(const std::string& text, int& target)
     }
 }
 
-void UtilityCommon::ChangeString(const std::string& text, float& target, float minNum)
+void UtilityCommon::ChangeString(const std::string& _text, float& _target, float _minNum)
 {
     /* 文字列→float */
 
-    std::string txt = "";
+    std::string text = "";
 
     // 小数点
     const char& dot = *".";
@@ -121,35 +121,35 @@ void UtilityCommon::ChangeString(const std::string& text, float& target, float m
 
 
     // 文字が空白のとき、最小値の文字列にする
-    if (text == "" || text == " ")
+    if (_text == "" || _text == " ")
     {
-        target = minNum;
+        _target = _minNum;
         return;
     }
 
-    for (auto t : text)
+    for (auto txt : _text)
     {
         // 数字・小数点・マイナスではない文字列のとき、終了
-        if (!isdigit(static_cast<unsigned char>(t)) &&
-            t != dot && t != minus)
+        if (!isdigit(static_cast<unsigned char>(txt)) &&
+            txt != dot && txt != minus)
         {
             break;
         }
 
         // 文字に現在の単語を追加 (文章の末尾の余分な文字対策)
-        txt += t;
+        txt += txt;
     }
 
-    if (!txt.empty())
+    if (!text.empty())
     {
         // 文字列→float変換
-        float num = stof(txt);
+        float num = stof(text);
 
         // 最小値より小さいとき最小値にする
-        num = ((num < minNum) ? minNum : num);
+        num = ((num < _minNum) ? _minNum : num);
 
         // 数値に反映
-        target = num;
+        _target = num;
     }
     else
     {
@@ -160,12 +160,12 @@ void UtilityCommon::ChangeString(const std::string& text, float& target, float m
     }
 }
 
-void UtilityCommon::ChangeString(const std::string& text, float& target)
+void UtilityCommon::ChangeString(const std::string& _text, float& _target)
 {
     /* 文字列→float */
 
     /* 文字列→float */
-    std::string txt = "";
+    std::string text = "";
 
     // 小数点
     const char& dot = *".";
@@ -175,36 +175,36 @@ void UtilityCommon::ChangeString(const std::string& text, float& target)
 
 
     // 文字が空白のとき、0にする
-    if (text == "" || text == " ")
+    if (_text == "" || _text == " ")
     {
-        txt = std::to_string(0.0f);
+        text = std::to_string(0.0f);
         return;
     }
 
 
-    for (auto t : text)
+    for (auto txt : _text)
     {
         // 数字・小数点・マイナスではない文字列のとき、終了
-        if (!isdigit(static_cast<unsigned char>(t)) &&
-            t != dot && t != minus)
+        if (!isdigit(static_cast<unsigned char>(txt)) &&
+            txt != dot && txt != minus)
         {
             break;
         }
 
         // 文字に現在の単語を追加 (文章の末尾の余分な文字対策)
-        txt += t;
+        txt += txt;
     }
 
-    if (!txt.empty())
+    if (!text.empty())
     {
         // 文字列→float変換
-        float num = stof(txt);
+        float num = stof(text);
 
         // 最小値より小さいとき最小値にする
         num = ((num < 0.0f) ? 0.0f : num);
 
         // 数値に反映
-        target = num;
+        _target = num;
     }
     else
     {
@@ -268,6 +268,7 @@ bool UtilityCommon::WrapValue(Vector2& _vec, const Vector2& _maxVec, const Vecto
 }
 bool UtilityCommon::WrapValue(int& _num, int _maxNum, int _minNum)
 {
+    /* 最小値以上→最大値、最大値以上→最小値に変換 */
     bool isWrap = false;
 
     // 最小値を超えている場合は最大値に、最大値を超えている場合は最小値で返す
@@ -286,6 +287,7 @@ bool UtilityCommon::WrapValue(int& _num, int _maxNum, int _minNum)
 }
 bool UtilityCommon::WrapValue(float& _num, float _maxNum, float _minNum)
 {
+    /* 最小値以上→最大値、最大値以上→最小値に変換 */
     bool isWrap = false;
 
     // 最小値を超えている場合は最大値に、最大値を超えている場合は最小値で返す

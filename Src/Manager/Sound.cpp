@@ -3,22 +3,20 @@
 #include <algorithm>
 #include "./ResourceManager.h"
 
-Sound::Sound(void):
-	sound_(SoundInfo()),
-	resMng_(ResourceManager::GetInstance())
+Sound::Sound(void)
+	: sound_(SoundInfo())
 {
-
 }
-Sound::Sound(TYPE type, int _src, int _handle, bool _isBGM):
-	sound_(SoundInfo(type, _src, _handle, _isBGM)),
-	resMng_(ResourceManager::GetInstance())
+Sound::Sound(TYPE type, int _src, int _handle, bool _isBGM)
+	: sound_(SoundInfo(type, _src, _handle, _isBGM))
 {
-
 }
 
 
-void Sound::Update(VECTOR pos)
+void Sound::Update(VECTOR _pos)
 {
+	/* 更新処理 */
+
 	// 3Dではない、未割当時に処理終了
 	if (sound_.type != TYPE::SOUND_3D ||
 		CheckSoundMem(sound_.handle) == -1) { return; }
@@ -29,12 +27,13 @@ void Sound::Update(VECTOR pos)
 	if (soundPos == -1) { return; }
 
 	// 座標割り当て
-	sound_.pos = pos;
+	sound_.pos = _pos;
 }
 
-void Sound::Load(void)
+void Sound::Load(void)const
 {
-	if (sound_.type == TYPE::NONE) return;
+	/* 初回読み込み処理 */
+	if (sound_.type == TYPE::NONE) { return; }
 
 	// 3Dサウンド時に、3Dサウンドのフラグ割り当て
 	SetCreate3DSoundFlag((sound_.type == TYPE::SOUND_3D));	
@@ -43,6 +42,8 @@ void Sound::Load(void)
 
 bool Sound::Play(TIMES times, bool _isPitch, int _pitchRange, bool isForce)
 {
+	/* 音声再生処理 */
+
 	sound_.isPlayOld = sound_.isPlay;
 
 	if (sound_.type != TYPE::SOUND_2D ||
@@ -73,10 +74,9 @@ bool Sound::Play(TIMES times, bool _isPitch, int _pitchRange, bool isForce)
 	// 音声のピッチをランダムで変更しソースを再読み込み
 	if (_isPitch)
 	{
-		const int range = _pitchRange;
-		int rand = GetRand(range + range) - (range / 2);
+		int rand = GetRand(_pitchRange + _pitchRange) - (_pitchRange / 2);
 		SetCreateSoundPitchRate(static_cast<float>(rand) * MUSICAL_SCALE_HALF);
-		sound_.handle = LoadSoundMem(resMng_.GetHandlePath(sound_.src).c_str());
+		sound_.handle = LoadSoundMem(ResourceManager::GetInstance().GetHandlePath(sound_.src).c_str());
 	}
 
 	// サウンド割り当て判定
@@ -190,19 +190,13 @@ bool Sound::CheckSoundHandle(void)
 	return true;
 }
 
-bool Sound::IsLoad(void)
-{
-	// ハンドルが読み込まれている時、true
-	return (sound_.handle != -1);
-}
-
-void Sound::SetVolume(float per)
+void Sound::SetVolume(float _per)const
 {
 	// 音量の上限・下限制限(0.0～1.0)
 
-	per = std::clamp(per, 0.0f, 1.0f);
+	_per = std::clamp(_per, 0.0f, 1.0f);
 
-	int volume = static_cast<int>(per * sound_.maxVolume);
+	int volume = static_cast<int>(_per * sound_.maxVolume);
 
 	// 音量割り当て
 	ChangeVolumeSoundMem(volume, sound_.handle);
@@ -217,43 +211,44 @@ float Sound::GetVolume(void)const
 	return volume;
 }
 
-void Sound::SetMaxVolume(float per)
+void Sound::SetMaxVolume(float _per)
 {
 	// 負の値の時、正の値に変える
-	float volume = ((per < 0.0f) ? -per : per);
+	float volume = ((_per < 0.0f) ? -_per : _per);
 
-	sound_.maxVolume = (SoundManager::GetInstance().GetVolumeMaster() * per);
+	sound_.maxVolume = static_cast<int>(SoundManager::GetInstance().GetVolumeMaster() * _per);
 }
 
 
-bool Sound::IsStart(void)
+bool Sound::IsStart(void)const
 {
 	// サウンド未割当時、無効
-	if (sound_.handle != -1) return false;
+	if (sound_.handle != -1) { return false; }
 
 	// 前フレームがfalse,現在フレームがtrue時、true
 	return (sound_.isPlay && !sound_.isPlayOld);
 }
 
-bool Sound::IsPlay(void)
+bool Sound::IsPlay(void)const
 {
 	// サウンド未割当時、無効
-	if (sound_.handle != -1) return false;
+	if (sound_.handle != -1) { return false; }
 
 	// 前フレームと現在フレームがtrue時、true
 	return (sound_.isPlay && sound_.isPlayOld);
 }
 
-bool Sound::IsEnd(void)
+bool Sound::IsEnd(void)const
 {
 	// サウンド未割当時、無効
-	if (sound_.handle != -1) return false;
+	if (sound_.handle != -1) { return false; }
 
 	// 前フレームがtrue,現在フレームがfalse時、true
 	return (!sound_.isPlay && sound_.isPlayOld);
 }
 
-bool Sound::IsBGM(void)
+bool Sound::IsBGM(void)const
 {
+	// BGMか否か(音声未割当時も false)
 	return (sound_.isBgm && sound_.handle != -1);
 }

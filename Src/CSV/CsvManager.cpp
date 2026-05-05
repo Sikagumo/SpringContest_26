@@ -12,11 +12,12 @@
 #include "../Manager/ResourceManager.h"
 #include "../Utility/UtilityCommon.h"
 
-
 CsvManager* CsvManager::instance_ = nullptr;
+
 
 void CsvManager::CreateInstance(void)
 {
+	/* インスタンス生成処理 */
 	if (instance_ == nullptr)
 	{
 		instance_ = new CsvManager();
@@ -24,18 +25,9 @@ void CsvManager::CreateInstance(void)
 	// マネージャ読み込み処理
 	instance_->Load();
 }
-
-CsvManager& CsvManager::GetInstance(void)
+void CsvManager::DestroyInstance(void)
 {
-	if (instance_ == nullptr)
-	{
-		CreateInstance();
-	}
-	return *instance_;
-}
-
-void CsvManager::Destroy(void)
-{
+	/* インスタンス削除処理 */
 	if (instance_ != nullptr)
 	{
 		delete instance_;
@@ -43,6 +35,7 @@ void CsvManager::Destroy(void)
 }
 
 CsvManager::CsvManager(void)
+	:stage_(StageMap::StageMap())
 {
 #ifndef _DEBUG
 	// リリースビルド時のみDXアーカイブを使用
@@ -53,17 +46,22 @@ CsvManager::CsvManager(void)
 
 void CsvManager::Load(void)
 {
-	LoadStages();
+	// CSV読み込み
+	LoadStageMoveCsv(ResourceManager::PATH_CSV + PATH_STAGE_MOVE, true);
+
+	LoadStageGravityCsv(ResourceManager::PATH_CSV + PATH_STAGE_GRAVITY, true);
 }
 
 std::string CsvManager::ReadCsvFile(const std::string& path)
 {
-	// CSVファイルの内容を格納する変数
+	/* ビルド別ファイル読み込み処理 */
+
 	std::string content;
 
 #ifdef _DEBUG
 
-	// デバッグビルド：通常のファイルシステムから読み込み
+	/* Debugビルド時、通常のファイルシステムから読み込み */
+
 	std::ifstream file(path);
 
 	if (!file.is_open())
@@ -82,7 +80,9 @@ std::string CsvManager::ReadCsvFile(const std::string& path)
 	file.close();
 
 #else
-	// リリースビルド：DXアーカイブから読み込み
+
+	/* Releaseビルド時、DxArchiveから読み込む */
+
 	int fileHandle = FileRead_open(path.c_str());
 
 	if (fileHandle == 0)
@@ -108,14 +108,6 @@ std::string CsvManager::ReadCsvFile(const std::string& path)
 }
 
 
-void CsvManager::LoadStages(void)
-{
-	// CSV読み込み
-	LoadStageMoveCsv(ResourceManager::PATH_CSV + PATH_STAGE_MOVE, true);
-
-	LoadStageGravityCsv(ResourceManager::PATH_CSV + PATH_STAGE_GRAVITY, true);
-}
-
 void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 {
 	/*　csvファイル読み込み処理　*/
@@ -127,8 +119,8 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 	bool isSkip = _isLabelSkip;
 
 	// 縦横のマップ値[列数]
-	StageMap::MoveStagePlace dataNums;
-	StageMap::MoveStagePlace dataNumBacks;
+	StageMap::MoveStagePlace dataFrontNums;
+	StageMap::MoveStagePlace dataBackNums;
 
 	// 行
 	std::string line;
@@ -175,17 +167,14 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 			// セルの数値を格納
 			if (cellPos < STAGE_X)
 			{
-				// 前のステージ格納
-				dataNums[linePos][cellPos] = num;
+				dataFrontNums[linePos][cellPos] = num;
 			}
 			else
 			{
-				// 後ろのステージ格納
 				int cell = (cellPos - STAGE_X) - 1;
-				dataNumBacks[linePos][cell] = num;
+				dataBackNums[linePos][cell] = num;
 			}
 
-			// セル位置移動
 			cellPos++;
 		}
 
@@ -201,17 +190,14 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 			// セルの数値を格納
 			if (cellPos < STAGE_X)
 			{
-				// 前のステージ格納
-				dataNums[linePos][cellPos] = BLANK_NUM;
+				dataFrontNums[linePos][cellPos] = BLANK_NUM;
 			}
 			else
 			{
-				// 後ろのステージ格納
 				int cell = (cellPos - STAGE_X) - 1;
-				dataNumBacks[linePos][cell] = BLANK_NUM;
+				dataBackNums[linePos][cell] = BLANK_NUM;
 			}
 
-			// セル位置移動
 			cellPos++;
 		}
 
@@ -219,8 +205,8 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 		if (linePos-- <= 0)
 		{
 			// ステージリストに格納
-			stage_.move.emplace_back(dataNums);
-			stage_.moveBack.emplace_back(dataNumBacks);
+			stage_.move.emplace_back(dataFrontNums);
+			stage_.moveBack.emplace_back(dataBackNums);
 
 			isSkip = _isLabelSkip;
 			linePos = (STAGE_Y - 1);
@@ -243,13 +229,11 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 			// セルの数値を格納
 			if (cellPos < STAGE_X)
 			{
-				// 前のステージ格納
-				dataNums[linePos][cellPos] = BLANK_NUM;
+				dataFrontNums[linePos][cellPos] = BLANK_NUM;
 			}
 			else
 			{
-				// 後ろのステージ格納
-				dataNumBacks[linePos][(cellPos / 2) + (cellPos % 2)] = BLANK_NUM;
+				dataBackNums[linePos][(cellPos / 2) + (cellPos % 2)] = BLANK_NUM;
 			}
 
 			cellPos++;
@@ -259,8 +243,8 @@ void CsvManager::LoadStageMoveCsv(const std::string& _path, bool _isLabelSkip)
 	}
 
 	// ステージリストに格納
-	stage_.move.emplace_back(dataNums);
-	stage_.moveBack.emplace_back(dataNumBacks);
+	stage_.move.emplace_back(dataFrontNums);
+	stage_.moveBack.emplace_back(dataBackNums);
 }
 void CsvManager::LoadStageGravityCsv(const std::string& _path, bool _isLabelSkip)
 {
@@ -410,12 +394,12 @@ void CsvManager::LoadStageGravityCsv(const std::string& _path, bool _isLabelSkip
 	stage_.gravityBack.emplace_back(dataNumBacks);
 }
 
-
+/* ステージのマップ情報取得 */
 int CsvManager::GetStageMoveNum(int _type, int x, int y)
 {
 	return stage_.move[_type].at(y).at(x);
 }
-int CsvManager::GetStageBackMoveNum(int _type, int x, int y)
+int CsvManager::GetStageMoveBackNum(int _type, int x, int y)
 {
 	return stage_.moveBack[_type].at(y).at(x);
 }
@@ -423,54 +407,7 @@ int CsvManager::GetStageGravityNum(int _type, int x, int y)
 {
 	return stage_.gravity[_type].at(y).at(x);
 }
-int CsvManager::GetStageBackGravityNum(int _type, int x, int y)
+int CsvManager::GetStageGravityBackNum(int _type, int x, int y)
 {
 	return stage_.gravityBack[_type].at(y).at(x);
 }
-
-
-/*
-void CsvManager::SaveCSV(void)
-{
-	/* CSV書き込み処理 */
-	/*
-
-	int max = static_cast<int>(DATA_PLAYER::MAX);
-
-	//　データ保存処理
-	for (int y = 0; y < (SAVE_LENGTH - 1); y++)
-	{
-		// ラベル以外を書き出す
-		for (int x = 0; x < (max - 1); x++)
-		{
-			// 数値 → 文字列 変換読み込み
-			//loadString_[y + 1][x + 1] = std::to_string(loadValue_[y][x]);
-		}
-	}
-
-	// 保存ファイル読み込み
-	std::ofstream outputFile(DATA_HANDLE);
-	if (!outputFile.is_open())
-	{
-		OutputDebugString(w"\ncsvファイルが開かれませんでした。\n");
-		assert(false);
-	}
-
-	for (int y = 0; y < SAVE_LENGTH; ++y)
-	{
-		for (int x = 0; x < max; ++x)
-		{
-			// データ入力
-			outputFile << loadString_[y][x];
-
-			// カンマ入力
-			if (x < (max - 1)) outputFile << ",";
-		}
-		outputFile << "\n"; // 改行
-	}
-	outputFile.close(); //保存終了
-
-#ifdef _DEBUG
-	OutputDebugString("\n正常に保存完了しました\n");
-#endif
-}*/

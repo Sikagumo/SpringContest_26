@@ -2,6 +2,7 @@
 #include <DxLib.h>
 #include <string>
 #include <cassert>
+#include <algorithm>
 #include "./ResourceManager.h"
 #include "./Resource.h"
 
@@ -88,7 +89,7 @@ void SoundManager::SetSound(int _src, Sound::TYPE type, float maxVolume, bool _i
 	sounds_.emplace(_src, res);
 }
 
-void SoundManager::Destroy(void)
+void SoundManager::DestroyInstance(void)
 {
 	/*　メモリ解放処理　*/
 	for (auto& [type, sound] : sounds_)
@@ -102,7 +103,7 @@ void SoundManager::Destroy(void)
 	delete instance_;
 }
 
-bool SoundManager::Play(int _src, bool _isLoop, bool _isPitch, float _pitchRange, bool _isForce)
+bool SoundManager::Play(int _src, bool _isLoop, bool _isPitch, int _pitchRange, bool _isForce)
 {
 	/* 2D音声を再生 */
 	const auto& findSound = sounds_.find(_src);
@@ -124,7 +125,7 @@ bool SoundManager::Play(int _src, bool _isLoop, bool _isPitch, float _pitchRange
 
 	// 2Dサウンド再生処理
 	Sound::TIMES times = ((_isLoop) ? Sound::TIMES::LOOP : Sound::TIMES::ONCE);
-	return findSound->second->Play(times, _isPitch, _pitchRange,_isForce);
+	return findSound->second->Play(times, _isPitch, _pitchRange, _isForce);
 }
 bool SoundManager::Play(int _src, bool _isLoop, VECTOR _pos, float _radius)
 {
@@ -207,41 +208,29 @@ void SoundManager::StopAllChoice(bool _isBGM)
 
 bool SoundManager::IsSoundStart(int _src)
 {
-	const auto& soundlist = sounds_.find(_src);
+	const auto& soundList = sounds_.find(_src);
 
-	if (soundlist == sounds_.end())
-	{
-#ifdef _DEBUG
-		assert(false &&"\n停止するサウンドが割り当てられていません\n(；_；)\n"); // 例外スロー
-#endif
-		return false;
-	}
+	assert(soundList != sounds_.end() &&"\n再生の開始の判定をするサウンドが割り当てられていません\n(；_；)\n");
 
 	// 音声があるとき、再生か判定
-	return soundlist->second->IsStart();
+	return soundList->second->IsStart();
 }
 
 bool SoundManager::IsSoundPlay(int _src)
 {
-	const auto& soundlist = sounds_.find(_src);
+	const auto& soundList = sounds_.find(_src);
 
-	if (soundlist == sounds_.end())
-	{
-#ifdef _DEBUG
-		assert(false &&"\n停止するサウンドが割り当てられていません\n(；_；)\n"); // 例外スロー
-#endif
-		return false;
-	}
+	assert(soundList != sounds_.end() &&"\n再生の判定をするサウンドが割り当てられていません\n(；_；)\n");
 
 	// 音声があるとき、再生か判定
-	return soundlist->second->IsPlay();
+	return soundList->second->IsPlay();
 }
 
 bool SoundManager::IsSoundEnd(int _src)
 {
-	const auto& soundlist = sounds_.find(_src);
+	const auto& soundList = sounds_.find(_src);
 
-	if (soundlist == sounds_.end())
+	if (soundList == sounds_.end())
 	{
 #ifdef _DEBUG
 		assert(false &&"\n停止するサウンドが割り当てられていません\n(；_；)\n"); // 例外スロー
@@ -251,25 +240,22 @@ bool SoundManager::IsSoundEnd(int _src)
 
 	// 音声があるとき、再生か判定
 
-	return soundlist->second->IsEnd();
+	return soundList->second->IsEnd();
 }
 
 
 
-void SoundManager::SetVolumeMaster(float volume)
+void SoundManager::SetVolumeMaster(float _volumeRate)
 {
-	float vol = volume;
+	float rate = _volumeRate;
 	
 	// 音量が０未満の時、音量を０にする
-	vol = ((vol < 0.0f) ? 0.0f : vol);
+	rate = std::clamp(rate, 0.0f, 1.0f);
 
-	// 音量が最大値を超えた時、音量を最大値にする
-	vol = ((volume > VOLUME_MASTER_MAX) ? VOLUME_MASTER_MAX : vol);
-
-	vol = static_cast<int>(volume * VOLUME_MASTER_MAX);
+	int volume = static_cast<int>(rate * VOLUME_MASTER_MAX);
 
 	// 音量割り当て
-	volumeMaster_ = vol;
+	volumeMaster_ = volume;
 }
 void SoundManager::SetVolume(int _src, float _per)
 {
@@ -300,4 +286,5 @@ float SoundManager::GetVolume(int _src)
 	OutputDebugString("\nサウンドが割り当てられていません\n(；_；)\n");
 	assert(false); // 例外スロー
 #endif
+	return 0.0f;
 }

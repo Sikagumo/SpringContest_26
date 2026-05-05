@@ -17,7 +17,7 @@ StageController::StageController(bool _isMoveStage)
 }
 
 
-void StageController::Init(void)
+void StageController::Initialize(void)
 {
 	curStageNum_ = 0;
 
@@ -95,7 +95,7 @@ void StageController::SetStageType(StageController::STAGE_TYPE _type)
 	}
 
 	// ステージ初期化
-	stage_->Init(GetStageChoice());
+	stage_->Initialize(GetStageChoice());
 }
 
 int StageController::GetStageChoice(void)

@@ -57,24 +57,13 @@ public:
 	};
 
 
-	/// @brief インスタンス生成(初回のみ) 
 	static void CreateInstance(void);
-
-	/// @brief 入力マネージャ取得 
 	static InputManager& GetInstance(void) { return *instance_; };
+	static void DestroyInstance(void);
 
-
-	/// @brief 初期化処理
-	void Init(void);
-
-	/// @brief 更新処理
+	void Initialize(void);
 	void Update(void);
-
-	/// @brief 解放処理
 	void Release(void);
-
-	/// @brief リソースの破棄
-	static void Destroy(void);
 
 
 	/// @brief 指定した状況での各入力機器の押下判定

@@ -1,5 +1,7 @@
 #pragma once
 #include <chrono>
+#include "../Utility/UtilityCommon.h"
+#include <memory>
 #include <DxLib.h>
 class SceneBase;
 class Fader;
@@ -11,15 +13,6 @@ class SceneManager
 
 public:
 
-	// 背景色
-	static constexpr int BACKGROUND_COLOR_R = 255;
-	static constexpr int BACKGROUND_COLOR_G = 255;
-	static constexpr int BACKGROUND_COLOR_B = 255;
-
-	// ディレクショナルライトの方向
-	static constexpr VECTOR LIGHT_DIRECTION = { 0.0f, 0.0f, 1.0f };
-
-	// シーン管理用
 	enum class SCENE_ID
 	{
 		NONE = -1,
@@ -27,46 +20,38 @@ public:
 		GAME,
 	};
 	
-	// インスタンスの生成
 	static void CreateInstance(void);
+	static SceneManager& GetInstance(void) { return *instance_; };
+	void DestroyInstance(void);
 
-	// インスタンスの取得
-	static SceneManager& GetInstance(void);
-
-	// 初期化
-	void Init(void);
-	
-	// 3Dの初期化
-	void Init3D(void);
-
-	// 更新
+	void Initialize(void);
 	void Update(void);
-
-	// 描画
 	void Draw(void);
 
-	// リソースの破棄
-	void Destroy(void);
+	
 
-	// 状態遷移
+	/// @brief 状態遷移
+	/// @param _nextId 
 	void ChangeScene(SCENE_ID _nextId);
 
-	// シーンIDの取得
-	SCENE_ID GetSceneID(void);
+	SCENE_ID GetCurSceneID(void) { return curSceneId_; };
 
-	// デルタタイムの取得
-	float GetDeltaTime(void) const;
+	float GetDeltaTime(void) const { return deltaTime_; };
 
-	// カメラの取得
-	Camera* GetCamera(void) const;
+	Camera* GetCamera(void) const { return camera_; };
 
-	Perform& GetPerform(void) { return *perform_; }
+	/// @brief 演出の取得
+	const std::unique_ptr<Perform>& GetPerform(void) { return perform_; }
 
-	// デバッグ状態取得
+
+	/// @brief デバッグ状態取得
 	bool GetIsDebugMode(void) { return isDebugMode_; };
 
 	/// @brief 移動ステージを選択するか否か
+	/// @param _isChoiceMove 移動ステージを選択するか否か
 	void SetIsStageMove(bool _isChoiceMove) { isChoiceMove_ = _isChoiceMove; };
+
+	/// @brief 移動ステージを選択したか否か
 	bool GetIsStageMove(void) { return isChoiceMove_; };
 
 
@@ -75,16 +60,18 @@ private:
 	// 静的インスタンス
 	static SceneManager* instance_;
 
-	SCENE_ID sceneId_;
+	// シーンID
+	SCENE_ID curSceneId_;
 	SCENE_ID waitSceneId_;
 
 	// フェード
-	Fader* fader_;
+	std::unique_ptr<Fader> fader_;
 
-	Perform* perform_;
+	// 演出
+	std::unique_ptr<Perform> perform_;
 
 	// 各種シーン
-	SceneBase* scene_;
+	std::unique_ptr<SceneBase> scene_;
 
 	// カメラ
 	Camera* camera_;
@@ -96,6 +83,7 @@ private:
 	std::chrono::system_clock::time_point preTime_;
 	float deltaTime_;
 
+	// デバッグモードか否か
 	bool isDebugMode_;
 
 	int shadowMapHandle_;
@@ -104,24 +92,26 @@ private:
 	bool isChoiceMove_;
 	
 
-	// デフォルトコンストラクタをprivateにして、
-	// 外部から生成できない様にする
 	SceneManager(void);
-
-	// コピーコンストラクタも同様
-	SceneManager(const SceneManager& instance) = default;
-
-	// デストラクタも同様
 	~SceneManager(void) = default;
 
-	// デルタタイムをリセットする
+	/* コピーコンストラクタ対策 */
+	SceneManager(const SceneManager&)			 = delete;
+	SceneManager& operator=(const SceneManager&) = delete;
+	SceneManager(SceneManager&&)			= delete;
+	SceneManager& operator=(SceneManager&&) = delete;
+
+
+	void _Initialize3D(void);
+ 
 	void ResetDeltaTime(void);
 
-	// シーン遷移
-	void DoChangeScene(SCENE_ID sceneId);
+	/// @brief シーン遷移の実行
+	/// @param _sceneId 遷移先シーンID
+	void DoChangeScene(SCENE_ID _sceneId);
 
-	// フェード
+	/// @brief フェード状態の切替処理
 	void Fade(void);
 
-	void InitShadow(void);
+	void InitializeShadow(void);
 };

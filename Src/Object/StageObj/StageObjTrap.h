@@ -1,6 +1,7 @@
 #pragma once
 #include "./StageObjBase.h"
 #include <DxLib.h>
+#include "../../Common/Vector2.h"
 
 class StageObjTrap : public StageObjBase
 {
@@ -8,7 +9,7 @@ public:
 
 	static constexpr float COLLISION_RADIUS = 100.0f;
 
-	StageObjTrap(int _x, int _y, int _objType, float _alpha = 1.0f);
+	StageObjTrap(Vector2 _arrayPos, int _objType, float _alpha = 1.0f);
 
 	/// @brief 固定オブジェクトのため、更新しない
 	void Update(void)override {};

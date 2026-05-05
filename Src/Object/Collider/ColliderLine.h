@@ -7,40 +7,39 @@ class ColliderLine : public ColliderBase
 {
 public:
 
-	// コンストラクタ
-	ColliderLine(TAG tag, const Transform* follow,
-				 const VECTOR& localPosStart, const VECTOR& localPosEnd);
+	/// @brief コンストラクタ
+	/// @param _tag 自身のカプセル
+	/// @param _follow 追従対象
+	/// @param _localPosStart 始点位置
+	/// @param _localPosEnd 終点位置
+	ColliderLine(TAG _tag, const Transform* _follow,
+				 const VECTOR& _localPosStart, const VECTOR& _localPosEnd);
 
-	// デストラクタ
+	
 	~ColliderLine(void) override = default;
 
 
-	// ローカル座標での設定
-	void SetLocalPosStart(const VECTOR& pos);
-	void SetLocalPosEnd(const VECTOR& pos);
+	/* ローカル座標を割り当て */
+	void SetLocalPosStart(const VECTOR& _pos) { localPosStart_ = _pos; };
+	void SetLocalPosEnd(const VECTOR& _pos) { localPosEnd_ = _pos; };
 
-	// ローカル座標の取得
+	/* ローカル座標の取得 */
 	const VECTOR& GetLocalPosStart(void) const { return localPosStart_;  };
 	const VECTOR& GetLocalPosEnd(void) const { return localPosEnd_;  };
 
-	// ワールド座標の取得
+	/* ワールド座標の取得 */
 	VECTOR GetPosStart(void) const;
 	VECTOR GetPosEnd(void) const;
 
 
 protected:
 
-	// デバッグ用描画
-	void DrawDebug(int color) override;
+	/// @brief デバッグ描画
+	/// @param _color カプセルの色
+	void DrawDebug(unsigned int _color) override;
 
 
 private:
-
-	// デバッグ表示の球体半径
-	static constexpr float RADIUS = 5.0f;
-
-	// デバッグ表示の球体ポリゴン分割数
-	static constexpr int DIV_NUM = 6;
 
 	// 線分の開始座標(ローカル)
 	VECTOR localPosStart_;

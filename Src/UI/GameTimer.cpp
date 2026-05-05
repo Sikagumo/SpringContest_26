@@ -4,6 +4,7 @@
 #include "../Manager/SceneManager.h"
 #include "../Manager/ResourceManager.h"
 
+constexpr int TIME_POS = (Application::SCREEN_HALF_X - 100);
 
 GameTimer::GameTimer(float _gameTime)
 	: curTimer_(_gameTime)
@@ -17,6 +18,7 @@ GameTimer::GameTimer(float _gameTime)
 
 void GameTimer::Update(void)
 {
+	/* 更新処理 */
 	if (isTimeActive_)
 	{
 		// 時間減少
@@ -26,17 +28,23 @@ void GameTimer::Update(void)
 		isTimeActive_ = (curTimer_ > 0.0f);
 	}
 }
-void GameTimer::DrawTimer(void)
+void GameTimer::Draw(void)
 {
-	int x = Application::SCREEN_HALF_X - 100;
+	/* 描画処理 */
+	constexpr float UI_TEXT_SCALE = 0.5f;
+	constexpr int UI_TEXT_SIZE = static_cast<int>((80 * UI_TEXT_SCALE));
+	constexpr int TIME_OFFSET = 150;
+
+	// 描画する数の位
 	int arrayNum = 0;
+	int x = TIME_POS;
 
 	// 小数点以下の数値
 	float frac = (curTimer_ - std::floor(curTimer_));
 
 
 	// 100の位
-	x += 150;
+	x += TIME_OFFSET;
 	arrayNum = static_cast<int>(curTimer_ / 100.0f);
 	if (arrayNum > 0)
 	{
@@ -61,7 +69,7 @@ void GameTimer::DrawTimer(void)
 	x += UI_TEXT_SIZE;
 	arrayNum = static_cast<int>(curTimer_) % 10;
 	DrawRotaGraph(x, UI_TEXT_SIZE,
-		UI_TEXT_SCALE, 0.0, timeText_[10], true);
+		UI_TEXT_SCALE, 0.0, timeText_[TIME_DOT], true);
 
 	// 第1小数点
 	x += UI_TEXT_SIZE;
@@ -79,16 +87,21 @@ void GameTimer::DrawTimer(void)
 
 void GameTimer::DrawCountDown(float _time, int _uiHandle)
 {
-	int arrayNum = 0;
+	/* カウントダウン描画処理 */
 
-	arrayNum = static_cast<int>(_time);
+	// 画像スケール(カウントが０の場合は2倍、[げーむすたーと]描画時、1倍)
+	const double SCALE = ((_time > 0.0f) ? 2.0 : 1.0);
+
+	// 現在時間
+	int arrayNum = static_cast<int>(_time);
+
+	// カウントが0の時以外は[現在カウント+1]0未満では[げーむすたーと]を描画
 	int image = ((_time > 0.0f)
 		? timeText_[arrayNum + 1]
 		: _uiHandle);
 
-	double scale = ((_time > 0.0f) ? 2.0 : 1.0);
 
-	DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y - 100
-		, scale, 0.0, image, true);
+	DrawRotaGraph(Application::SCREEN_HALF_X, TIME_POS
+				  , SCALE, 0.0, image, true);
 
 }

@@ -4,29 +4,17 @@
 #include "../Manager/InputManager.h"
 #include "../Manager/SoundManager.h"
 
-SceneBase::SceneBase(void) 
+SceneBase::SceneBase(void)
 	: resMng_(ResourceManager::GetInstance())
 	, sceneMng_(SceneManager::GetInstance())
 	, input_(InputManager::GetInstance())
 	, sound_(SoundManager::GetInstance())
+	, uiText_{}
 {
-	for (int& ui : uiText_) { ui = -1; }
-
- 	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT, uiText_);
+	uiText_.fill(-1);
+	resMng_.LoadHandleIds(ResourceManager::SRC::IMGS_TEXT, uiText_.data());
 }
 
 SceneBase::~SceneBase(void)
-{
-}
-
-void SceneBase::Init(void)
-{
-}
-
-void SceneBase::Update(void)
-{
-}
-
-void SceneBase::Draw(void)
 {
 }

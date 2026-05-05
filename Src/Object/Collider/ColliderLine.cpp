@@ -1,24 +1,13 @@
-#include "../Common/Transform.h"
 #include "ColliderLine.h"
 
 ColliderLine::ColliderLine(TAG tag, const Transform* follow,
 						   const VECTOR& localPosStart, const VECTOR& localPosEnd)
-	:
-	ColliderBase(SHAPE::LINE, tag, follow),
-	localPosStart_(localPosStart),
-	localPosEnd_(localPosEnd)
+	: ColliderBase(SHAPE::LINE, tag, follow)
+	, localPosStart_(localPosStart)
+	, localPosEnd_(localPosEnd)
 {
 }
 
-
-void ColliderLine::SetLocalPosStart(const VECTOR& pos)
-{
-	localPosStart_ = pos;
-}
-void ColliderLine::SetLocalPosEnd(const VECTOR& pos)
-{
-	localPosEnd_ = pos;
-}
 
 VECTOR ColliderLine::GetPosStart(void) const
 {
@@ -29,15 +18,23 @@ VECTOR ColliderLine::GetPosEnd(void) const
 	return GetRotPos(localPosEnd_);
 }
 
-void ColliderLine::DrawDebug(int color)
+void ColliderLine::DrawDebug(unsigned int _color)
 {
-	VECTOR s = GetPosStart();
-	VECTOR e = GetPosEnd();
+	/* デバッグ表示 */
+
+	constexpr float RADIUS = 5.0f;
+
+	// 球体ポリゴン分割数
+	constexpr int DIV_NUM = 6;
+
+
+	const VECTOR start = GetPosStart();
+	const VECTOR end = GetPosEnd();
 
 	// 線分を描画
-	DrawLine3D(s, e, color);
+	DrawLine3D(start, end, _color);
 
 	// 始点・終点を球体で補助表示
-	DrawSphere3D(s, RADIUS, DIV_NUM, color, color, true);
-	DrawSphere3D(e, RADIUS, DIV_NUM, color, color, true);
+	DrawSphere3D(start, RADIUS, DIV_NUM, _color, _color, true);
+	DrawSphere3D(end, RADIUS, DIV_NUM, _color, _color, true);
 }

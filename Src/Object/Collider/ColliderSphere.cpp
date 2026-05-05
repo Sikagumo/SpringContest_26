@@ -2,16 +2,11 @@
 #include "./ColliderBase.h"
 #include "../Common/Transform.h"
 
-ColliderSphere::ColliderSphere(TAG tag, const Transform* follow, const VECTOR& localPos, float radius):
-	ColliderBase::ColliderBase(SHAPE::SPHERE, tag, follow),
-	localPos_(localPos),radius_(radius)
+ColliderSphere::ColliderSphere(TAG tag, const Transform* follow, const VECTOR& localPos, float radius)
+	: ColliderBase::ColliderBase(SHAPE::SPHERE, tag, follow)
+	, localPos_(localPos),radius_(radius)
 {
 
-}
-
-const VECTOR& ColliderSphere::GetLocalPos(void) const
-{
-	return localPos_;
 }
 
 VECTOR ColliderSphere::GetPos(void) const
@@ -19,34 +14,40 @@ VECTOR ColliderSphere::GetPos(void) const
 	return GetRotPos(localPos_);
 }
 
-void ColliderSphere::DrawDebug(int color)
+void ColliderSphere::DrawDebug(unsigned int _color)
 {
-	DrawSphere3D(GetPos(), radius_, 10, color, color, true);
+	// ポリゴン分割数
+	constexpr int DIV_NUM = 10;
+
+	DrawSphere3D(GetPos(), radius_, DIV_NUM, _color, _color, true);
 }
 
-VECTOR ColliderSphere::GetPosPushBackAlongNormal(const MV1_COLL_RESULT_POLY& hitColPoly,
-	int maxTryCnt, float pushDistance) const
+VECTOR ColliderSphere::GetPosPushBackAlongNormal(const MV1_COLL_RESULT_POLY& _hitColPoly
+												 , int _maxTryCnt, float _pushDistance) const
 {
+	/* 反発後の座標を取得 */
+
 	// コピー生成
 	Transform tempTransform = *follow_;
-	ColliderSphere tmpSphere = *this;
-	tmpSphere.SetFollow(&tempTransform);
+	ColliderSphere tempSphere = *this;
+	tempSphere.SetFollow(&tempTransform);
 
 	// 衝突補正処理
 	int tryCnt = 0;
-	while (tryCnt < maxTryCnt)
+	while (tryCnt < _maxTryCnt)
 	{
 		// カプセルと三角形の当たり判定
 		if (!HitCheck_Sphere_Triangle(
-			tmpSphere.GetPos(),
-			tmpSphere.GetRadius(),
-			hitColPoly.Position[0], hitColPoly.Position[1],
-			hitColPoly.Position[2]))
+			tempSphere.GetPos(),
+			tempSphere.GetRadius(),
+			_hitColPoly.Position[0], _hitColPoly.Position[1],
+			_hitColPoly.Position[2]))
 		{
 			break;
 		}
+
 		// 衝突していたら法線方向に押し戻し
-		tempTransform.pos = VAdd(tempTransform.pos, VScale(hitColPoly.Normal, pushDistance));
+		tempTransform.pos = VAdd(tempTransform.pos, VScale(_hitColPoly.Normal, _pushDistance));
 		tryCnt++;
 	}
 	return tempTransform.pos;

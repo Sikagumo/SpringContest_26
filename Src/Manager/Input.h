@@ -128,24 +128,16 @@ public:
 	};
 
 
-	/// @brief デフォルトコンストラクタ
 	Input(void);
-
-	/// @brief デフォルトデストラクタ
 	~Input(void) = default;
 
-	/// @brief 初期化処理
-	void Init(void);
-
-	/// @brief 更新処理 
+	void Initialize(void);
 	void Update(void);
-
-	/// @brief メモリ開放処理
 	void Release(void);
+
 
 	/// @brief 指定するキーの追加
 	void Add(int key);
-
 
 	/// @brief キーの押下しているか否か
 	bool IsNew(int key) const;

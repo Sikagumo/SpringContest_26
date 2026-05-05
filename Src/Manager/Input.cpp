@@ -19,7 +19,7 @@ Input::Input(void)
 }
 
 
-void Input::Init(void)
+void Input::Initialize(void)
 {
 	Input::MouseInfo info;
 

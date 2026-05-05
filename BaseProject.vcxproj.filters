@@ -87,14 +87,8 @@
     <ClCompile Include="Src\Scene\TitleScene.cpp">
       <Filter>ソース ファイル\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Utility\AsoUtility.cpp">
-      <Filter>ソース ファイル\Utility</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Manager\Camera.cpp">
       <Filter>ソース ファイル\Manager</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Object\Common\AnimationController.cpp">
-      <Filter>ソース ファイル\Object\Common</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Common\Transform.cpp">
       <Filter>ソース ファイル\Object\Common</Filter>
@@ -106,9 +100,6 @@
       <Filter>ソース ファイル\Common</Filter>
     </ClCompile>
     <ClCompile Include="Src\Object\Actor\ActorBase.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="Src\Utility\MatrixUtility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="Src\Common\FpsController.cpp">
@@ -153,9 +144,6 @@
     <ClCompile Include="Src\Object\Stage\StageBase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
-    <ClCompile Include="Src\Object\Collider\ColliderPlane.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="Src\Object\StageObj\StageObjBase.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -192,6 +180,12 @@
     <ClCompile Include="Src\UI\GameTimer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="Src\Utility\UtilityMath.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Src\Utility\UtilityMatrix.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Common\Fader.h">
@@ -218,14 +212,8 @@
     <ClInclude Include="Src\Scene\TitleScene.h">
       <Filter>ヘッダー ファイル\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Utility\AsoUtility.h">
-      <Filter>ヘッダー ファイル\Utility</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Manager\Camera.h">
       <Filter>ヘッダー ファイル\Manager</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Object\Common\AnimationController.h">
-      <Filter>ヘッダー ファイル\Object\Common</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Common\Transform.h">
       <Filter>ヘッダー ファイル\Object\Common</Filter>
@@ -243,9 +231,6 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Object\Actor\ActorBase.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="Src\Utility\MatrixUtility.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\Common\FpsController.h">
@@ -290,9 +275,6 @@
     <ClInclude Include="Src\Object\Stage\StageBase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Src\Object\Collider\ColliderPlane.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="Src\Object\StageObj\StageObjBase.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -327,6 +309,12 @@
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="Src\UI\GameTimer.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Utility\UtilityMath.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Src\Utility\UtilityMatrix.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>

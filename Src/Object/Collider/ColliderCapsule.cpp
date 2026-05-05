@@ -4,11 +4,11 @@
 #include "./ColliderModel.h"
 
 
-ColliderCapsule::ColliderCapsule(TAG tag, const Transform* follow, const VECTOR& localPosTop, const VECTOR& localPosDown, float radius):
-	ColliderBase(SHAPE::CAPSULE, tag, follow),
-	localPosTop_(localPosTop),
-	localPosDown_(localPosDown),
-	radius_(radius)
+ColliderCapsule::ColliderCapsule(TAG _tag, const Transform* _follow, const VECTOR& _localPosTop, const VECTOR& _localPosDown, float _radius):
+	ColliderBase(SHAPE::CAPSULE, _tag, _follow),
+	localPosTop_(_localPosTop),
+	localPosDown_(_localPosDown),
+	radius_(_radius)
 {
 }
 
@@ -23,6 +23,7 @@ VECTOR ColliderCapsule::GetPosDown(void) const
 
 VECTOR ColliderCapsule::GetCenter(void) const
 {
+	/* 正面座標を取得 */
 	VECTOR top = GetPosTop();
 	VECTOR down = GetPosDown();
 	VECTOR diff = VSub(top, down);
@@ -30,15 +31,17 @@ VECTOR ColliderCapsule::GetCenter(void) const
 	return VAdd(down, VScale(diff, 0.5f));
 }
 
-void ColliderCapsule::DrawDebug(int color)
+void ColliderCapsule::DrawDebug(unsigned int _color)
 {
+	/* デバッグ描画 */
+
 	// 上の球体
 	VECTOR pos1 = GetPosTop();
-	DrawSphere3D(pos1, radius_, 5, color, color, false);
+	DrawSphere3D(pos1, radius_, 5, _color, _color, false);
 
 	// 下の球体
 	VECTOR pos2 = GetPosDown();
-	DrawSphere3D(pos2, radius_, 5, color, color, false);
+	DrawSphere3D(pos2, radius_, 5, _color, _color, false);
 	
 	VECTOR dir;
 	VECTOR s, e;
@@ -47,33 +50,35 @@ void ColliderCapsule::DrawDebug(int color)
 	dir = follow_->GetRight();
 	s = VAdd(pos1, VScale(dir, radius_));
 	e = VAdd(pos2, VScale(dir, radius_));
-	DrawLine3D(s, e, color);
+	DrawLine3D(s, e, _color);
 
 	// 球体を繋ぐ線(X-)
 	dir = follow_->GetLeft();
 	s = VAdd(pos1, VScale(dir, radius_));
 	e = VAdd(pos2, VScale(dir, radius_));
-	DrawLine3D(s, e, color);
+	DrawLine3D(s, e, _color);
 
 	// 球体を繋ぐ線(Z+)
 	dir = follow_->GetForward();
 	s = VAdd(pos1, VScale(dir, radius_));
 	e = VAdd(pos2, VScale(dir, radius_));
-	DrawLine3D(s, e, color);
+	DrawLine3D(s, e, _color);
 
 	// 球体を繋ぐ線(Z-)
 	dir = follow_->GetBack();
 	s = VAdd(pos1, VScale(dir, radius_));
 	e = VAdd(pos2, VScale(dir, radius_));
-	DrawLine3D(s, e, color);
+	DrawLine3D(s, e, _color);
 
 	// カプセルの中心
-	DrawSphere3D(GetCenter(), radius_, 10, color, color, true);
+	DrawSphere3D(GetCenter(), radius_, 10, _color, _color, true);
 }
 
-VECTOR ColliderCapsule::GetPosPushBackAlongNormal(const MV1_COLL_RESULT_POLY& hitColPoly,
-												  int maxTryCnt, float pushDistance) const
+VECTOR ColliderCapsule::GetPosPushBackAlongNormal(const MV1_COLL_RESULT_POLY& _hitColPoly,
+												  int _maxTryCnt, float _pushDistance) const
 {
+	/* 当たり判定で押し戻した座標を取得 */
+
 	// コピー生成
 	Transform tempTransform = *follow_;
 	ColliderCapsule tmpCapsule = *this;
@@ -81,26 +86,27 @@ VECTOR ColliderCapsule::GetPosPushBackAlongNormal(const MV1_COLL_RESULT_POLY& hi
 
 	// 衝突補正処理
 	int tryCnt = 0;
-	while (tryCnt < maxTryCnt)
+	while (tryCnt < _maxTryCnt)
 	{
 		// カプセルと三角形の当たり判定
 		if (!HitCheck_Capsule_Triangle(
 			tmpCapsule.GetPosTop(), tmpCapsule.GetPosDown(),
 			tmpCapsule.GetRadius(),
-			hitColPoly.Position[0], hitColPoly.Position[1],
-			hitColPoly.Position[2]))
+			_hitColPoly.Position[0], _hitColPoly.Position[1],
+			_hitColPoly.Position[2]))
 		{
 			break;
 		}
 		// 衝突していたら法線方向に押し戻し
-		tempTransform.pos = VAdd(tempTransform.pos, VScale(hitColPoly.Normal, pushDistance));
+		tempTransform.pos = VAdd(tempTransform.pos, VScale(_hitColPoly.Normal, _pushDistance));
 		tryCnt++;
 	}
 	return tempTransform.pos;
 }
 
-void ColliderCapsule::PushBackAlongNormal(const ColliderModel* _colliderModel, Transform* _transform, int _maxTryCnt, float _pushDistance, bool isExclude, bool isTarget) const
+void ColliderCapsule::PushBackAlongNormal(const ColliderModel* _colliderModel, Transform* _transform, int _maxTryCnt, float _pushDistance, bool _isExclude, bool _isTarget) const
 {
+	/* 当たり判定の押し戻し処理 */
 	auto hits = MV1CollCheck_Capsule(_colliderModel->GetFollow()->modelId, -1,
 									 GetPosTop(), GetPosDown(), GetRadius());
 
@@ -114,7 +120,7 @@ void ColliderCapsule::PushBackAlongNormal(const ColliderModel* _colliderModel, T
 			continue;
 		}*/
 		// 対象フレーム以外は無視
-		if (isTarget && !_colliderModel->IsTargetFrame(hitPoly.FrameIndex))
+		if (_isTarget && !_colliderModel->IsTargetFrame(hitPoly.FrameIndex))
 		{
 			continue;
 		}
@@ -127,8 +133,9 @@ void ColliderCapsule::PushBackAlongNormal(const ColliderModel* _colliderModel, T
 	MV1CollResultPolyDimTerminate(hits);
 }
 
-bool ColliderCapsule::IsHit(const ColliderModel* colliderModel, bool isExcude, bool isTarget) const
+bool ColliderCapsule::IsHit(const ColliderModel* colliderModel, bool _isExcude, bool _isTarget) const
 {
+	/* 衝突判定 */
 	bool ret = false;
 
 	// ステージモデル(地面)との衝突
@@ -146,7 +153,7 @@ bool ColliderCapsule::IsHit(const ColliderModel* colliderModel, bool isExcude, b
 			continue;
 		}*/
 		// 対象フレーム以外は無視
-		if (isTarget && !colliderModel->IsTargetFrame(hit.FrameIndex))
+		if (_isTarget && !colliderModel->IsTargetFrame(hit.FrameIndex))
 		{
 			continue;
 		}

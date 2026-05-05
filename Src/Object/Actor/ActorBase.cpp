@@ -12,7 +12,7 @@ ActorBase::ActorBase(void)
 }
 
 
-void ActorBase::Init(void)
+void ActorBase::Initialize(void)
 {
 	/* ‰Šú‰»ˆ— */
 

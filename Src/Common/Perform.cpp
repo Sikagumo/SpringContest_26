@@ -7,10 +7,10 @@
 
 Perform::Perform(void)
 {
-    Init();
+    Initialize();
 }
 
-void Perform::Init(void)
+void Perform::Initialize(void)
 {
     type_ = TYPE::NONE;
     timeStop_ = timeSlow_ = timeShake_ = 0.0f;

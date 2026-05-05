@@ -8,22 +8,30 @@
 #include "../Object/Collider/ColliderModel.h"
 #include "../Object/Collider/ColliderSphere.h"
 
+// 衝突時の押し戻し試行回数
+constexpr int CNT_TRY_COLLISION_CAMERA = 30;
 
-Camera::Camera(void) :
-	ActorBase::ActorBase(),
-	followTransform_(nullptr),
-	prePos_(UtilityMath::VECTOR_ZERO),
-	mode_(MODE::NONE),
-	angles_(UtilityMath::VECTOR_ZERO),
-	rotY_(Quaternion::Identity()),
-	targetPos_(UtilityMath::VECTOR_ZERO)
+// 衝突時の押し戻し量
+constexpr float COLLISION_BACK_DIS = 2.0f;
+
+// 衝突判定用球体半径
+constexpr float COL_CAPSULE_SPHERE = 50.0f;
+
+// カメラの補間移動率
+constexpr float LERP_RATE_MOVE = 0.1f;
+
+
+Camera::Camera(void)
+	: ActorBase::ActorBase()
+	, followTransform_(nullptr)
+	, prePos_(UtilityMath::VECTOR_ZERO)
+	, mode_(MODE::NONE)
+	, angles_(UtilityMath::VECTOR_ZERO)
+	, rotY_(Quaternion::Identity())
+	, targetPos_(UtilityMath::VECTOR_ZERO)
 {
-	// DxLibの初期設定では、
-	// カメラの位置が x = 320.0f, y = 240.0f, z = (画面のサイズによって変化)、
-	// 注視点の位置は x = 320.0f, y = 240.0f, z = 1.0f
-	// カメラの上方向は x = 0.0f, y = 1.0f, z = 0.0f
-	// 右上位置からZ軸のプラス方向を見るようなカメラ
 }
+
 
 void Camera::InitCollider(void)
 {
@@ -41,6 +49,7 @@ void Camera::InitCollider(void)
 
 void Camera::InitPost(void)
 {
+	// カメラ状態初期化
 	ChangeMode(MODE::FIXED_POINT);
 }
 
@@ -60,14 +69,16 @@ void Camera::SetBeforeDraw(void)
 
 	switch (mode_)
 	{
-	case Camera::MODE::FIXED_POINT:
-		SetBeforeDrawFixedPoint();
+		case Camera::MODE::FIXED_POINT:
+			SetBeforeDrawFixed_Point();
 		break;
-	case Camera::MODE::FREE:
-		SetBeforeDrawFree();
+
+		case Camera::MODE::FREE:
+			SetBeforeDraw_Free();
 		break;
-	case Camera::MODE::FOLLOW:
-		SetBeforeDrawFollow();
+
+		case Camera::MODE::FOLLOW:
+			SetBeforeDraw_Follow();
 		break;
 	}
 
@@ -91,25 +102,20 @@ void Camera::Release(void)
 {
 }
 
-void Camera::SetFollow(const Transform* follow)
-{
-	followTransform_ = follow;
-}
-
 
 VECTOR Camera::GetForward(void) const
 {
 	return VNorm(VSub(targetPos_, transform_.pos));
 }
 
-void Camera::ChangeMode(MODE mode)
+void Camera::ChangeMode(MODE _mode)
 {
 
 	// カメラの初期設定
 	SetDefault();
 
 	// カメラモードの変更
-	mode_ = mode;
+	mode_ = _mode;
 
 	// 変更時の初期化処理
 	switch (mode_)
@@ -197,12 +203,12 @@ void Camera::ProcessMove(void)
 
 }
 
-void Camera::SetBeforeDrawFixedPoint(void)
+void Camera::SetBeforeDrawFixed_Point(void)
 {
 #ifdef _DEBUG
 
-	const float move = 2.5f;
-	const float rot = 2.0f;
+	constexpr float move = 2.5f;
+	constexpr float rot = 2.0f;
 
 	if (InputManager::GetInstance().IsNew(InputManager::TYPE::CAMERA_MOVE_UP))
 	{
@@ -244,7 +250,7 @@ void Camera::SetBeforeDrawFixedPoint(void)
 #endif
 }
 
-void Camera::SetBeforeDrawFree(void)
+void Camera::SetBeforeDraw_Free(void)
 {	
 	// カメラ操作(移動)
 	ProcessMove();
@@ -259,7 +265,7 @@ void Camera::SetBeforeDrawFree(void)
 	targetPos_ = VAdd(transform_.pos, transform_.quaRot.PosAxis(FOLLOW_TARGET_LOCAL_POS));
 }
 
-void Camera::SetBeforeDrawFollow(void)
+void Camera::SetBeforeDraw_Follow(void)
 {
 	// カメラ位置の補間
 	transform_.pos = UtilityMath::Lerp(prePos_,

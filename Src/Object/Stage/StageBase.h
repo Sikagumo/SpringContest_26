@@ -29,7 +29,7 @@ public:
 		MAX,
 	};
 
-	enum class TYPE
+	enum class STAGE_TYPE
 	{
 		MOVE,
 		MOVE3D,
@@ -37,12 +37,17 @@ public:
 		GRAVITY3D,
 	};
 
-	StageBase(TYPE stageType, int mapNum, int mapBackNum = 0);
+
+	/// @brief コンストラクタ
+	/// @param _stageType ステージの種類
+	/// @param _mapNum マップの種類番号
+	/// @param _mapBackNum 
+	StageBase(STAGE_TYPE _stageType, int _mapNum, int _mapBackNum = 0);
 
 	virtual ~StageBase(void) = default;
 
 
-	void Init(int _stageNum);
+	void Initialize(int _stageNum);
 
 	virtual void Update(void) = 0;
 
@@ -69,7 +74,7 @@ public:
 	/// @param _actor 割り当てる対象1
 	void AddStageColliders(ActorBase& _actor);
 
-	int GetStageNum(void) { return curStageNum_; };
+	int GetStageNum(void)const { return curStageNum_; };
 
 
 protected:
@@ -92,7 +97,7 @@ protected:
 	
 	int curStageNum_;
 
-	TYPE curStageType_;
+	STAGE_TYPE curStageType_;
 
 	// マップ最大数
 	int mapNumMax_;

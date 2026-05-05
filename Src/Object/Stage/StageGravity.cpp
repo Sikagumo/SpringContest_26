@@ -11,7 +11,7 @@
 #include "../StageObj/StageObjTrapHorizontalMove.h"
 
 StageGravity::StageGravity(bool _isBack)
-    : StageBase::StageBase(((_isBack) ? TYPE::GRAVITY3D : TYPE::GRAVITY)
+    : StageBase::StageBase(((_isBack) ? STAGE_TYPE::GRAVITY3D : STAGE_TYPE::GRAVITY)
     					   , CsvManager::GetInstance().GetStageGravityMapNum())
 {
 }
@@ -37,7 +37,7 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 
     // プレイヤー2 (上重力) 登録
     else if (objType == BLOCK_TYPE::PLAYER_HEIGHT
-			 && curStageType_ == TYPE::GRAVITY
+			 && curStageType_ == STAGE_TYPE::GRAVITY
 			 && UtilityMath::EqualsVZero(initialPlayersPos_[1]))
     {
         initialPlayersPos_[1] = pos;
@@ -46,19 +46,19 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
     // ゴール登録
     else if (objType == BLOCK_TYPE::GOAL)
     {
-        ret = new StageObjGoal(_x, _y, _blockType);
-        ret->Init(pos);
+        ret = new StageObjGoal(Vector2(_x, _y), _blockType);
+        ret->Initialize(pos);
         goalPos_ = ret->GetTransform().pos;
 
-		if (curStageType_ == TYPE::GRAVITY)
+		if (curStageType_ == STAGE_TYPE::GRAVITY)
 			{ goalPosBack_ = goalPos_; }
     }
 
     // 壁登録
     else if (objType == BLOCK_TYPE::WALL)
     {
-        ret = new StageObjWall(_x, _y, _blockType);
-        ret->Init(pos);
+        ret = new StageObjWall(Vector2(_x, _y), _blockType);
+        ret->Initialize(pos);
 
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
 
@@ -69,8 +69,8 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
     //トラップ登録
     else if (objType == BLOCK_TYPE::TRAP)
     {
-        ret = new StageObjTrap(_x, _y, _blockType);
-        ret->Init(pos);
+        ret = new StageObjTrap(Vector2(_x, _y), _blockType);
+        ret->Initialize(pos);
         
 		// 色登録
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_FLONT);
@@ -88,9 +88,9 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 	else if (objType == BLOCK_TYPE::TRAP_VEERTICAL_MOVE) // 列挙型に追加した名前
 	{
 		// ステージのポインタを渡す必要がある場合は、コンストラクタやInitを調整
-		auto* vTrap = new StageObjTrapVerticalMove(_x, _y, _blockType);
+		auto* vTrap = new StageObjTrapVerticalMove(Vector2(_x, _y), _blockType);
 		vTrap->SetStage(this); // 壁判定のために自分(Stage)を教える
-		vTrap->Init(pos);
+		vTrap->Initialize(pos);
 		ret = vTrap;
 
 		// 色登録
@@ -109,9 +109,9 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 	//横移動トラップ登録
 	else if (objType == BLOCK_TYPE::TRAP_HORIZONTAL_MOVE)
 	{
-		auto* hTrap = new StageObjTrapHorizontalMove(_x, _y, _blockType);
+		auto* hTrap = new StageObjTrapHorizontalMove(Vector2(_x, _y), _blockType);
 		hTrap->SetStage(this);
-		hTrap->Init(pos);
+		hTrap->Initialize(pos);
 		ret = hTrap;
 
 		// 色登録
@@ -130,7 +130,7 @@ StageObjBase* StageGravity::SetParam(int _blockType, int _x, int _y)
 StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _alpha, bool _isCollision)
 {
 	// 奥行がない場合はnullで返す
-	if (curStageType_ != TYPE::GRAVITY3D) { return nullptr; }
+	if (curStageType_ != STAGE_TYPE::GRAVITY3D) { return nullptr; }
 
 	StageObjBase* ret = nullptr;
 
@@ -152,16 +152,16 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _
 	// ゴール登録
 	else if (objType == BLOCK_TYPE::GOAL)
 	{
-		ret = new StageObjGoal(_x, _y, _blockType);
-		ret->Init(pos);
+		ret = new StageObjGoal(Vector2(_x, _y), _blockType);
+		ret->Initialize(pos);
 		goalPosBack_ = ret->GetTransform().pos;
 	}
 
 	// 壁登録
 	else if (objType == BLOCK_TYPE::WALL)
 	{
-		ret = new StageObjWall(_x, _y, _blockType, _alpha, _isCollision);
-		ret->Init(pos);
+		ret = new StageObjWall(Vector2(_x, _y), _blockType, _alpha, _isCollision);
+		ret->Initialize(pos);
 		
 		COLOR_F color = UtilityCommon::GetColorRate(WALL_COLOR_BACK);
 
@@ -173,8 +173,8 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _
 	//トラップ登録
 	else if (objType == BLOCK_TYPE::TRAP)
 	{
-		ret = new StageObjTrap(_x, _y, _blockType);
-		ret->Init(pos);
+		ret = new StageObjTrap(Vector2(_x, _y), _blockType);
+		ret->Initialize(pos);
 
 		//トラップの座標をリストに保存する
 		trapPositions_.push_back(ret->GetTransform().pos);
@@ -183,9 +183,9 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _
 	else if (objType == BLOCK_TYPE::TRAP_VEERTICAL_MOVE) // 列挙型に追加した名前
 	{
 		// ステージのポインタを渡す必要がある場合は、コンストラクタやInitを調整
-		auto* vTrap = new StageObjTrapVerticalMove(_x, _y, _blockType);
+		auto* vTrap = new StageObjTrapVerticalMove(Vector2(_x, _y), _blockType);
 		vTrap->SetStage(this); // 壁判定のために自分(Stage)を教える
-		vTrap->Init(pos);
+		vTrap->Initialize(pos);
 		ret = vTrap;
 
 		// ※動くトラップの場合、ここで push_back した pos は固定値になってしまいます。
@@ -195,9 +195,9 @@ StageObjBase* StageGravity::SetParamBack(int _blockType, int _x, int _y, float _
 	//横移動トラップ登録
 	else if (objType == BLOCK_TYPE::TRAP_HORIZONTAL_MOVE)
 	{
-		auto* hTrap = new StageObjTrapHorizontalMove(_x, _y, _blockType);
+		auto* hTrap = new StageObjTrapHorizontalMove(Vector2(_x, _y), _blockType);
 		hTrap->SetStage(this);
-		hTrap->Init(pos);
+		hTrap->Initialize(pos);
 		ret = hTrap;
 		trapPositions_.push_back(ret->GetTransform().pos);
 	}

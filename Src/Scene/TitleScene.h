@@ -23,22 +23,12 @@ public:
 	};
 
 
-	/// @brief コンストラクタ  
 	TitleScene(void);
-
-	/// @brief デフォルトデストラクタ
 	~TitleScene(void) override = default;
 
-	/// @brief 初期化
-	void Init(void) override;
-
-	/// @brief 更新
+	void Initialize(void) override;
 	void Update(void) override;
-
-	/// @brief 描画
 	void Draw(void) override;
-
-	/// @brief 解放
 	void Release(void) override;
 
 
@@ -50,37 +40,28 @@ private:
 	// 決定したか否か
 	bool isSelected_;
 
-	static constexpr float TITLE_UI_SCALE = (1.0f - 0.0f);
-	static constexpr float TITLE_NOT_UI_SCALE = (1.0f - 0.25f);
 
-	static constexpr float SELECT_UI_SCALE = (1.0f - 0.15f);
-	static constexpr float SELECT_NOT_UI_SCALE = (1.0f - 0.6f);
-
-	static constexpr int TITLE_UI_OFFSET = 250;
-	static constexpr int TITLE_UI_OFFSET_Y = 75;
-	static constexpr int SELECT_UI_OFFSET = 500;
-
-	static constexpr int TITLE_NOT_SUB = (255 - 200);
-	static constexpr int SELECT_ALPHA = (255 - 100);
-
+	// タイトルUI画像
 	enum class TITLE_UI_IMAGE
 	{
-		SELECT_START,
-		GAME_END,
-		SELECT_CHARA,
+		SELECT_START, // 選択開始
+		GAME_END,	  // ゲーム終了
+		SELECT_CHARA, // 選択キャラ
 
 		MAX
 	};
 	int titleUIHandle_[static_cast<int>(TITLE_UI_IMAGE::MAX)];
 
+	// 選択UI画像
 	enum class SELECT_UI_IMAGE
 	{
-		BACK,
-		MOVE_NOT_SELECT,
-		GRAVITY_NOT_SELECT,
+		BACK, // 戻る
 
-		MOVE_SELECT,
-		GRAVITY_SELECT,
+		MOVE_NOT_SELECT,	// 移動ステージ 選択不可
+		GRAVITY_NOT_SELECT, // 重力ステージ 選択不可
+
+		MOVE_SELECT,	// 移動ステージ 選択
+		GRAVITY_SELECT, // 重力ステージ 選択
 
 		MAX,
 	};
@@ -89,10 +70,6 @@ private:
 	// タイトル画像
 	int titleImage_;
 	int titleBackImage_;
-
-	static constexpr int BACK_HALF_X = (2040 / 2) * 2;
-	
-	std::array<Vector2F, 3> backImagesPos_;
 
 
 	// タイトル状態更新処理

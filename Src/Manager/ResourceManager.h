@@ -26,7 +26,7 @@ public:
 		IMGS_UI_TITLE,
 		IMGS_UI_SELECT,
 
-		// モデル
+		/* モデル */
 		MODEL_PLAYER_MOVE,
 		MODEL_PLAYER_GRAVITY,
 
@@ -36,11 +36,11 @@ public:
 		MODEL_GOAL,
 		MODEL_TRAP,
 
-		// 外部アニメーション
+		/* 外部アニメーション */
 
-		// エフェクト
+		/* エフェクト */
 
-		// 映像
+		/* 映像 */
 
 		/* BGM */
 		BGM_TITLE,
@@ -87,18 +87,11 @@ public:
 	static const std::string PATH_CSV;
 
 
-
-	/// @brief インスタンス生成
 	static void CreateInstance(void);
-
-	/// @brief インスタンス取得処理
 	static ResourceManager& GetInstance(void) { return *instance_; };
+	void DestroyInstance(void);
 
-	/// @brief 初期化処理
-	void Init(void);
-
-	/// @brief インスタンス削除
-	void Destroy(void);
+	void Initialize(void);
 
 
 	/// @brief リソースのロード
@@ -112,12 +105,12 @@ public:
 
 	/// @brief 複数画像のハンドルを画像ハンドルに割り当て
 	/// @param _src 読み込み対象
-	/// @param target 
-	void LoadHandleIds(SRC _src, int* target);
+	/// @param _target 複数画像配列の先頭パス
+	void LoadHandleIds(SRC _src, int* _target);
 
 	/// @brief 3Dモデル重複利用時の読み込み
-	/// @param src 読み込み対象
-	int LoadModelDuplicate(SRC src);
+	/// @param _src 読み込み対象
+	int LoadModelDuplicate(SRC _src);
 
 	/// @brief リソースのハンドルを取得
 	/// @param _src 読み込み対象
@@ -141,22 +134,15 @@ private:
 	void Release(void);
 
 
-	/// @brief デフォルトコンストラクタ
 	ResourceManager(void);
-
-	/// @brief デフォルトデストラクタ
 	~ResourceManager(void) = default;
 
-	// コピーコンストラクタ対策
-	ResourceManager(const ResourceManager&) = delete;
+	/* コピーコンストラクタ対策 */
+	ResourceManager(const ResourceManager&)			   = delete;
 	ResourceManager& operator=(const ResourceManager&) = delete;
-	ResourceManager(ResourceManager&&) = delete;
+	ResourceManager(ResourceManager&&)			  = delete;
 	ResourceManager& operator=(ResourceManager&&) = delete;
 	
-
-
-	/// @brief リソースを取得する処理
-	void SetResource(void);
 
 	/// @brief リソース取得処理(複数画像)
 	/// @param _loadType 読み込み方法
@@ -165,10 +151,8 @@ private:
 	/// @param _allNum 画像の数
 	/// @param _numX 最大横画像数
 	/// @param _numY 最大縦画像数
-	/// @param _sizeX 各画像の横サイズ
-	/// @param _sizeY 各画像の縦サイズ
 	void _SetResource(Resource::LOAD_TYPE _loadType, SRC _src, std::string _path
-					  , int _allNum = -1, int _numX = -1, int _numY = -1, int _sizeX = -1, int _sizeY = -1);
+					  , int _allNum = -1, int _numX = -1, int _numY = -1);
 
 	/// @brief 内部ロード処理
 	/// @param _source 読み込み対象

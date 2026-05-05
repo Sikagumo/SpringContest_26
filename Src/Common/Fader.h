@@ -34,7 +34,7 @@ public:
 	void SetFade(STATE _state);
 
 	/// @brief ‰Šú‰»
-	void Init(void);
+	void Initialize(void);
 
 	/// @brief XV
 	void Update(void);

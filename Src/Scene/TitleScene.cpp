@@ -11,6 +11,29 @@
 #include "../Common/Vector2.h"
 #include "../Object/SkyDome/SkyDome.h"
 
+// 背景
+constexpr float BACK_SCALE = 2.0f;
+constexpr float BACK_HALF_X = (2040 / 2) * BACK_SCALE;
+
+// タイトルUIのスケール
+constexpr float TITLE_UI_SCALE = (1.0f - 0.0f);
+constexpr float TITLE_NOT_UI_SCALE = (1.0f - 0.25f);
+
+// タイトルUIのスケール
+constexpr float SELECT_UI_SCALE = (1.0f - 0.15f);
+constexpr float SELECT_NOT_UI_SCALE = (1.0f - 0.6f);
+
+// UI位置調整値
+constexpr int TITLE_UI_OFFSET = 250;
+constexpr int TITLE_UI_OFFSET_Y = 75;
+constexpr int SELECT_UI_OFFSET = 500;
+
+constexpr int TITLE_NOT_SUB = (255 - 200);
+constexpr int SELECT_ALPHA = (255 - 100);
+
+// タイトルUI縦位置
+constexpr int TITLE_UI_POS_Y = (Application::SCREEN_HALF_Y + 250);
+
 
 TitleScene::TitleScene(void)
 	: SceneBase()
@@ -19,7 +42,7 @@ TitleScene::TitleScene(void)
     , updateStateFunc_(nullptr)
     , drawFuncTitle_(nullptr), drawFuncSelect_(nullptr)
     , titleImage_(-1), titleBackImage_(-1)
-    , backImagesPos_()
+    , selectUIHandle_{}, titleUIHandle_{}
 {
     // 画像読み込み
     titleImage_ = resMng_.LoadHandleId(ResourceManager::SRC::IMG_TITLE);
@@ -30,34 +53,25 @@ TitleScene::TitleScene(void)
 }
 
 
-void TitleScene::Init(void)
+void TitleScene::Initialize(void)
 {
+    /* 初期化処理 */
     _ChangeStateProc(TITLE_STATE::SELECT_START);
-
-    backImagesPos_[0] = Vector2F(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y);
-    backImagesPos_[1] = Vector2F(Application::SCREEN_HALF_X + (BACK_HALF_X + Application::SCREEN_SIZE_X),
-                                 Application::SCREEN_HALF_Y);
-    backImagesPos_[2] = Vector2F(Application::SCREEN_HALF_X + ((BACK_HALF_X + Application::SCREEN_SIZE_X) * 2.0f),
-                                 Application::SCREEN_HALF_Y);
 
     sound_.Play(static_cast<int>(ResourceManager::SRC::BGM_TITLE), true);
 }
 
 void TitleScene::Update(void)
 {
+    /* 更新処理 */
+
+    constexpr float BACK_SPEED = 750.0f;
+
     // タイトル状態処理
     updateStateFunc_();
 
-    const float BACK_SPEED = 750.0f;
 
-    for (auto& pos : backImagesPos_) 
-    {
-        break;
-        pos.x = ((pos.x < Application::SCREEN_HALF_X + ((BACK_HALF_X + Application::SCREEN_SIZE_X) * 2.0f))
-                    ? pos.x + (BACK_SPEED * sceneMng_.GetDeltaTime())
-                    : Application::SCREEN_HALF_X + ((BACK_HALF_X + Application::SCREEN_SIZE_X) * 2.0f));
-    }
-
+    /* 効果音再生 */
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_UP, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DOWN, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_LEFT, Input::JOYPAD_NO::PAD1)
@@ -81,22 +95,18 @@ void TitleScene::Update(void)
 
 void TitleScene::Draw(void)
 {
-    const float BACK_SCALE = 2.0f;
-    const float BACK_OFFSET = (2040 * BACK_SCALE);
+    /* 描画処理 */
 
-    for (auto pos : backImagesPos_)
-    {
-        DrawRotaGraph(static_cast<int>(pos.x), static_cast<int>(pos.y)
-            , BACK_SCALE, 0.0f, titleBackImage_, true);
-        break;
-    }
+    DrawRotaGraph(Application::SCREEN_HALF_X, Application::SCREEN_HALF_Y
+                      , BACK_SCALE, 0.0f, titleBackImage_, true);
 
     // タイトル画像
-    const int TITLE_POS_X = (Application::SCREEN_HALF_X - 408);
-    const int TITLE_POS_Y = 100;
+    constexpr int TITLE_POS_X = (Application::SCREEN_HALF_X - 408);
+    constexpr int TITLE_POS_Y = 100;
     DrawGraph(TITLE_POS_X, TITLE_POS_Y, titleImage_, true);
 
     drawFuncTitle_();
+
 
     // 状態別描画処理
     if (state_ != TITLE_STATE::SELECT_START &&
@@ -121,10 +131,13 @@ void TitleScene::Draw(void)
 
 void TitleScene::Release(void)
 {
+
 }
 
 void TitleScene::ChangeStateProc(TITLE_STATE _selectUp, TITLE_STATE _selectDown)
 {
+    /* タイトル状態遷移処理 */
+
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_UP, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_LEFT, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_UP, Input::JOYPAD_NO::PAD2)
@@ -144,39 +157,39 @@ void TitleScene::ChangeStateProc(TITLE_STATE _selectUp, TITLE_STATE _selectDown)
 }
 void TitleScene::_ChangeStateProc(TITLE_STATE _state)
 {
+    /* タイトル状態遷移処理の内容 */
     state_ = _state;
 
-    if (_state == TITLE_STATE::SELECT_START)
+    if (state_ == TITLE_STATE::SELECT_START)
     {
         updateStateFunc_ = std::bind(&TitleScene::Update_SelectStart, this);
         drawFuncTitle_ = std::bind(&TitleScene::Draw_SelectStart, this);
     }
-    if (_state == TITLE_STATE::GAME_END)
+    else if (state_ == TITLE_STATE::GAME_END)
     {
         updateStateFunc_ = std::bind(&TitleScene::Update_GameEnd, this);
         drawFuncTitle_ = std::bind(&TitleScene::Draw_GameEnd, this);
     }
-
-    if (_state == TITLE_STATE::SELECT_MOVE)
+    else if (state_ == TITLE_STATE::SELECT_MOVE)
     {
         updateStateFunc_ = std::bind(&TitleScene::Update_SelectMove, this);
         drawFuncSelect_ = std::bind(&TitleScene::Draw_SelectMove, this);
     }
-    if (_state == TITLE_STATE::SELECT_GRAVITY)
+    else if (state_ == TITLE_STATE::SELECT_GRAVITY)
     {
         updateStateFunc_ = std::bind(&TitleScene::Update_SelectGravity, this);
         drawFuncSelect_ = std::bind(&TitleScene::Draw_SelectGravity, this);
     }
-    if (_state == TITLE_STATE::SELECT_CANCEL)
+    else if (state_ == TITLE_STATE::SELECT_CANCEL)
     {
         updateStateFunc_ = std::bind(&TitleScene::Update_SelectCancel, this);
         drawFuncSelect_ = std::bind(&TitleScene::Draw_SelectCancel, this);
     }
 
 
+    // タイトル描画が未割当時、"選択開始"描画関数にする
     if (drawFuncTitle_ == nullptr)
     {
-        // タイトル描画が未割当時、選択開始描画関数にする
         drawFuncTitle_ = std::bind(&TitleScene::Draw_SelectStart, this);
     }
 }
@@ -184,6 +197,8 @@ void TitleScene::_ChangeStateProc(TITLE_STATE _state)
 
 void TitleScene::Update_SelectStart(void)
 {
+	/* タイトル状態："選択開始"の更新処理 */
+
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2))
     {
@@ -201,6 +216,7 @@ void TitleScene::Update_SelectStart(void)
 }
 void TitleScene::Update_GameEnd(void)
 {
+	/* タイトル状態："ゲーム終了"の更新処理 */
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2)
@@ -216,13 +232,16 @@ void TitleScene::Update_GameEnd(void)
 }
 void TitleScene::Update_SelectMove(void)
 {
+	/* タイトル状態："移動ステージ選択"の更新処理 */
+
+    // 移動ステージを選択してシーン遷移
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2))
     {
-        // 移動ステージを選択してシーン遷移
         sceneMng_.SetIsStageMove(true);
         sceneMng_.ChangeScene(SceneManager::SCENE_ID::GAME);
     }
+
     if (input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::PAUSE, Input::JOYPAD_NO::PAD2))
     {
@@ -235,6 +254,7 @@ void TitleScene::Update_SelectMove(void)
 }
 void TitleScene::Update_SelectGravity(void)
 {
+	/* タイトル状態："重力ステージ選択"の更新処理 */
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2))
     {
@@ -248,12 +268,14 @@ void TitleScene::Update_SelectGravity(void)
         _ChangeStateProc(TITLE_STATE::SELECT_START);
     }
 
-    // タイトル状態遷移入力
+    // タイトル状態遷移処理
     ChangeStateProc(TITLE_STATE::SELECT_MOVE, TITLE_STATE::SELECT_CANCEL);
 }
 
 void TitleScene::Update_SelectCancel(void)
 {
+	/* タイトル状態："選択キャンセル"の更新処理 */
+
     if (input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD1)
         || input_.IsTrgDown(InputManager::TYPE::SELECT_DECISION, Input::JOYPAD_NO::PAD2))
     {
@@ -272,8 +294,7 @@ void TitleScene::Update_SelectCancel(void)
 
 void TitleScene::Draw_SelectStart(void)
 {
-    const int TITLE_UI_POS_Y = (Application::SCREEN_HALF_Y + 250);
-
+	/* タイトル状態："選択開始"の描画処理 */
     int x = 0;
     
     x = (Application::SCREEN_HALF_X - TITLE_UI_OFFSET);
@@ -293,6 +314,7 @@ void TitleScene::Draw_SelectStart(void)
 }
 void TitleScene::Draw_GameEnd(void)
 {
+	/* タイトル状態："ゲーム終了"の描画処理 */
     const int TITLE_UI_POS_Y = (Application::SCREEN_HALF_Y + 250);
 
     int x = 0;
@@ -316,6 +338,7 @@ void TitleScene::Draw_GameEnd(void)
 
 void TitleScene::Draw_SelectMove(void)
 {
+	/* タイトル状態："移動ステージ選択"の描画処理 */
     int x = 0;
 
     x = Application::SCREEN_HALF_X;
@@ -341,6 +364,7 @@ void TitleScene::Draw_SelectMove(void)
 }
 void TitleScene::Draw_SelectGravity(void)
 {
+	/* タイトル状態："重力ステージ選択"の描画処理 */
     int x = 0;
 
     x = (Application::SCREEN_HALF_X + SELECT_UI_OFFSET);
@@ -365,7 +389,9 @@ void TitleScene::Draw_SelectGravity(void)
 }
 void TitleScene::Draw_SelectCancel(void)
 {
+	/* タイトル状態："選択キャンセル"の描画処理 */
     int x = 0;
+
     x = (Application::SCREEN_HALF_X - SELECT_UI_OFFSET);
     DrawRotaGraph(x, Application::SCREEN_HALF_Y + TITLE_UI_OFFSET_Y
                   , SELECT_UI_SCALE, 0.0

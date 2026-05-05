@@ -232,7 +232,7 @@ void Player::ReInit(const VECTOR& _pos, STAGE_TYPE _stageType)
 	transform_.pos = initialPos_ = _pos;
 	curStageType_ = _stageType;
 
-	CharaBase::Init();
+	CharaBase::Initialize();
 	Update();
 }
 

@@ -68,7 +68,7 @@ public:
 	/// @param _scl 倍率(default:1.0)
 	void SetScale(float _scl = 1.0f);
 
-	/// @brief 初期化処理
+	/// @brief 初期化
 	/// @param _scl モデルのスケール(ベクトル)
 	/// @param _rot グローバル回転(クォータニオン)
 	/// @param _rotLocal ローカル回転(クォータニオン)

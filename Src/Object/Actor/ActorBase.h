@@ -13,22 +13,12 @@ public:
 
 	using ColliderMap = std::map<int, ColliderBase*>;
 
-	/// @brief コンストラクタ
 	ActorBase(void);
-
-	/// @brief デストラクタ
 	virtual ~ActorBase(void) = default;
 
-	/// @brief 初期化
-	void Init(void);
-
-	/// @brief 更新
+	void Initialize(void);
 	virtual void Update(void) = 0;
-
-	/// @brief 描画
 	virtual void Draw(void);
-
-	/// @brief 解放
 	virtual void Release(void);
 
 
@@ -56,7 +46,7 @@ public:
 
 protected:
 
-	// シングルトン参照
+	// マネージャ参照
 	ResourceManager& resMng_;
 	SceneManager& sceneMng_;
 

@@ -34,7 +34,7 @@ int WINAPI WinMain(
 	instance.Run();
 
 	// ‰ð•ú
-	instance.Destroy();
+	instance.DestroyInstance();
 
 
 #ifdef _DEBUG

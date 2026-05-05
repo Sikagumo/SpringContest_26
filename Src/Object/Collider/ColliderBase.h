@@ -10,54 +10,48 @@ public:
 	// 形状
 	enum class SHAPE
 	{
-		NONE,
-		LINE,
-		SPHERE,
-		CAPSULE,
-		MODEL,
-		PLANE,
-		AABB,
+		NONE = -1,
+
+		LINE,	 // 線分
+		SPHERE,	 // 球
+		CAPSULE, // カプセル
+		MODEL,	 // モデル
+		PLANE,	 // 平面
 	};
 
 	// 衝突種別
 	enum class TAG
 	{
-		STAGE,
-		PLAYER,
-		CAMERA,
-		ENEMY,
-		GOAL,
-		VIEW_RANGE,
+		STAGE,	// ステージ
+		PLAYER, // プレイヤー
+		CAMERA, // カメラ
+		GOAL,	// ゴール
 	};
 
 
-	// コンストラクタ
-	ColliderBase(SHAPE shape, TAG tag, const Transform* follow);
-
-	// デストラクタ
+	/// @brief コンストラクタ
+	/// @param _shape 
+	/// @param _tag タグ
+	/// @param _follow 
+	ColliderBase(SHAPE _shape, TAG _tag, const Transform* _follow);
 	virtual ~ColliderBase(void) = default;
 
-	// 描画
 	void Draw(void);
 
-	// 追従先の取得
-	const Transform * GetFollow(void) const { return follow_; };
+	/// @brief 追従先の取得
+	const Transform* GetFollow(void) const { return follow_; };
 
-	// 追従先の再設定
-	void SetFollow(Transform* follow);
+	/// @brief 追従先の再設定処理
+	void SetFollow(Transform* _follow) { follow_ = _follow; };
 
-	// 形状
+	/// @brief 形状の取得
 	SHAPE GetShape(void) const { return shape_; }
 
-	// 衝突種別
+	/// @brief 衝突種別の取得
 	TAG GetTag(void) const { return tag_; }
 
 
 protected:
-
-	// デバッグ表示の色
-	static constexpr int COLOR_VALID = 0xff0000;
-	static constexpr int COLOR_INVALID = 0xaaaaaa;
 
 	// 形状
 	SHAPE shape_;
@@ -72,9 +66,9 @@ protected:
 	bool isValid_;
 
 
-	// ローカル座標をワールド座標に変換
-	VECTOR GetRotPos(const VECTOR& localPos) const;
+	/// @brief ローカル座標をワールド座標に変換
+	VECTOR GetRotPos(const VECTOR& _localPos) const;
 
-	// デバッグ用描画
-	virtual void DrawDebug(int color) = 0;
+	/// @brief デバッグ用描画
+	virtual void DrawDebug(unsigned int _color) = 0;
 };
